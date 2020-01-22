@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Tutopoint</title>
+    <link rel="stylesheet" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/dashboardstyle.css">
+    </head>
+  <body>
+
+    <section class="hero is-fullheight">
+  <!-- Hero head: will stick at the top -->
+  <div class="hero-head">
+    <header class="navbar">
+      <div class="container">
+        <div class="navbar-brand">
+          <span class="navbar-burger burger" data-target="navbarMenuHeroC">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="navbarMenuHeroC" class="navbar-menu">
+          <div class="navbar-start">
+
+
+            </div>
+            <a class="navbar-item">
+              TutoPoint
+
+            </a>
+          <div class="navbar-end">
+
+          </div>
+        </div>
+      </div>
+    </header>
+  </div>
+
+
+
+  <!-- Hero content: will be in the middle -->
+  <div class="hero-body">
+    <div class="menu-wrapper">
+      <aside class="menu">
+        <p class="menu-label">Placeholder</p>
+        <ul class="menu-list">
+          <li>
+            <a>link</a>
+            <a>link</a>
+            <a>link</a>
+            <a>link</a>
+          </li>
+        </ul>
+        <p class="menu-label">Profile</p>
+        <ul class="menu-list">
+          <li>
+            <a>link</a>
+            <a href="/logout">Log Out</a>
+          </li>
+        </ul>
+      </aside>
+    </div>
+
+
+    <div class="container columns-wrapper has-text-centered">
+      <div class="columns">
+        <div class="column">
+          <div class="card">
+              <div class="card-content">
+                Your notes
+                <ul>
+                  {{#each documents}}
+                    <li><a href="/document/{{this._id}}">{{this.title}}</a></li>
+                  {{/each}}
+                  <br />
+                  <a href="/create-document">New document</a>
+                </ul>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-content">
+                Your upcoming sessions
+                <ul>
+                  {{#each sessions}}
+                    <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
+                  {{/each}}
+                </ul>
+              </div>
+            </div>
+
+        </div>
+        <div class="column">
+          <div class="card">
+            <div class="card-content">
+              Your information
+              <ul>
+                {{#each information}}
+                  <li><a href="/information/{{this._id}}">{{this.title}}</a></li>
+                {{/each}}
+                <br />
+                <a href="/edit-information">Edit Information</a>
+              </ul>
+            </div>
+            </div></div>
+        <div class="column">
+          <div class="card">
+              <div class="card-content">
+                easy
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                  easy
+                  </div>
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero footer: will stick at the bottom -->
+  <div class="hero-foot">
+  </div>
+</section>
+  </body>
+</html>

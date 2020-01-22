@@ -1,0 +1,54 @@
+.page-container
+{
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+}
+
+.chat-container
+{
+  height: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  padding: 0;
+}
+.ql-toolbar, #editor
+{
+  border-left: none !important;
+}
+.ql-toolbar
+{
+  border-top: none !important;
+}
+
+.video-container
+{
+  display: inline-block;
+  padding: 0;
+  height: 100%;
+}
+.their-video-container
+{
+  height: 100%;
+}
+.my-video-container
+{
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 200px;
+}
+.video
+{
+  margin: auto;
+  width: auto;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: black;
+}
