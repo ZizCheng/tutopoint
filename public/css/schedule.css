@@ -1,0 +1,66 @@
+.calendar-date
+{
+  padding: 10px;
+}
+.calendar-real-date
+{
+  border: 1px solid black;
+}
+
+.day-container
+{
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: visible;
+  display: none;
+  padding: 4rem 0 0 0;
+}
+.day
+{
+  position: relative;
+  height: 30px;
+  width: 4000px;
+  background-color: yellow;
+}
+.time
+{
+  display: inline-block;
+  border: 1px solid black;
+  padding: 5px;
+}
+.interval
+{
+  position: absolute;
+  height: 30px;
+  background-color: orange;
+}
+.interval-label
+{
+  position: absolute;
+}
+.remove-interval
+{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+.cursor
+{
+  position: absolute;
+  width: 4px;
+  height: 30px;
+  background-color: red;
+  z-index: 1;
+  pointer-events: none;
+}
+.cursor-text
+{
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  border: 1px solid black;
+  padding: 0.25rem 0.5rem;
+}

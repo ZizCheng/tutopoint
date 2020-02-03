@@ -32,12 +32,24 @@ const Guide = new Schema({
 	},
 	major: {
 		type: String
-	}
+	},
+	info: {
+		type: String
+	},
+	//schedule is sorted based on first index of array
+	schedule: [
+		[Date, Date]
+	],
+	//5 length array that stores how many 1 star, 2 star, etc. (1 star at index 0)
+	ratings: [{
+		type: Number
+	}]
 });
 const Client = new Schema({
-	information: [{
-		type: String
-	}]
+	balance: {
+		type: Number,
+		required: [true, "Balance is required"]
+	}
 });
 
 const Session = new Schema({

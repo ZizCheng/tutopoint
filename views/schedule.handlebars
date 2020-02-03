@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="../css/bulma.min.css">
+    <link rel="stylesheet" href="../css/schedule.css">
+    <script src="/js/schedule.js"></script>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <body>
+    <div class="calendar-container">
+      <table>
+        <thead>
+          <th>Su</th>
+          <th>Mo</th>
+          <th>Tu</th>
+          <th>We</th>
+          <th>Th</th>
+          <th>Fr</th>
+          <th>Sa</th>
+        </thead>
+        <tbody class="calendar-body">
+
+        </tbody>
+      </table>
+    </div>
+    <div class="day-container">
+      <div class="day">
+
+
+      </div>
+      <div class="cursor">
+        <div class="cursor-text">
+
+        </div>
+      </div>
+    </div>
+    <div class="list-view">
+      Start: <input type="date" /><br />
+      End: <input type="date" /><br />
+      <button onclick="addFromList()">Add</button>
+      <button onclick="newListInterval()">Create</button>
+    </div>
+    <button onclick="saveSchedule()">Save</button>
+    <script>
+      //JSON.parse changes dates into strings, need to convert back
+      var schedule = JSON.parse(`{{{schedule}}}`);
+      for(var i = 0;i<schedule.length;i++) {
+        for(var j = 0;j<schedule[i].length;j++) {
+          schedule[i][j] = new Date(schedule[i][j]);
+        }
+      }
+    </script>
+    <script>
+      var config = {
+        hourChunks: 4 //number of chunks an hour is split into
+      }
+
+      var month = 0;
+      var year = 2020;
+      var day;
+
+      newCalendar(new Date(year, month));
+
+      $(".cursor").css({bottom: 0});
+      $(".day").mousemove(function(event){
+        var left = event.pageX - $(".day").offset().left;
+        var date = getDateFromLeftPos(left);
+        var roundedDate = roundDate(date);
+        var cursorLeft = getLeftPosFromDate(roundedDate);
+        $(".cursor").css({left: cursorLeft});
+        $(".cursor-text").html(formatDate(roundedDate))
+      });
+
+      var firstDate = null;
+      var secondDate = null;
+      $(".day").click(function(event){
+        var left = event.pageX - $(".day").offset().left;
+        var date = getDateFromLeftPos(left);
+        var roundedDate = roundDate(date);
+
+        if(!firstDate)
+        {
+          firstDate = roundedDate;
+        }
+        else
+        {
+          secondDate = roundedDate;
+          console.log(firstDate + " " + secondDate);
+          //vars must be ordered, distinct dates
+          if(firstDate.getTime() != secondDate.getTime())
+          {
+            //make sure times are ordered
+            if(firstDate.getTime() > secondDate.getTime())
+            {
+              var temp = firstDate;
+              firstDate = secondDate;
+              secondDate = temp;
+            }
+            insertInterval([firstDate,secondDate],schedule);
+            console.log(schedule);
+            newDay(); //update day to show change
+            firstDate = null;
+
+            console.log(schedule);
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
