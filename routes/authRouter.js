@@ -1,28 +1,27 @@
 const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const auth = require("../auth/auth.js");
+const router = new express.Router();
+const auth = require('../auth/auth.js');
 
-router.get('/login', function(req, res){
-  res.render("login", {
-    layout: false
+router.get('/login', function(req, res) {
+  res.render('login', {
+    layout: false,
   });
 });
-router.post('/login', passport.authenticate('local', { failureRedirect: '/error' }), function(req, res) {
+router.post('/login', auth.authenticateUser, function(req, res) {
   res.redirect('/dashboard');
 });
 
-router.get('/dashboard', auth.loggedIn, function(req, res){
-  res.render("dashboard", {
+router.get('/dashboard', auth.loggedIn, function(req, res) {
+  res.render('dashboard', {
     sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-    documents:  JSON.parse(JSON.stringify(req.user.documents)),
-    layout: false
+    documents: JSON.parse(JSON.stringify(req.user.documents)),
+    layout: false,
   });
 });
 router.post('/signup', auth.newUser, (req, res) => {
   res.redirect('/dashboard');
 });
-router.get('/logout', function(req, res){
+router.get('/logout', function(req, res) {
   req.logout();
   res.redirect('/');
 });

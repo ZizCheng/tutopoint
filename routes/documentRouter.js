@@ -1,23 +1,49 @@
 const express = require('express');
-const router = express.Router();
-const passport = require('passport');
-const auth = require("../auth/auth.js");
+const router = new express.Router();
+const auth = require('../auth/auth.js');
 
-router.get('/document/:id', auth.loggedIn, auth.hasDocument, function(req, res){
-  res.render("document", {doc_text: req.doc.text, doc_id: req.doc._id, layout: false});
+const Documents = require('./models/model.js').Documents;
+
+/*
+GET is used to get the document.
+POST is used to create a new document.
+PUT is used to modify a document.
+*/
+
+router.use(auth.loggedIn);
+
+
+router.get('/document/:id', auth.hasDocument, function(req, res) {
+  const renderOptions =
+  {
+    doc_text: req.doc.text,
+    doc_id: req.doc._id,
+    layout: false,
+  };
+
+  res.render('document', renderOptions);
 });
-router.post('/save-document/:id', auth.loggedIn, auth.hasDocument, function(req,res){
-  req.doc.text = req.body.text;
-  req.doc.save();
-  res.send("success");
-});
-router.get('/create-document', auth.loggedIn, function(req,res){
-  var newDoc = new Documents({title: "Untitled Notes", text: "<p>You can take notes here.</p>"});
-  newDoc.save(function(err,doc){
-    req.user.documents.push(doc._id)
-    req.user.populate("documents").save();
-    res.redirect("/document/" + newDoc._id);
+
+router.post('/document', function(req, res) {
+  const newDoc = new Documents(
+      {title: 'Untitled Notes',
+        text: '<p>You can take notes here.</p>'},
+  );
+  newDoc.save(function(err, doc) {
+    req.user.documents.push(doc._id);
+    req.user.populate('documents').save()
+        .then(() => res.redirect('/document/' + newDoc._id))
+        .catch((err) => res.send('Error occurred.'));
   });
 });
+
+
+router.put('/document/:id', auth.hasDocument, function(req, res) {
+  req.doc.text = req.body.text;
+  req.doc.save()
+      .then(() => res.send('success'))
+      .catch((err) => res.send('Error occurred.'));
+});
+
 
 module.exports = router;
