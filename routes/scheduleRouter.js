@@ -3,7 +3,9 @@ const router = new express.Router();
 const auth = require('../auth/auth.js');
 
 
-router.get('/schedule', auth.loggedIn, function(req, res) {
+router.use(auth.loggedIn);
+
+router.get('/schedule', function(req, res) {
   const renderOptions =
   {
     schedule: JSON.stringify(req.user.schedule),
@@ -18,7 +20,7 @@ router.get('/schedule/:id', function(req, res) {
     else res.send(user.schedule);
   });
 });
-router.post('/schedule', auth.loggedIn, function(req, res) {
+router.post('/schedule', function(req, res) {
   for (let i = 0; i < req.body.schedule.length; i++) {
     for (let j = 0; j < req.body.schedule[i].length; j++) {
       req.body.schedule[i][j] = new Date(req.body.schedule[i][j]);

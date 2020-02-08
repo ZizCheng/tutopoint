@@ -11,6 +11,7 @@ authConfig = {
   salt: 2,
 };
 
+// TODO: Redo with explicity querying for the __password__
 exports.Strategy = (new LocalStrategy(
     {
       usernameField: 'email',

@@ -15,6 +15,7 @@ const Sessions = require('./models/model.js').Sessions;
 const authRouter = require('./routes/authRouter.js');
 const scheduleRouter = require('./routes/authRouter.js');
 const documentRouter = require('./routes/authRouter.js');
+const discoverRouter = require('./routes/discoverRouter.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -35,6 +36,8 @@ app.use(passport.session());
 app.use(authRouter);
 app.use(scheduleRouter);
 app.use(documentRouter);
+app.use('/discover', discoverRouter);
+
 
 app.engine('handlebars', handlebars());
 app.set('view engine', 'handlebars');
