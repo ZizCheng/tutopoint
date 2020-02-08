@@ -46,10 +46,7 @@ const Guide = new Schema({
   }],
 });
 const Client = new Schema({
-  balance: {
-    type: Number,
-    required: [true, 'Balance is required'],
-  },
+  
 });
 
 const Session = new Schema({

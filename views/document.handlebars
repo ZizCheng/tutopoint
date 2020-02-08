@@ -58,7 +58,7 @@
       {
         var delta = quill.getContents();
         console.log(delta);
-        $.post("/save-document/" + doc_id, {text: JSON.stringify(delta)});
+        $.post("/document/" + doc_id, {text: JSON.stringify(delta)});
       }
     </script>
   </body>
