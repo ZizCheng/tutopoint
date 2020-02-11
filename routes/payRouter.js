@@ -7,12 +7,12 @@ const stripe = require('stripe')(secret.sk_key);
 router.use(auth.loggedIn);
 router.use(auth.ensureUserIsClient);
 
-router.get('/:id', function(req, res) {
+router.get('/', function(req, res) {
   res.render('userPay', {layout: false, guideid: req.params.id});
 });
 
 
-router.post('/:id', async function(req, res) {
+router.post('/', async function(req, res) {
   const token = req.body.stripeToken;
 
   stripe.charges.create({
