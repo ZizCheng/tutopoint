@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\""
+    "test": "echo \"Error: no test specified\"",
+    "watch": "browserify public/js/call -o public/js/bundle.js",
+    "app": "nodemon index.js"
   },
   "author": "tutopoint, llc.",
   "license": "ISC",
@@ -26,7 +28,9 @@
     "stripe": "^8.15.0"
   },
   "devDependencies": {
+    "browserify": "^16.5.0",
     "eslint": "^6.8.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "nodemon": "^2.0.2"
   }
 }
