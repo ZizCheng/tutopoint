@@ -4,6 +4,8 @@ const auth = require('../auth/auth.js');
 const Guides = require('../models/model.js').Guides;
 
 discover.use(auth.loggedIn);
+discover.use(auth.ensureUserIsClient);
+
 
 discover.get('/', function(req, res) {
   Guides

@@ -45,9 +45,18 @@ const Guide = new Schema({
   ratings: [{
     type: Number,
   }],
+  stripeAccountId: {
+    type: String,
+  },
+  onboarded: {
+    type: Boolean,
+    default: false,
+  },
 });
 const Client = new Schema({
-  
+  stripeCustomerId: {
+    type: String,
+  },
 });
 
 const Session = new Schema({

@@ -7,7 +7,7 @@ router.get('/login', function(req, res) {
     layout: false,
   });
 });
-router.post('/login', auth.authenticateUser, function(req, res) {
+router.post('/login', auth.authenticateUser, auth.guideHasOnboarded, function(req, res) {
   res.redirect('/dashboard');
 });
 
