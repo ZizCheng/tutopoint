@@ -3,83 +3,189 @@
   <head>
     <meta charset="utf-8">
     <title>Tutopoint</title>
+    <link rel="stylesheet" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="css/bulma.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/navbar.css">
   </head>
   <body>
-<nav class="navbar">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="/">Tutopoint</a>
-  </div>
-  <div class="navbar-end">
-    <div class="navbar-item">
-      <a class="button is-light" href="/login">Log in</a>
-    </div>
-  </div>
-</nav>
 
-<section class="header-section">
-  <div class="header-container">
-    <h1 class="header-title has-text-white">Tutopoint</h1>
-    <p class="header-description">College counseling from authentic college students</p>
-    <div class="header-button-container">
-      <a class="header-button button is-light" href="/signup">SIGN UP</a>
-      <a class="header-button button is-light" href="/login">LOG IN</a>
-    </div>
-  </div>
-</section>
+    <section class="hero is-fullheight">
+  <!-- Hero head: will stick at the top -->
+  <div class="hero-head">
+    <header class="navbar">
+      <div class="container">
+        <div class="navbar-brand">
+          <span class="navbar-burger burger" data-target="navbarMenuHeroC">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="navbarMenuHeroC" class="navbar-menu">
+          <div class="navbar-start">
+              <a class="navbar-item">
+                TutoPoint
 
-<section class="why-section">
-  <div class="divider"></div>
-  <div class="why-container">
-    <h1 class="why-title title">Why Tutopoint</h1>
-    <div class="why-wrapper columns">
-      <div class="why-column column">
-        <div class="card why-card">
-          <div class="card-content"><h1 class="title">Cheap</h1></div>
-          <div class="card-content">
-            <span class="why-icon icon has-text-primary">
-              <i class="fas fa-yen-sign"></i>
+              </a>
+
+            </div>
+          <div class="navbar-end">
+            <span class="navbar-item">
+              <a class="button has-background-dark has-text-white" href="/login">
+                <span>Sign in</span>
+              </a>
             </span>
-          </div>
-          <div class="why-card-description card-content">
-            Tutopoint provides the cheapest plans you will find anywhere, starting at $15 per session.
           </div>
         </div>
       </div>
-      <div class="why-column column">
-          <div class="card why-card">
-            <div class="card-content"><h1 class="title">Online</h1></div>
-            <div class="card-content">
-              <span class="why-icon icon has-text-primary">
-                <i class="fas fa-laptop"></i>
-              </span>
+    </header>
+  </div>
+
+  <!-- Hero content: will be in the middle -->
+  <div class="hero-body">
+    <div class="container columns-wrapper">
+      <div class="columns">
+        <div class="column is-half signup client-signup">
+
+          <h1 class="is-size-3 has-text-centered"> New Customer? Sign up now! </h1>
+            <div class="card">
+              <div class="card-content">
+                <form method="post" action="/signup">
+                  <div class="select client-userType">
+                    <select>
+                      <option value="client" selected>Customer</option>
+                      <option value="guide">Guide</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                      <input class="input" type="email" name="email">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                      <input class="input" type="text" name="name">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Password</label>
+                    <div class="control">
+                      <input class="input" type="password" name="password">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Confirm password</label>
+                    <div class="control">
+                      <input class="input" type="password">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="control">
+                      <input class="input" type="submit">
+                    </div>
+                  </div>
+
+                  <input type="hidden" name="userType" value="client" />
+                </form>
+              </div>
             </div>
-            <div class="why-card-description card-content">
-              Tutopoint brings college counseling right to your home with
-              online sessions. There is no need to fuss about driving somewhere.
-            </div>
-          </div>
         </div>
-      <div class="why-column column">
-        <div class="card why-card">
-          <div class="card-content"><h1 class="title">Safe</h1></div>
-          <div class="card-content">
-            <span class="why-icon icon has-text-primary">
-              <i class="fas fa-lock"></i>
-            </span>
-          </div>
-          <div class="why-card-description card-content">
-            We do extensive background checks to ensure that all counselors are authentic college students.
+        <div class="column is-half signup guide-signup">
+          <h1 class="is-size-3 has-text-centered"> Apply to become a guide! </h1>
+          <div class="card">
+              <div class="card-content">
+                <form method="post" action="/signup">
+                  <div class="select guide-userType">
+                    <select>
+                      <option value="client">Customer</option>
+                      <option value="guide" selected>Guide</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                      <input class="input" type="email" name="email">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                      <input class="input" type="text" name="name">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">University</label>
+                    <div class="control">
+                      <input class="input" type="text" name="university">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Grade Level</label>
+                    <div class="control is-expanded">
+                      <div class="select is-fullwidth">
+                        <select name="grade">
+                          <option value="Freshman">Freshman</option>
+                          <option value="Sophmore">Sophmore</option>
+                          <option value="Junior">Junior</option>
+                          <option value="Senior">Senior</option>
+                          <option value="Masters">Masters</option>
+                          <option value="PhD">PhD</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="label">Major</label>
+                    <div class="control">
+                      <input class="input" type="text" name="major">
+                    </div>
+                  </div>
+
+                <div class="field">
+                  <label class="label">Password</label>
+                  <div class="control">
+                    <input class="input" type="password" name="password">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Confirm password</label>
+                  <div class="control">
+                    <input class="input" type="password">
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <input class="input" type="submit">
+                  </div>
+                </div>
+
+                <input type="hidden" name="userType" value="guide" />
+              </form>
+
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</section>
 
+  <!-- Hero footer: will stick at the bottom -->
+  <div class="hero-foot">
+  </div>
+</section>
+<script>
+  $(".client-userType").change(function(){
+    $(".client-signup").hide();
+    $(".guide-signup").show();
+    $(".client-userType").val("client");
+  });
+  $(".guide-userType").change(function(){
+    $(".guide-signup").hide();
+    $(".client-signup").show();
+    $(".client-userType").val("guide");
+  });
+</script>
   </body>
 </html>
