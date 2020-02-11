@@ -58,15 +58,25 @@ function newDay() {
   }
   $('.day-container').show();
 }
+/*
+function newChunk(date) {
+  const timeStr = formatDate(date);
+  const chunkDiv = document.createElement('div');
+  $(chunkDiv)
+    .addClass('chunk')
+    .data('date',date)
+
+}
+*/
 function newInterval(interval) {
   const start = interval[0];
   const end = interval[1];
-  const left = getLeftPosFromDate(start);
-  const right = getRightPosFromDate(end);
+  const top = getTopPosFromDate(start);
+  const bottom = getBottomPosFromDate(end);
   const intervalDiv = document.createElement('div');
   $(intervalDiv)
       .addClass('interval')
-      .css({left: left, right: right})
+      .css({top: top, bottom: bottom})
       .data('start', start)
       .data('end', end)
       .mouseenter(function() {
@@ -85,11 +95,11 @@ function newInterval(interval) {
         $(this).parent().remove();
       });
 
-  const leftLabel = $(newIntervalLabel(start)).css({left: 0});
-  const rightLabel = $(newIntervalLabel(end)).css({right: 0});
+  const topLabel = $(newIntervalLabel(start)).css({top: 0});
+  const bottomLabel = $(newIntervalLabel(end)).css({bottom: 0});
 
   $('.day').append(intervalDiv);
-  $(intervalDiv).append(leftLabel).append(rightLabel).append(removeDiv);
+  $(intervalDiv).append(topLabel).append(bottomLabel).append(removeDiv);
 }
 function newIntervalLabel(date) {
   const label = document.createElement('span');
@@ -102,7 +112,7 @@ function newIntervalLabel(date) {
 
 // SERVER
 function saveSchedule() {
-  $.post('/save-schedule', {
+  $.post('/schedule', {
     schedule: schedule,
   });
 }
@@ -114,31 +124,41 @@ function roundDate(date) {
   const chunkMs = 1000*60*60/config.hourChunks;
   return new Date(Math.round(dateMs/chunkMs) * chunkMs);
 }
-function getDateFromLeftPos(offset) {
-  const percentDiff = offset/$('.day').width();
+function getDateFromTopPos(offset) {
+  const percentDiff = offset/$('.day').height();
   const dayStart = new Date(year, month, day);
   const ret = dayStart.getTime() + 1000*60*60*24*percentDiff;
   return new Date(ret);
 }
-function getLeftPosFromDate(date) {
+function getTopPosFromDate(date) {
   const dayStart = new Date(year, month, day);
   const dateDiff = date.getTime() - dayStart.getTime();
   const datePercentDiff = dateDiff/(1000*60*60*24);
-  return $('.day').width() * datePercentDiff;
+  return $('.day').height() * datePercentDiff;
 }
-function getRightPosFromDate(date) {
+function getBottomPosFromDate(date) {
   const dayStart = new Date(year, month, day);
   const dateDiff = date.getTime() - dayStart.getTime();
   const datePercentDiff = dateDiff/(1000*60*60*24);
-  return $('.day').width() * (1-datePercentDiff);
+  return $('.day').height() * (1-datePercentDiff);
 }
 function formatDate(date) {
   let minutes = date.getMinutes();
   if (minutes<10) minutes = '0' + minutes;
   return date.getHours() + ':' + minutes;
 }
+function moveCursor(date) {
+  var roundedDate = roundDate(date);
+  var cursorTop = getTopPosFromDate(roundedDate);
+  $(".cursor").css({top: cursorTop});
+  $(".cursor-text").html(formatDate(roundedDate))
+}
 
 
+
+
+
+// SAME AS BACK END
 // CORE FUNCTIONS
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);

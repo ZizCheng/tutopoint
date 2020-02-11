@@ -30,13 +30,15 @@
       </table>
     </div>
     <div class="day-container">
-      <div class="day">
+      <div class="day-wrapper">
+        <div class="day">
 
 
-      </div>
-      <div class="cursor">
-        <div class="cursor-text">
+        </div>
+        <div class="cursor">
+          <div class="cursor-text">
 
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +63,7 @@
         hourChunks: 4 //number of chunks an hour is split into
       }
 
-      var month = 0;
+      var month = 1;
       var year = 2020;
       var day;
 
@@ -69,19 +71,16 @@
 
       $(".cursor").css({bottom: 0});
       $(".day").mousemove(function(event){
-        var left = event.pageX - $(".day").offset().left;
-        var date = getDateFromLeftPos(left);
-        var roundedDate = roundDate(date);
-        var cursorLeft = getLeftPosFromDate(roundedDate);
-        $(".cursor").css({left: cursorLeft});
-        $(".cursor-text").html(formatDate(roundedDate))
+        var top = event.pageY - $(".day").offset().top;
+        var date = getDateFromTopPos(top);
+        moveCursor(date);
       });
 
       var firstDate = null;
       var secondDate = null;
       $(".day").click(function(event){
-        var left = event.pageX - $(".day").offset().left;
-        var date = getDateFromLeftPos(left);
+        var top = event.pageY - $(".day").offset().top;
+        var date = getDateFromTopPos(top);
         var roundedDate = roundDate(date);
 
         if(!firstDate)
@@ -96,8 +95,7 @@
           if(firstDate.getTime() != secondDate.getTime())
           {
             //make sure times are ordered
-            if(firstDate.getTime() > secondDate.getTime())
-            {
+            if(firstDate.getTime() > secondDate.getTime()) {
               var temp = firstDate;
               firstDate = secondDate;
               secondDate = temp;

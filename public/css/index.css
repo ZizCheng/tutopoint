@@ -1,16 +1,92 @@
 
-.form-section
+.header-section
 {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
+  margin: 36px;
+  background-image: url("/images/intro-image.jpg");
+  background-size: cover;
+  background-position: center;
+}
+.header-container
+{
+  display: inline-flex;
+  padding: 0 72px;
+  height: 80vh;
+  background-color: rgba(0,0,0,0.8);
   flex-direction: column;
   justify-content: center;
-    background-color: #ffffc9;
 }
-.form-container
+.header-title
 {
-  width: 40%;
-  max-width: 800px;
+  font-size: 400%;
+  letter-spacing: 2px;
+  font-weight: 400;
+}
+.header-description
+{
+  font-size: 125%;
+  color: #bbb;
+  margin: 16px 0 24px 0;
+}
+.header-button-container
+{
+  display: flex;
+  flex-direction: row;
+}
+.header-button
+{
+  color: red;
+  border-radius: 0;
+  padding: 28px 42px;
+  letter-spacing: 2px;
+}
+.header-button:first-of-type
+{
+  margin-right: 24px;
+}
+
+.divider
+{
+  height: 1px;
+  width: 100%;
+  background-color: #ddd;
+}
+
+.why-section
+{
+  margin: 100px;
+}
+.why-container
+{
+  text-align: center;
+}
+.why-title
+{
+  font-size: 3rem;
+  margin-top: 3rem;
+}
+.why-wrapper
+{
+  margin: 80px 0;
+  justify-content: space-between;
+}
+.why-column
+{
+  padding: 1.5rem;
+}
+.why-card
+{
+  padding: 1rem;
+}
+.why-card .why-card-description
+{
+  padding: 1rem 3rem 3rem 3rem;
+}
+.why-icon
+{
+  width: 4rem;
+  height: 4rem;
+}
+.why-icon i
+{
+  font-size: 4rem;
 }

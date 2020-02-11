@@ -2,7 +2,7 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
-const Documents = require('./models/model.js').Documents;
+const Documents = require('../models/model.js').Documents;
 
 /*
 GET is used to get the document.
@@ -13,7 +13,7 @@ PUT is used to modify a document.
 router.use(auth.loggedIn);
 
 
-router.get('/document/:id', auth.hasDocument, function(req, res) {
+router.get('/:id', auth.hasDocument, function(req, res) {
   const renderOptions =
   {
     doc_text: req.doc.text,
@@ -23,8 +23,14 @@ router.get('/document/:id', auth.hasDocument, function(req, res) {
 
   res.render('document', renderOptions);
 });
+router.put('/:id', auth.hasDocument, function(req, res) {
+  req.doc.text = req.body.text;
+  req.doc.save()
+      .then(() => res.send('success'))
+      .catch((err) => res.send('Error occurred.'));
+});
 
-router.post('/document', function(req, res) {
+router.post('/', function(req, res) {
   const newDoc = new Documents(
       {title: 'Untitled Notes',
         text: '<p>You can take notes here.</p>'},
@@ -38,12 +44,7 @@ router.post('/document', function(req, res) {
 });
 
 
-router.put('/document/:id', auth.hasDocument, function(req, res) {
-  req.doc.text = req.body.text;
-  req.doc.save()
-      .then(() => res.send('success'))
-      .catch((err) => res.send('Error occurred.'));
-});
+
 
 
 module.exports = router;

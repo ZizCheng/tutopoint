@@ -15,12 +15,19 @@
   display: none;
   padding: 4rem 0 0 0;
 }
+.day-wrapper
+{
+  height: 4000px;
+  width: 400px;
+  margin: 0;
+  position: relative;
+}
 .day
 {
   position: relative;
-  height: 30px;
-  width: 4000px;
-  background-color: yellow;
+  width: 100%;
+  height: 100%;
+  background-color: #bbddff;
 }
 .time
 {
@@ -31,7 +38,7 @@
 .interval
 {
   position: absolute;
-  height: 30px;
+  width: 100%;
   background-color: orange;
 }
 .interval-label
@@ -48,8 +55,9 @@
 .cursor
 {
   position: absolute;
-  width: 4px;
-  height: 30px;
+  left: 0;
+  right: 0;
+  height: 2px;
   background-color: red;
   z-index: 1;
   pointer-events: none;
@@ -57,9 +65,9 @@
 .cursor-text
 {
   position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
   border: 1px solid black;
   padding: 0.25rem 0.5rem;

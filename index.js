@@ -13,8 +13,8 @@ const Users = require('./models/model.js').Users;
 const Sessions = require('./models/model.js').Sessions;
 
 const authRouter = require('./routes/authRouter.js');
-const scheduleRouter = require('./routes/authRouter.js');
-const documentRouter = require('./routes/authRouter.js');
+const scheduleRouter = require('./routes/scheduleRouter.js');
+const documentRouter = require('./routes/documentRouter.js');
 const discoverRouter = require('./routes/discoverRouter.js');
 
 const session = expressSession({
@@ -34,8 +34,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(authRouter);
-app.use(scheduleRouter);
-app.use(documentRouter);
+app.use('/schedule', scheduleRouter);
+app.use('/document', documentRouter);
 app.use('/discover', discoverRouter);
 
 

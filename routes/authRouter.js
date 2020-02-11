@@ -18,6 +18,11 @@ router.get('/dashboard', auth.loggedIn, function(req, res) {
     layout: false,
   });
 });
+router.get('/signup', (req, res) => {
+  res.render('signup', {
+    layout: false,
+  });
+});
 router.post('/signup', auth.newUser, (req, res) => {
   res.redirect('/dashboard');
 });

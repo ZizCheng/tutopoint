@@ -3,119 +3,91 @@
   <head>
     <meta charset="utf-8">
     <title>Tutopoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/navbar.css">
     <link rel="stylesheet" href="./css/bulma.min.css">
-    <link rel="stylesheet" href="./css/dashboardstyle.css">
     </head>
   <body>
-
-    <section class="hero is-fullheight">
-  <!-- Hero head: will stick at the top -->
-  <div class="hero-head">
-    <header class="navbar">
-      <div class="container">
-        <div class="navbar-brand">
-          <span class="navbar-burger burger" data-target="navbarMenuHeroC">
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-        </div>
-        <div id="navbarMenuHeroC" class="navbar-menu">
-          <div class="navbar-start">
-
-
-            </div>
-            <a class="navbar-item">
-              TutoPoint
-
-            </a>
-          <div class="navbar-end">
-
-          </div>
-        </div>
-      </div>
-    </header>
-  </div>
-
-
-
-  <!-- Hero content: will be in the middle -->
-  <div class="hero-body">
-    <div class="menu-wrapper">
-      <aside class="menu">
-        <p class="menu-label">Placeholder</p>
-        <ul class="menu-list">
-          <li>
-            <a>link</a>
-            <a>link</a>
-            <a>link</a>
-            <a href="/schedule">Schedule</a>
-          </li>
-        </ul>
-        <p class="menu-label">Profile</p>
-        <ul class="menu-list">
-          <li>
-            <a>link</a>
-            <a href="/logout">Log Out</a>
-          </li>
-        </ul>
-      </aside>
-    </div>
-
-
-    <div class="container columns-wrapper has-text-centered">
-      <div class="columns">
-        <div class="column">
-          <div class="card">
-              <div class="card-content">
-                Your notes
-                <ul>
-                  {{#each documents}}
-                    <li><a href="/document/{{this._id}}">{{this.title}}</a></li>
-                  {{/each}}
-                  <br />
-                  <a href="/create-document">New document</a>
-                </ul>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-content">
-                Your upcoming sessions
-                <ul>
-                  {{#each sessions}}
-                    <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
-                  {{/each}}
-                </ul>
-              </div>
-            </div>
-
-        </div>
-        <div class="column">
-          <div class="card">
-              <div class="card-content">
-                easy
-                </div>
-            </div></div>
-        <div class="column">
-          <div class="card">
-              <div class="card-content">
-                easy
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-content">
-                  easy
-                  </div>
-              </div>
-
+  <div class="page-container">
+    <aside class="menu">
+      <p class="menu-label">General</p>
+      <ul class="menu-list">
+        <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+        <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+        <li><a class="menu-link" data-page="schedule-session">Schedule a session</a></li>
+      </ul>
+      <p class="menu-label">Account</p>
+      <ul class="menu-list">
+        <li><a href="/logout">Log out</a></li>
+      </ul>
+    </aside>
+    <div class="content-container" id="upcoming-sessions">
+      <div class="card">
+        <div class="card-content">
+          Your sessions
+          <ul>
+            {{#each sessions}}
+              <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
+            {{/each}}
+          </ul>
         </div>
       </div>
     </div>
-  </div>
+    <div class="content-container" id="my-documents">
+      <h1 class="title">Your notes</h1>
+      {{#each documents}}
+      <div class="card document-card">
+        <div class="card-content document-content">
+          <a href="/document/{{this._id}}">{{this.title}}</a>
+        </div>
+      </div>
+      {{/each}}
+      <br />
+      <a href="/create-document">New document</a>
+    </div>
+    <div class="content-container" id="schedule-session">
 
-  <!-- Hero footer: will stick at the bottom -->
-  <div class="hero-foot">
+    </div>
   </div>
-</section>
+  <script>
+
+    changePage("upcoming-sessions");
+    $(".menu-link").click(function(){
+      changePage($(this).data("page"));
+    });
+    function changePage(pageId)
+    {
+      $(".content-container").hide();
+      $("#" + pageId).show();
+    }
+  </script>
   </body>
 </html>
+
+<!--
+
+<div class="card">
+  <div class="card-content">
+    Your notes
+    <ul>
+      {{#each documents}}
+        <li><a href="/document/{{this._id}}">{{this.title}}</a></li>
+      {{/each}}
+      <br />
+      <a href="/create-document">New document</a>
+    </ul>
+  </div>
+</div>
+<div class="card">
+  <div class="card-content">
+    Your upcoming sessions
+    <ul>
+      {{#each sessions}}
+        <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+
+-->
