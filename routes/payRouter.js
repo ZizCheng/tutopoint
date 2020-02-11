@@ -7,34 +7,16 @@ const stripe = require('stripe')(secret.sk_key);
 router.use(auth.loggedIn);
 router.use(auth.ensureUserIsClient);
 
-router.get('/', function(req, res) {
-  res.render('userPay', {layout: false, guideid: req.params.id});
+router.get('/addpaymentmethod', function(req, res) {
+  res.render('userAddPayment', {layout: false});
 });
 
-
-router.post('/', async function(req, res) {
-  const token = req.body.stripeToken;
-
-  stripe.charges.create({
-    amount: 1500,
-    currency: 'usd',
-    customer: req.user.stripeCustomerId,
-    source: token,
-    capture: true,
-  },
-  function(err, charge) {
-    if (err) console.log(err);
-    res.send('success');
-  },
-  );
-});
-
-router.post('/save/:token', function(req, res) {
+router.post('/addpaymentmethod', function(req, res, next) {
   const stripeid = req.user.stripeCustomerId;
-  const tok = req.params.token;
+  const token = req.body.stripeToken;
   stripe.customers.createSource(
       stripeid,
-      {source: tok},
+      {source: token},
       function(err, card) {
         // asynchronously called
         if (err) next(err);
@@ -42,5 +24,36 @@ router.post('/save/:token', function(req, res) {
       },
   );
 });
+
+router.get('/', function(req, res, next) {
+  res.render('userPay', {layout: false});
+});
+
+router.post('/', async function(req, res) {
+  const token = req.body.source;
+  const amount = req.body.CreditAmount * 100;
+  stripe.charges.create({
+    amount: amount,
+    currency: 'usd',
+    customer: req.user.stripeCustomerId,
+    source: token,
+    capture: true,
+  },
+  function(err, charge) {
+    console.log(err);
+    if (err) next(err);
+    stripe.customers.createBalanceTransaction(
+        req.user.stripeCustomerId,
+        {amount: -charge.amount, currency: 'usd', description: 'Session refill.'},
+        function(err, customer) {
+          console.log(err);
+          if (err) next(err);
+          res.send('success');
+        },
+    );
+  },
+  );
+});
+
 
 module.exports = router;
