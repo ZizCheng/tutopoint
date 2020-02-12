@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <body>
+    <p>
+      <label>Full legal name (first/last)</label>
+      <input type = "text"
+             id = "name"
+             placeholder = "ex. Daniel Cheng" />
+    </p>
+    <p>
+      <label>Email address (preferrably school email)</label>
+      <input type = "text"
+             id = "email"
+             placeholder = "ex. daniel.cheng23@university.edu" />
+    </p>
+    <p>
+      <label>University (currently attending)</label>
+      <input type = "text"
+             id = "university"
+             placeholder = "ex. Hamburger University" />
+    </p>
+    <p>
+      <label>Academic/Intended Major(s), use comma if double majoring</label>
+      <input type = "text"
+             id = "major"
+             placeholder = "ex. Pre-med, Computer Science" />
+    </p>
+    <p>
+      <label>Languages spoken (Many clients search for guides who speak a specific language)</label>
+      <input type = "text"
+             id = "language"
+             placeholder = "ex. English, Korean" />
+    </p>
+    <p>
+      <label>Grade level</label>
+      <select id="grade">
+        <option value="freshman">Freshman</option>
+        <option value="sophomore">Sophomore</option>
+        <option value="junior">Junior</option>
+        <option value="senior">Senior</option>
+      </select>
+    </p>
+    <p>
+      <style>
+          label textarea {
+              vertical-align: top;
+          }
+      </style>
+      <label>Bio (to show clients)
+      <textarea id = "bio"
+              rows = "5"
+              cols = "60"
+              placeholder="Hi! My name is Kevin, I'm a sophomore at Hamburger University studying Pre-med and CS. In my free time I like to play tennis, watch anime, and go hiking."></textarea>
+      </label>
+    </p>
+    <div>
+    Please upload a clear image of you holding your student ID (covering ID number). This will be displayed to your potential clients.
+    <form method="post" enctype="multipart/form-data" action="/upload">
+      <input type="file" name="file" id="face">
+    </form>
+    </div>
+    <div>
+    Please upload another document proving your student status at this university (acceptance letter, transcript, screenshot of student portal, etc). This will only be used for authentification purposes.
+    <form method="post" enctype="multipart/form-data" action="/upload">
+      <input type="file" name="file" id="document">
+    </form>
+    </div>
+    <div>
+      <input type="checkbox" value="terms"> I agree to the TutoPoint guide's terms and conditions.<br>
+    </div>
+    <div>
+      <form action="/apply/submit" method="post">
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </body>
+</html>

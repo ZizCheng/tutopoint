@@ -16,6 +16,7 @@ const authRouter = require('./routes/authRouter.js');
 const scheduleRouter = require('./routes/scheduleRouter.js');
 const documentRouter = require('./routes/documentRouter.js');
 const discoverRouter = require('./routes/discoverRouter.js');
+const applicationRouter = require('./routes/applicationRouter.js');
 const payRouter = require('./routes/payRouter.js');
 
 const session = expressSession({
@@ -39,6 +40,7 @@ app.use('/schedule', scheduleRouter);
 app.use('/document', documentRouter);
 app.use('/discover', discoverRouter);
 app.use('/pay', payRouter);
+app.use('/apply', applicationRouter);
 
 
 app.engine('handlebars', handlebars());
