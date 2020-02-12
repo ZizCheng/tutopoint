@@ -53,7 +53,6 @@ function redirectToStripeOnboarding(stripeid, req, res) {
 
 
 exports.guideHasOnboarded = function(req, res, next) {
-  console.log(req.user);
   if (req.user.__t == 'guides') {
     const stripeid = req.user.stripeAccountId;
     stripe.accounts.retrieve(

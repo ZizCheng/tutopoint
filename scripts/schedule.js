@@ -2,6 +2,7 @@
 // CORE FUNCTIONS
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
+  console.log(temp);
   if (temp == -1) return false;
   return dateBetween(date, schedule[temp][0], schedule[temp][1]);
 }
@@ -68,22 +69,6 @@ function removeInterval(interval, schedule) {
     }
   }
 }
-// find all guides with available interval
-function queryByDate(interval, Guides, callback) {
-  Guides.find({}).exec(function(err, guides) {
-    const res = [];
-    console.log(guides[0]);
-    for (let i = 0; i<guides.length; i++) {
-      guide = guides[i];
-      if (!guide.schedule) continue;
-      if (intervalAvailable(interval, guide.schedule)) {
-        res.push(guide);
-      }
-    }
-
-    callback(res);
-  });
-}
 
 
 // check if schedule is disjoint and ordered
@@ -125,6 +110,5 @@ module.exports = {
   intervalAvailable: intervalAvailable,
   insertInterval: insertInterval,
   removeInterval: removeInterval,
-  queryByDate: queryByDate,
   verify: verify,
 };

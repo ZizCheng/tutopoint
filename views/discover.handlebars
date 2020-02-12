@@ -1,6 +1,31 @@
-<ul>
-  <li> Sample guide #1 (Doesn't work yet) </li>
-  {{#each guides}}
-    <li> <a href="/discover/{{this._id}}"> {{this.name}} </a> </li>
-  {{/each}}
-<ul>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/bulma.css">
+    <link rel="stylesheet" href="/css/login.css">
+  </head>
+  <body>
+    <ul>
+      {{#each guides}}
+        <li> <a href="/discover/{{this._id}}"> {{this.name}} </a> </li>
+      {{/each}}
+    </ul>
+    <form action="/discover/date" method="post">
+      <input class="date-input" name="date" type="hidden">
+      <div class="control">
+        <button class="button is-primary">Submit</button>
+      </div>
+    </form>
+    <script>
+      var tempDate = new Date();
+      $(".date-input").val(tempDate);
+      /*
+      $.post('/discover/date', {date: tempDate}, function(data)
+      {
+        console.log(data);
+      })
+      */
+    </script>
+  </body>
+</html>
