@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <body>
-    <form action="/apply/submit" method="post">
+    <form action="/apply/submit" enctype="multipart/form-data" method="POST">
       <p>
         <label>Full legal name (first/last)</label>
         <input type = "text"
@@ -57,21 +57,21 @@
       <div>
         <input type="checkbox" value="terms"> I agree to the TutoPoint guide's terms and conditions.<br>
       </div>
-      <div>
-        <input type="submit" value="Submit">
-      </div>
-    </form>
     <div>
     Please upload a clear image of you holding your student ID (covering ID number). This will be displayed to your potential clients.
-    <form method="post" enctype="multipart/form-data" action="/upload">
-      <input type="file" name="file" name="face">
-    </form>
+      <input type="file" name="profilePic" id="profilePic"></input>
     </div>
     <div>
     Please upload another document proving your student status at this university (acceptance letter, transcript, screenshot of student portal, etc). This will only be used for authentification purposes.
-    <form method="post" enctype="multipart/form-data" action="/upload">
-      <input type="file" name="file" name="document">
-    </form>
+      <input type="file" name="file1" id="file1"></input>
     </div>
+    <div>
+    Please upload another document proving your student status at this university (acceptance letter, transcript, screenshot of student portal, etc). This will only be used for authentification purposes.
+      <input type="file" name="file2" id="file1"></input>
+    </div>
+    <div>
+      <input type="submit" value="Submit">
+    </div>
+  </form>
   </body>
 </html>
