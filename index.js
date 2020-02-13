@@ -19,6 +19,7 @@ const discoverRouter = require('./routes/discoverRouter.js');
 const applicationRouter = require('./routes/applicationRouter.js');
 const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
+const bankRouter = require('./routes/bankRouter.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -43,6 +44,7 @@ app.use('/discover', discoverRouter);
 app.use('/apply', applicationRouter);
 app.use('/pay', payRouter);
 app.use('/session', sessionRouter);
+app.use('/bank', bankRouter);
 
 
 app.engine('handlebars', handlebars());

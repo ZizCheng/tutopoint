@@ -20,17 +20,25 @@ router.post('/addpaymentmethod', function(req, res, next) {
       function(err, card) {
         // asynchronously called
         if (err) next(err);
-        res.send('Payment method added. Redirect to pay or something');
+        res.redirect('/pay');
       },
   );
 });
 
 router.get('/', function(req, res, next) {
-  res.render('userPay', {layout: false});
+  const stripeid = req.user.stripeCustomerId;
+  stripe.customers.listSources(
+      stripeid,
+      function(err, cards) {
+        if (err) next(err);
+        res.render('userPay', {layout: false, cards: cards.data});
+      },
+  );
 });
 
 router.post('/', async function(req, res) {
   const token = req.body.source;
+  console.log(token)
   const amount = req.body.CreditAmount * 100;
   stripe.charges.create({
     amount: amount,
@@ -48,7 +56,7 @@ router.post('/', async function(req, res) {
         function(err, customer) {
           console.log(err);
           if (err) next(err);
-          res.send('success');
+          res.redirect('/dashboard');
         },
     );
   },

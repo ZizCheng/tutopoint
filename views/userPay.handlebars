@@ -13,9 +13,18 @@
 
     <div class="wrapper">
       <div class="form-content">
-        <button id="WeChatButton"> WeChat </button>
-        <div id="QRDisplay"></div>
-        <form action="/pay" method="post" id="payment-form">
+        <form action="/pay" method="post" id="paymentForm">
+          <div class="form-row">
+          <label for="paymentMethod">Choose a payment method:</label>
+
+          <select id="paymentMethod" name="source">
+            {{#each cards}}
+              <option value="{{this.id}}"> Card ending with {{this.last4}} </option>
+            {{/each}}
+           <option value="wechat"> WeChat </option>
+           <option value="addpayment"> Add payment method </option>
+          </select>
+        </div>
           <div class="form-row">
             <label for="card-element">
               Confirm payment for $15 session or some
@@ -25,25 +34,47 @@
               <input id="CreditAmount" type="text" placeholder="15" required="" name="CreditAmount">
             </div>
           </div>
-
-          <button>Submit Payment</button>
+          <div id="QRDisplay"></div>
+          <button id="formSubmitButton">Submit Payment</button>
         </form>
 
       </div>
     </div>
     <script>
         var stripe = Stripe('pk_test_7lBG8gut6VvygbnBDxJHYiK300GhqhqUOC');
+
+        paymentMethod.addEventListener('change', function() {
+          const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+          if(currentSelectedValue == "addpayment"){
+            window.location.href = "/pay/addpaymentmethod";
+          }
+        });
+
+        paymentForm.addEventListener('submit', function(e){
+          e.preventDefault();
+
+          const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+          if(currentSelectedValue == "wechat"){
+            formSubmitButton.disabled = true;
+            stripe.createSource({
+            type: 'wechat',
+            amount: CreditAmount.value * 100,
+            currency: 'usd',
+          }).then(function(result) {
+            // handle result.error or result.source
+            if(result.error) return;
+            pollSource(result.source)
+            new QRCode(document.getElementById("QRDisplay"), result.source.wechat["qr_code_url"]);
+          });
+          }
+          else {
+            paymentForm.submit();
+          }
+
+        })
+
             WeChatButton.addEventListener('click', function(){
-              stripe.createSource({
-              type: 'wechat',
-              amount: CreditAmount.value * 100,
-              currency: 'usd',
-            }).then(function(result) {
-              // handle result.error or result.source
-              if(result.error) return;
-              pollSource(result.source)
-              new QRCode(document.getElementById("QRDisplay"), result.source.wechat["qr_code_url"]);
-            });
+
         })
 
 
@@ -74,7 +105,7 @@
         }
 
           function handlePaymentSource(src){
-            var form = document.getElementById('payment-form');
+            var form = document.getElementById('paymentForm');
             var hiddenInput = document.createElement('input');
             hiddenInput.setAttribute('type', 'hidden');
             hiddenInput.setAttribute('name', 'source');

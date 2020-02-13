@@ -60,7 +60,7 @@ exports.guideHasOnboarded = function(req, res, next) {
         function(err, account) {
           console.log(account.requirements);
           if (!account.payouts_enabled) {
-            res.send('Handle adding bank account');
+            res.redirect('/bank/addbank');
           } else if (account.requirements.currently_due.length > 0 && account.requirements.eventually_due.length > 0) {
             redirectToStripeOnboarding(stripeid, req, res);
           } else {
