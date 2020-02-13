@@ -19,8 +19,10 @@ router.get('/dashboard', auth.loggedIn, function(req, res) {
   });
 });
 router.get('/signup', (req, res) => {
+  const referralCode = req.query.referral;
   res.render('signup', {
     layout: false,
+    referralCode,
   });
 });
 router.post('/signup', auth.newUser, (req, res) => {

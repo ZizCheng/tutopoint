@@ -8,6 +8,7 @@ const stripe = require('stripe')(secret.sk_key);
 const Users = require('../models/model.js').Users;
 const Clients = require('../models/model.js').Clients;
 const Guides = require('../models/model.js').Guides;
+const Referrals = require('../models/model.js').Referrals;
 
 authConfig = {
   salt: 2,
@@ -76,6 +77,24 @@ exports.guideHasOnboarded = function(req, res, next) {
   }
 };
 
+function handleReferral(client, referralCode) {
+  return new Promise(function(resolve, reject) {
+    Referrals.find({code: referralCode})
+        .then((ref) => {
+          ref.referred.push(client.id);
+          ref.save()
+              .then((ref) => {
+                client.referredBy = ref.id;
+                client.save()
+                    .then((user) => resolve(user))
+                    .catch((err) => reject(new Error('Database error.')));
+              })
+              .catch((err) => reject(new Error('Database Error')));
+        })
+        .catch((err) => reject(new Error('Cannot find referer')));
+  });
+}
+
 exports.newUser = function(req, res, next) {
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) return next(err);
@@ -88,7 +107,14 @@ exports.newUser = function(req, res, next) {
       };
       user = new Clients(userInfo);
       user.save(function(err, user) {
-        if (err) return next(err);
+        if (err) {
+          if (err.code == 11000) {
+            res.render('signup', {layout: false, emailError: 'Email already exists.', referralCode: req.body.referralCode});
+          } else {
+            res.render('signup', {layout: false, error: 'Please make sure all fields are filled.', referralCode: req.body.referralCode});
+          }
+          return;
+        }
         stripe.customers.create(
             {
               email: req.body.email,
@@ -98,10 +124,17 @@ exports.newUser = function(req, res, next) {
               if (err) return next(err);
               user.stripeCustomerId = customer.id;
               user.save()
+                  .then((user) => handleReferral(user, req.body.referralCode))
                   .then(() => req.login(user, function() {
                     next();
                   }))
-                  .catch((err) => next(err));
+                  .catch((err) => {
+                    if (err.message == 'Cannot find referer') {
+                      res.render('signup', {layout: false, error: 'Referer Code invalid'});
+                    } else {
+                      next(err);
+                    }
+                  });
             },
         );
       });

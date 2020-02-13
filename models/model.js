@@ -23,6 +23,10 @@ const User = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'documents',
   }],
+  referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'referrals',
+  },
 });
 const Guide = new Schema({
   university: {
@@ -64,7 +68,7 @@ const Session = new Schema({
     type: String,
     required: [true, 'Title is required.'],
   },
-  //guide
+  // guide
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users',
@@ -84,7 +88,7 @@ const Session = new Schema({
   confirmed: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const Document = new Schema({
@@ -98,15 +102,33 @@ const Document = new Schema({
   },
 });
 
+const Referrals = new Schema({
+  referrer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+  },
+  code: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  referred: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+  }],
+});
+
 const Users = mongoose.model('users', User);
 const Guides = Users.discriminator('guides', Guide);
 const Clients = Users.discriminator('clients', Client);
 const Sessions = mongoose.model('sessions', Session);
 const Documents = mongoose.model('documents', Document);
+const ReferralDocs = mongoose.model('referrals', Referrals);
 module.exports = {
   Users: Users,
   Clients: Clients,
   Guides: Guides,
   Sessions: Sessions,
   Documents: Documents,
+  Referrals: ReferralDocs,
 };

@@ -18,7 +18,7 @@
               <input class="input" name="email" type="email">
             </div>
           </div>
-
+          <p class="has-text-danger"> {{emailError}} </p>
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
@@ -36,11 +36,11 @@
           <div class="field">
             <label class="label">Referral code</label>
             <div class="control">
-              <input class="referralCode-input input" name="referralCode" type="text">
+              <input class="referralCode-input input" name="referralCode" type="text" value="{{referralCode}}">
             </div>
             <p class="help">(Optional)</p>
           </div>
-
+          <p class="has-text-danger"> {{error}} </p>
           <input class="input" type="hidden" name="userType" value="client">
           <div class="control">
             <button class="button is-primary">Submit</button>
