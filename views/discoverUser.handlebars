@@ -10,9 +10,16 @@
     <h1> {{guide.university}} </h1>
     <h1> {{guide.major}} </h1>
     <h1> {{guide.grade}} </h1>
+    <input class="session-time-picker" type="datetime-local">
     <button class="schedule-button button is-primary">Schedule Session</button>
     <script>
-      
+      var guideId = "{{guide._id}}";
+    </script>
+    <script>
+      $(".schedule-button").click(function(){
+        var date = $(".session-time-picker").val();
+        $.post("/session/request", {guideId: guideId, date: date});
+      });
     </script>
   </body>
 </html>

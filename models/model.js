@@ -64,6 +64,7 @@ const Session = new Schema({
     type: String,
     required: [true, 'Title is required.'],
   },
+  //guide
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users',

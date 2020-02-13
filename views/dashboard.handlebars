@@ -15,7 +15,6 @@
       <ul class="menu-list">
         <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
         <li><a class="menu-link" data-page="my-documents">My documents</a></li>
-        <li><a class="menu-link" data-page="schedule-session">Schedule a session</a></li>
         <li><a href="/discover">Discover</a></li>
         <li><a href="/schedule">Schedule</a></li>
       </ul>
@@ -25,26 +24,25 @@
       </ul>
     </aside>
     <div class="content-container" id="upcoming-sessions">
-      <div class="card">
-        <div class="card-content">
-          Your sessions
-          <ul>
-            {{#each sessions}}
-              <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
-            {{/each}}
-          </ul>
-        </div>
+      Your sessions
+      <div class="sessions-container">
+        {{#each sessions}}
+          <div class="session-wrapper">
+            <a href="/session/{{this._id}}">{{this.title}}</a>
+            <p class="session-date" data-date="{{this.date}}"></p>
+          </div>
+        {{/each}}
       </div>
     </div>
     <div class="content-container" id="my-documents">
       <h1 class="title">Your notes</h1>
-      {{#each documents}}
-      <div class="card document-card">
-        <div class="card-content document-content">
-          <a href="/document/{{this._id}}">{{this.title}}</a>
+        {{#each documents}}
+        <div class="card document-card">
+          <div class="card-content document-content">
+            <a href="/document/{{this._id}}">{{this.title}}</a>
+          </div>
         </div>
-      </div>
-      {{/each}}
+        {{/each}}
       <br />
       <a href="/create-document">New document</a>
     </div>
@@ -62,6 +60,13 @@
     {
       $(".content-container").hide();
       $("#" + pageId).show();
+    }
+
+    $(".session-date").html(formatDate(new Date($(".session-date").data("date"))))
+
+    function formatDate(date)
+    {
+      return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
     }
   </script>
   </body>

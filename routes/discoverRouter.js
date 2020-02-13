@@ -19,7 +19,7 @@ discover.get('/', function(req, res) {
 discover.get('/:id', function(req, res) {
   Guides
       .findOne({_id: req.params.id})
-      .select('name university major grade')
+      .select('_id name university major grade')
       .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), layout: false}))
       .catch((err) => next(err));
 });
