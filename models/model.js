@@ -76,6 +76,14 @@ const Session = new Schema({
   notes: {
     type: String,
   },
+  date: {
+    type: Date,
+    required: [true, 'Required is required'],
+  },
+  confirmed: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const Document = new Schema({
