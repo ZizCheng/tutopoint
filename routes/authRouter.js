@@ -36,16 +36,27 @@ router.get('/verify/:token', function(req, res) {
   });
 });
 
-router.post('/login', auth.authenticateUser, auth.guideHasOnboarded, auth.clientIsVerified, function(req, res) {
+router.post('/login', auth.authenticateUser, auth.userIsVerified, function(req, res) {
   res.redirect('/dashboard');
 });
 
-router.get('/dashboard', auth.loggedIn, auth.guideHasOnboarded, auth.clientIsVerified, function(req, res) {
-  res.render('dashboard', {
-    sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-    documents: JSON.parse(JSON.stringify(req.user.documents)),
-    layout: false,
-  });
+router.get('/dashboard', auth.loggedIn, auth.userIsVerified, function(req, res) {
+  if(req.user.__t == "clients")
+  {
+    res.render('dashboard-user', {
+      sessions: JSON.parse(JSON.stringify(req.user.sessions)),
+      documents: JSON.parse(JSON.stringify(req.user.documents)),
+      layout: false,
+    });
+  }
+  if(req.user.__t == "guides")
+  {
+    res.render('dashboard-guide', {
+      sessions: JSON.parse(JSON.stringify(req.user.sessions)),
+      documents: JSON.parse(JSON.stringify(req.user.documents)),
+      layout: false,
+    });
+  }
 });
 router.get('/signup', (req, res) => {
   const referralCode = req.query.referral;

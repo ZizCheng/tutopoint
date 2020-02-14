@@ -55,7 +55,7 @@ function redirectToStripeOnboarding(stripeid, req, res) {
   );
 }
 
-exports.clientIsVerified = function(req, res, next) {
+exports.userIsVerified = function(req, res, next) {
   if (req.user.__t == 'clients') {
     console.log(req.user.isVerified);
     if (!req.user.isVerified) {
@@ -63,7 +63,7 @@ exports.clientIsVerified = function(req, res, next) {
     } else {
       next();
     }
-  }
+  } else next();
 };
 
 exports.guideHasOnboarded = function(req, res, next) {
