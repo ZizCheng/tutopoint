@@ -66,7 +66,7 @@
       <label class="label">Please upload a clear image of you holding your
         student ID (covering ID number). This will be displayed to your
         potential clients.</label>
-      <div class="file">
+      <div class="show-file-name file has-name">
         <label class="file-label">
           <input class="file-input" type="file" name="profilePic">
           <span class="file-cta">
@@ -77,6 +77,7 @@
               Choose a file…
             </span>
           </span>
+          <span class="file-name">No file chosen</span>
         </label>
       </div>
     </div>
@@ -84,7 +85,7 @@
       <label class="label">Please upload another document proving your student
         status at this university (acceptance letter, transcript, screenshot of
         student portal, etc). This will only be used for authentification purposes.</label>
-      <div class="file">
+      <div class="show-file-name file has-name">
         <label class="file-label">
           <input class="file-input" type="file" name="file1">
           <span class="file-cta">
@@ -95,6 +96,7 @@
               Choose a file…
             </span>
           </span>
+          <span class="file-name">No file chosen</span>
         </label>
       </div>
     </div>
@@ -102,7 +104,7 @@
       <label class="label">Please upload another document proving your student
         status at this university (acceptance letter, transcript, screenshot of
         student portal, etc). This will only be used for authentification purposes.</label>
-      <div class="file">
+      <div class="show-file-name file has-name">
         <label class="file-label">
           <input class="file-input" type="file" name="file2">
           <span class="file-cta">
@@ -113,6 +115,7 @@
               Choose a file…
             </span>
           </span>
+          <span class="file-name">No file chosen</span>
         </label>
       </div>
     </div>
@@ -121,5 +124,13 @@
     </div>
   </form>
 </div>
+    <script>
+      const fileInput = $(".show-file-name input[type=file]");
+      fileInput.change(function(){
+        if (this.files.length > 0) {
+          $(this).parents(".show-file-name").find(".file-name").html(this.files[0].name);
+        }
+      })
+    </script>
   </body>
 </html>
