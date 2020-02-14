@@ -43,8 +43,8 @@ function redirectToStripeOnboarding(stripeid, req, res) {
   stripe.accountLinks.create(
       {
         account: stripeid,
-        failure_url: 'http://localhost:3000/error',
-        success_url: 'http://localhost:3000/dashboard',
+        failure_url: 'https://tutopoint.com/error',
+        success_url: 'https://tutopoint.com/dashboard',
         type: 'custom_account_verification',
         collect: 'currently_due',
       },
