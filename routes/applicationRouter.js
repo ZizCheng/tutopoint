@@ -20,8 +20,9 @@ const transporter = nodemailer.createTransport({
 });
 
 router.get('/', function(req, res) {
-  const path = require('path');
-  res.sendFile(path.resolve('../tutopoint-master/views/guideApplication.html'));
+  res.render('guideApplication',{
+    layout: false
+  });
 });
 
 router.post('/submit', everything, function(req, res, next) {
@@ -91,8 +92,9 @@ router.post('/submit', everything, function(req, res, next) {
         console.log('Email sent2');
       }
     });
-    const path = require('path');
-    res.sendFile(path.resolve('../tutopoint-master/views/guideAppSuccess.html'));
+    res.render('guideAppSuccess',{
+      layout: false
+    });
   }
 });
 

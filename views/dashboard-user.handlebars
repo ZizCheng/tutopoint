@@ -16,18 +16,18 @@
         <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
         <li><a class="menu-link" data-page="my-documents">My documents</a></li>
         <li><a href="/discover">Discover</a></li>
-        <li><a href="/schedule">Schedule</a></li>
       </ul>
       <p class="menu-label">Account</p>
       <ul class="menu-list">
+        <li><a class="menu-link" data-page="balance">Balance</a></li>
         <li><a href="/logout">Log out</a></li>
       </ul>
     </aside>
     <div class="content-container" id="upcoming-sessions">
-      Your sessions
-      <div class="sessions-container">
+      <h1 class="title">Your sessions</h1>
+      <div class="grid-card-container">
         {{#each sessions}}
-          <div class="session-wrapper">
+          <div class="grid-card">
             <a href="/session/{{this._id}}">{{this.title}}</a>
             <p class="session-date" data-date="{{this.date}}"></p>
           </div>
@@ -36,18 +36,47 @@
     </div>
     <div class="content-container" id="my-documents">
       <h1 class="title">Your notes</h1>
-        {{#each documents}}
-        <div class="card document-card">
-          <div class="card-content document-content">
-            <a href="/document/{{this._id}}">{{this.title}}</a>
+      <div class="grid-card-container">
+          {{#each documents}}
+          <div class="grid-card">
+              <a href="/document/{{this._id}}">{{this.title}}</a>
+          </div>
+          {{/each}}
+        <br />
+      </div>
+      <a href="/create-document" class="button is-primary">New document</a>
+    </div>
+    <div class="content-container" id="balance">
+      <form class="payment-form" method="post" action="/login">
+        <label class="label">Your Information</label>
+        <div class="field">
+          <div class="control">
+            <input class="input" name="name" type="text" placeholder="Full Name">
           </div>
         </div>
-        {{/each}}
-      <br />
-      <a href="/create-document">New document</a>
-    </div>
-    <div class="content-container" id="schedule-session">
-
+        <div class="field">
+          <div class="control">
+            <input class="input" name="email" type="email" placeholder="Email">
+          </div>
+        </div>
+        <label class="label">Card Details</label>
+        <div class="field">
+          <div class="control">
+            <input class="input" name="cardNumber" type="text" placeholder="Card Number">
+          </div>
+        </div>
+        <div class="field has-addons">
+          <div class="control">
+            <input class="input" name="email" type="text" placeholder="CVV">
+          </div>
+          <div class="control">
+            <input class="input" name="email" type="text" placeholder="MM/YY">
+          </div>
+        </div>
+        <div class="control">
+          <button class="button is-primary">Add to your balance</button>
+        </div>
+      </form>
     </div>
   </div>
   <script>

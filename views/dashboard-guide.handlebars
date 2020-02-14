@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Tutopoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    </head>
+  <body>
+  <div class="page-container">
+    <aside class="menu">
+      <p class="menu-label">General</p>
+      <ul class="menu-list">
+        <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+        <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+        <li><a href="/discover">Discover</a></li>
+        <li><a href="/schedule">Schedule</a></li>
+      </ul>
+      <p class="menu-label">Account</p>
+      <ul class="menu-list">
+        <li><a data-page="balance">Balance - 0.00</a></li>
+        <li><a href="/logout">Log out</a></li>
+      </ul>
+    </aside>
+    <div class="content-container" id="upcoming-sessions">
+      <h1 class="title">Your sessions</h1>
+      <div class="grid-card-container">
+        {{#each sessions}}
+          <div class="grid-card">
+            <a href="/session/{{this._id}}">{{this.title}}</a>
+            <p class="session-date" data-date="{{this.date}}"></p>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+    <div class="content-container" id="my-documents">
+      <h1 class="title">Your notes</h1>
+      <div class="grid-card-container">
+          {{#each documents}}
+          <div class="grid-card">
+              <a href="/document/{{this._id}}">{{this.title}}</a>
+          </div>
+          {{/each}}
+        <br />
+      </div>
+      <a href="/create-document" class="button is-primary">New document</a>
+    </div>
+    <div class="content-container" id="schedule-session">
+
+    </div>
+  </div>
+  <script>
+
+    changePage("upcoming-sessions");
+    $(".menu-link").click(function(){
+      changePage($(this).data("page"));
+    });
+    function changePage(pageId)
+    {
+      $(".content-container").hide();
+      $("#" + pageId).show();
+    }
+
+    $(".session-date").html(formatDate(new Date($(".session-date").data("date"))))
+
+    function formatDate(date)
+    {
+      return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+    }
+  </script>
+  </body>
+</html>
+
+<!--
+
+<div class="card">
+  <div class="card-content">
+    Your notes
+    <ul>
+      {{#each documents}}
+        <li><a href="/document/{{this._id}}">{{this.title}}</a></li>
+      {{/each}}
+      <br />
+      <a href="/create-document">New document</a>
+    </ul>
+  </div>
+</div>
+<div class="card">
+  <div class="card-content">
+    Your upcoming sessions
+    <ul>
+      {{#each sessions}}
+        <li><a href="/session/{{this._id}}">{{this.title}}</a></li>
+      {{/each}}
+    </ul>
+  </div>
+</div>
+
+-->

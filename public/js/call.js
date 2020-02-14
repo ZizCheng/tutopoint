@@ -78,7 +78,7 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true})
     })
     .catch((err) => console.log(err));
 
-document.getElementById('join').addEventListener('click', function() {
+$("#join").click(function() {
   socket.emit('call');
 });
 
