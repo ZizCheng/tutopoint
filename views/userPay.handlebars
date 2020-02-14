@@ -21,7 +21,7 @@
             {{#each cards}}
               <option value="{{this.id}}"> Card ending with {{this.last4}} </option>
             {{/each}}
-           <option value="wechat"> WeChat </option>
+           <option value="wechat" id="wechatOption"> WeChat </option>
            <option value="addpayment"> Add payment method </option>
           </select>
         </div>
@@ -107,9 +107,7 @@
           function handlePaymentSource(src){
             var form = document.getElementById('paymentForm');
             var hiddenInput = document.createElement('input');
-            hiddenInput.setAttribute('type', 'hidden');
-            hiddenInput.setAttribute('name', 'source');
-            hiddenInput.setAttribute('value', src.id);
+            wechatOption.value = src.id
             form.appendChild(hiddenInput);
 
             // Submit the form

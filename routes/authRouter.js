@@ -3,6 +3,10 @@ const router = new express.Router();
 const auth = require('../auth/auth.js');
 const Token = require('../models/model.js').VerifyToken;
 const Users = require('../models/model.js').Users;
+const Referrals = require('../models/model.js').Referrals;
+const secret = require('../secret.js').stripe;
+const stripe = require('stripe')(secret.sk_key);
+
 
 router.get('/login', function(req, res) {
   res.render('login', {
@@ -41,16 +45,19 @@ router.post('/login', auth.authenticateUser, auth.userIsVerified, function(req, 
 });
 
 router.get('/dashboard', auth.loggedIn, auth.userIsVerified, function(req, res) {
-  if(req.user.__t == "clients")
-  {
-    res.render('dashboard-user', {
-      sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-      documents: JSON.parse(JSON.stringify(req.user.documents)),
-      layout: false,
-    });
-  }
-  if(req.user.__t == "guides")
-  {
+  if (req.user.__t == 'clients') {
+    stripe.customers.retrieve(
+        req.user.stripeCustomerId,
+        function(err, customer) {
+          res.render('dashboard-user', {
+            sessions: JSON.parse(JSON.stringify(req.user.sessions)),
+            documents: JSON.parse(JSON.stringify(req.user.documents)),
+            customerBalance: (customer.balance / 100) * -1,
+            layout: false,
+          });
+        },
+    );
+  } else if (req.user.__t == 'guides') {
     res.render('dashboard-guide', {
       sessions: JSON.parse(JSON.stringify(req.user.sessions)),
       documents: JSON.parse(JSON.stringify(req.user.documents)),
@@ -72,5 +79,15 @@ router.get('/logout', function(req, res) {
   req.logout();
   res.redirect('/');
 });
+
+router.get('/referral/create/:name', auth.loggedIn, function(req, res) {
+  const referralCode = req.params.name;
+
+  const ref = new Referrals({referrer: req.user.id, code: referralCode});
+  ref.save()
+      .then(() => res.render('referralCode', {layout: false, code: referralCode}))
+      .catch((err) => res.status(500).send('Internal Server Error'));
+});
+
 
 module.exports = router;

@@ -66,27 +66,27 @@ exports.userIsVerified = function(req, res, next) {
   } else next();
 };
 
-exports.guideHasOnboarded = function(req, res, next) {
+exports.guideHasOnboarded = function(req, res) {
   if (req.user.__t == 'guides') {
     const stripeid = req.user.stripeAccountId;
     stripe.accounts.retrieve(
         stripeid,
         function(err, account) {
           console.log(account.requirements);
-          if (!account.payouts_enabled) {
+          if (account.requirements.currently_due.includes('external_account') || account.requirements.eventually_due.includes('external_account')) {
             res.redirect('/bank/addbank');
-          } else if (account.requirements.currently_due.length > 0 && account.requirements.eventually_due.length > 0) {
+          } else if (account.requirements.disabled_reason != null) {
             redirectToStripeOnboarding(stripeid, req, res);
           } else {
             req.user.onboarded = true;
             req.user.save()
-                .then(() => next())
-                .catch((err) => next(err));
+                .then(() => res.redirect('/dashboard'))
+                .catch((err) => res.send('error'));
           }
         },
     );
   } else {
-    next();
+    res.redirect('/dashboard');
   }
 };
 

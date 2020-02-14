@@ -20,6 +20,7 @@ const applicationRouter = require('./routes/applicationRouter.js');
 const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
+const adminRouter = require('./routes/adminRouter.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -45,6 +46,8 @@ app.use('/apply', applicationRouter);
 app.use('/pay', payRouter);
 app.use('/session', sessionRouter);
 app.use('/bank', bankRouter);
+app.use('/admin', adminRouter);
+app.use('/onboard', auth.guideHasOnboarded);
 
 
 app.engine('handlebars', handlebars());

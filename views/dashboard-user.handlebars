@@ -19,7 +19,7 @@
       </ul>
       <p class="menu-label">Account</p>
       <ul class="menu-list">
-        <li><a class="menu-link" data-page="balance">Balance</a></li>
+        <li><a class="menu-link" data-page="balance" href="/pay">Balance: ${{customerBalance}}</a></li>
         <li><a href="/logout">Log out</a></li>
       </ul>
     </aside>
@@ -83,7 +83,8 @@
 
     changePage("upcoming-sessions");
     $(".menu-link").click(function(){
-      changePage($(this).data("page"));
+      //changePage($(this).data("page"));
+
     });
     function changePage(pageId)
     {
