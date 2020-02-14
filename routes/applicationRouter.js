@@ -20,8 +20,8 @@ const transporter = nodemailer.createTransport({
 });
 
 router.get('/', function(req, res) {
-  res.render('guideApplication',{
-    layout: false
+  res.render('guideApplication', {
+    layout: false,
   });
 });
 
@@ -92,8 +92,8 @@ router.post('/submit', everything, function(req, res, next) {
         console.log('Email sent2');
       }
     });
-    res.render('guideAppSuccess',{
-      layout: false
+    res.render('guideAppSuccess', {
+      layout: false,
     });
   }
 });
