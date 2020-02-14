@@ -27,6 +27,7 @@ const User = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'referrals',
   },
+  isVerified: {type: Boolean, default: false},
 });
 const Guide = new Schema({
   university: {
@@ -118,12 +119,19 @@ const Referrals = new Schema({
   }],
 });
 
+const VerifyToken = new Schema({
+  for: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'},
+  token: {type: String, required: true},
+  createdAt: {type: Date, required: true, default: Date.now, expires: 43200},
+});
+
 const Users = mongoose.model('users', User);
 const Guides = Users.discriminator('guides', Guide);
 const Clients = Users.discriminator('clients', Client);
 const Sessions = mongoose.model('sessions', Session);
 const Documents = mongoose.model('documents', Document);
 const ReferralDocs = mongoose.model('referrals', Referrals);
+const VerifyTokens = mongoose.model('verifyTokens', VerifyToken)
 module.exports = {
   Users: Users,
   Clients: Clients,
@@ -131,4 +139,5 @@ module.exports = {
   Sessions: Sessions,
   Documents: Documents,
   Referrals: ReferralDocs,
+  VerifyToken: VerifyTokens,
 };

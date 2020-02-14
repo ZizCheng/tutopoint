@@ -3,12 +3,15 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
-
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const mailAuth = require('../secret.js').mailAuth;
 
 const Users = require('../models/model.js').Users;
 const Clients = require('../models/model.js').Clients;
 const Guides = require('../models/model.js').Guides;
 const Referrals = require('../models/model.js').Referrals;
+const VerifyToken = require('../models/model.js').VerifyToken;
 
 authConfig = {
   salt: 2,
@@ -52,6 +55,16 @@ function redirectToStripeOnboarding(stripeid, req, res) {
   );
 }
 
+exports.clientIsVerified = function(req, res, next) {
+  if (req.user.__t == 'clients') {
+    console.log(req.user.isVerified);
+    if (!req.user.isVerified) {
+      res.redirect('/awaitVerification');
+    } else {
+      next();
+    }
+  }
+};
 
 exports.guideHasOnboarded = function(req, res, next) {
   if (req.user.__t == 'guides') {
@@ -79,6 +92,10 @@ exports.guideHasOnboarded = function(req, res, next) {
 
 function handleReferral(client, referralCode) {
   return new Promise(function(resolve, reject) {
+    if (referralCode == '') {
+      resolve(client);
+      return;
+    }
     Referrals.find({code: referralCode})
         .then((ref) => {
           ref.referred.push(client.id);
@@ -92,6 +109,34 @@ function handleReferral(client, referralCode) {
               .catch((err) => reject(new Error('Database Error')));
         })
         .catch((err) => reject(new Error('Cannot find referer')));
+  });
+}
+
+function mailToken(user) {
+  const token = new VerifyToken({for: user._id, token: crypto.randomBytes(16).toString('hex')});
+  token.save(function(err) {
+    if (err) {
+      return;
+    }
+
+    // Send the email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: mailAuth,
+    });
+    const mailOptions = {
+      from: 'tutopointauth@gmail.com',
+      to: user.email.toString(),
+      subject: 'NO REPLY Confirm TutoPoint Email Address',
+      text: `Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n`,
+    };
+    transporter.sendMail(mailOptions, function(err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('yippy');
+      }
+    });
   });
 }
 
@@ -128,6 +173,7 @@ exports.newUser = function(req, res, next) {
                   .then(() => req.login(user, function() {
                     next();
                   }))
+                  .then(() => mailToken(user))
                   .catch((err) => {
                     if (err.message == 'Cannot find referer') {
                       res.render('signup', {layout: false, error: 'Referer Code invalid'});
