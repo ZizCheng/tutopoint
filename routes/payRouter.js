@@ -30,6 +30,7 @@ router.get('/', function(req, res, next) {
   stripe.customers.listSources(
       stripeid,
       function(err, cards) {
+        console.log(err)
         if (err) next(err);
         res.render('userPay', {layout: false, cards: cards.data});
       },
