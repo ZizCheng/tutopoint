@@ -10,8 +10,24 @@ socket.on('connect', () => {
 socket.on('forceDisconnect', function() {
   console.log('Socket disconnected');
   socket.disconnect();
+  client.peer.destroy();
+  endCall();
 });
-navigator.mediaDevices.getUserMedia({video: true, audio: true})
+socket.once('guideConnected', function() {
+  pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
+  socket.emit('replyGuideConnected');
+  enableCall();
+});
+socket.once('clientConnected', function() {
+  pushNotification('Good news', 'Client has connected!', 'is-success', 30000);
+  socket.emit('replyClientConnected');
+  enableCall();
+});
+navigator.mediaDevices.getUserMedia({video: true, audio: {
+  sampleRate: 48000,
+  channelCount: 2,
+  volume: 1.0,
+}})
     .then((stream) => {
       video.srcObject = stream;
       video.muted = true;
@@ -63,6 +79,7 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true})
         });
         peer.signal(data.offer);
         client.peer = peer;
+        callStart();
       }
 
       function SignalAnswer(answer) {
@@ -70,6 +87,7 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true})
         client.gotAnswer = true;
         const peer = client.peer;
         peer.signal(answer);
+        callStart();
       }
 
       socket.on('backAnswer', SignalAnswer);
@@ -78,7 +96,8 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true})
     })
     .catch((err) => console.log(err));
 
-$("#join").click(function() {
+$('#startButton').click(function() {
+  console.log('call logged.');
   socket.emit('call');
 });
 
@@ -103,3 +122,86 @@ socket.on('text change', function(msg) {
     quill.updateContents(del, msg.who);
   }
 });
+
+
+// Start
+let whenCallStarted;
+let intervalProcess;
+init();
+function init() {
+  endButton.style['display'] = 'none';
+  startButton.setAttribute('disabled', '');
+
+  endButton.addEventListener('click', function() {
+    endCall();
+  });
+}
+
+function callStart() {
+  whenCallStarted = new Date(Date.now());
+  endButton.style['display'] = '';
+  startButton.setAttribute('disabled', '');
+  startButton.style['display'] = 'none';
+  intervalProcess = setInterval(() => {
+    displayTimer();
+  }, 1000);
+}
+
+function endCall() {
+  clearInterval(intervalProcess);
+  socket.emit('callEnd');
+}
+
+function enableCall() {
+  startButton.removeAttribute('disabled');
+  startButton.style['display'] = '';
+}
+
+function displayTimer() {
+  const diff = parseInt(Date.now() - whenCallStarted) / 1000;
+  const seconds = pad(parseInt(diff % 60));
+  const minutes = pad(parseInt(diff / 60));
+  timerDisplay.textContent = `${minutes}:${seconds}`;
+}
+
+function pad(val) {
+  const valString = val + '';
+  if (valString.length < 2) {
+    return '0' + valString;
+  } else {
+    return valString;
+  }
+}
+
+
+function deleteNotification(el) {
+  const parentArticle = el.parentElement.parentElement;
+  notification.removeChild(parentArticle);
+}
+
+function pushNotification(title, message, type, timer = null) {
+  const notificationElement = document.createElement('article');
+  notificationElement.setAttribute('class', `message ${type}`);
+
+  const messageInnerHtml = `
+         <div class=\"message-header\">
+                  <p>${title}</p>
+                  <button class=\"delete\" aria-label=\"delete\"></button>
+                </div>
+                <div class=\"message-body\">
+                    ${message}
+                </div>`;
+  notificationElement.innerHTML = messageInnerHtml;
+
+  notification.appendChild(notificationElement);
+  const button = notificationElement.querySelector('button[class=\'delete\'');
+  button.addEventListener('click', function(ev) {
+    deleteNotification(ev.srcElement);
+  });
+  if (timer != null && !
+  isNaN(timer)) {
+    setTimeout(() => {
+      deleteNotification(button);
+    }, timer);
+  }
+}

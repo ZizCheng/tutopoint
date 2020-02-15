@@ -1957,7 +1957,7 @@ var hexSliceLookupTable = (function () {
 })()
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":1,"buffer":3,"ieee754":5}],4:[function(require,module,exports){
+},{"base64-js":1,"buffer":3,"ieee754":6}],4:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2483,6 +2483,23 @@ function functionBindPolyfill(context) {
 }
 
 },{}],5:[function(require,module,exports){
+// originally pulled out of simple-peer
+
+module.exports = function getBrowserRTC () {
+  if (typeof window === 'undefined') return null
+  var wrtc = {
+    RTCPeerConnection: window.RTCPeerConnection || window.mozRTCPeerConnection ||
+      window.webkitRTCPeerConnection,
+    RTCSessionDescription: window.RTCSessionDescription ||
+      window.mozRTCSessionDescription || window.webkitRTCSessionDescription,
+    RTCIceCandidate: window.RTCIceCandidate || window.mozRTCIceCandidate ||
+      window.webkitRTCIceCandidate
+  }
+  if (!wrtc.RTCPeerConnection) return null
+  return wrtc
+}
+
+},{}],6:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -2568,7 +2585,200 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    if (superCtor) {
+      ctor.super_ = superCtor
+      ctor.prototype = Object.create(superCtor.prototype, {
+        constructor: {
+          value: ctor,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      })
+    }
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    if (superCtor) {
+      ctor.super_ = superCtor
+      var TempCtor = function () {}
+      TempCtor.prototype = superCtor.prototype
+      ctor.prototype = new TempCtor()
+      ctor.prototype.constructor = ctor
+    }
+  }
+}
+
+},{}],8:[function(require,module,exports){
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var w = d * 7;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isFinite(val)) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'weeks':
+    case 'week':
+    case 'w':
+      return n * w;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (msAbs >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (msAbs >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (msAbs >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return plural(ms, msAbs, d, 'day');
+  }
+  if (msAbs >= h) {
+    return plural(ms, msAbs, h, 'hour');
+  }
+  if (msAbs >= m) {
+    return plural(ms, msAbs, m, 'minute');
+  }
+  if (msAbs >= s) {
+    return plural(ms, msAbs, s, 'second');
+  }
+  return ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, msAbs, n, name) {
+  var isPlural = msAbs >= n * 1.5;
+  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
+}
+
+},{}],9:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2754,216 +2964,6 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],7:[function(require,module,exports){
-// originally pulled out of simple-peer
-
-module.exports = function getBrowserRTC () {
-  if (typeof window === 'undefined') return null
-  var wrtc = {
-    RTCPeerConnection: window.RTCPeerConnection || window.mozRTCPeerConnection ||
-      window.webkitRTCPeerConnection,
-    RTCSessionDescription: window.RTCSessionDescription ||
-      window.mozRTCSessionDescription || window.webkitRTCSessionDescription,
-    RTCIceCandidate: window.RTCIceCandidate || window.mozRTCIceCandidate ||
-      window.webkitRTCIceCandidate
-  }
-  if (!wrtc.RTCPeerConnection) return null
-  return wrtc
-}
-
-},{}],8:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      ctor.prototype = Object.create(superCtor.prototype, {
-        constructor: {
-          value: ctor,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      })
-    }
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      var TempCtor = function () {}
-      TempCtor.prototype = superCtor.prototype
-      ctor.prototype = new TempCtor()
-      ctor.prototype.constructor = ctor
-    }
-  }
-}
-
-},{}],9:[function(require,module,exports){
-/**
- * Helpers.
- */
-
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var w = d * 7;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isFinite(val)) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-  throw new Error(
-    'val is not a non-empty string or a valid number. val=' +
-      JSON.stringify(val)
-  );
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 100) {
-    return;
-  }
-  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
-    str
-  );
-  if (!match) {
-    return;
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'weeks':
-    case 'week':
-    case 'w':
-      return n * w;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  var msAbs = Math.abs(ms);
-  if (msAbs >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-  if (msAbs >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-  if (msAbs >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-  if (msAbs >= s) {
-    return Math.round(ms / s) + 's';
-  }
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  var msAbs = Math.abs(ms);
-  if (msAbs >= d) {
-    return plural(ms, msAbs, d, 'day');
-  }
-  if (msAbs >= h) {
-    return plural(ms, msAbs, h, 'hour');
-  }
-  if (msAbs >= m) {
-    return plural(ms, msAbs, m, 'minute');
-  }
-  if (msAbs >= s) {
-    return plural(ms, msAbs, s, 'second');
-  }
-  return ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, msAbs, n, name) {
-  var isPlural = msAbs >= n * 1.5;
-  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
-}
-
 },{}],10:[function(require,module,exports){
 let promise
 
@@ -3028,7 +3028,7 @@ function randomBytes (size, cb) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":6,"safe-buffer":12}],12:[function(require,module,exports){
+},{"_process":9,"safe-buffer":12}],12:[function(require,module,exports){
 /* eslint-disable node/no-deprecated-api */
 var buffer = require('buffer')
 var Buffer = buffer.Buffer
@@ -4099,7 +4099,7 @@ Peer.channelConfig = {}
 module.exports = Peer
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":3,"debug":14,"get-browser-rtc":7,"queue-microtask":10,"randombytes":11,"readable-stream":30}],14:[function(require,module,exports){
+},{"buffer":3,"debug":14,"get-browser-rtc":5,"queue-microtask":10,"randombytes":11,"readable-stream":30}],14:[function(require,module,exports){
 (function (process){
 /* eslint-env browser */
 
@@ -4367,7 +4367,7 @@ formatters.j = function (v) {
 };
 
 }).call(this,require('_process'))
-},{"./common":15,"_process":6}],15:[function(require,module,exports){
+},{"./common":15,"_process":9}],15:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -4635,7 +4635,7 @@ function setup(env) {
 
 module.exports = setup;
 
-},{"ms":9}],16:[function(require,module,exports){
+},{"ms":8}],16:[function(require,module,exports){
 'use strict';
 
 function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
@@ -4906,7 +4906,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
   }
 });
 }).call(this,require('_process'))
-},{"./_stream_readable":19,"./_stream_writable":21,"_process":6,"inherits":8}],18:[function(require,module,exports){
+},{"./_stream_readable":19,"./_stream_writable":21,"_process":9,"inherits":7}],18:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4946,7 +4946,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":20,"inherits":8}],19:[function(require,module,exports){
+},{"./_stream_transform":20,"inherits":7}],19:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6073,7 +6073,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":16,"./_stream_duplex":17,"./internal/streams/async_iterator":22,"./internal/streams/buffer_list":23,"./internal/streams/destroy":24,"./internal/streams/from":26,"./internal/streams/state":28,"./internal/streams/stream":29,"_process":6,"buffer":3,"events":4,"inherits":8,"string_decoder/":31,"util":2}],20:[function(require,module,exports){
+},{"../errors":16,"./_stream_duplex":17,"./internal/streams/async_iterator":22,"./internal/streams/buffer_list":23,"./internal/streams/destroy":24,"./internal/streams/from":26,"./internal/streams/state":28,"./internal/streams/stream":29,"_process":9,"buffer":3,"events":4,"inherits":7,"string_decoder/":31,"util":2}],20:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6275,7 +6275,7 @@ function done(stream, er, data) {
   if (stream._transformState.transforming) throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();
   return stream.push(null);
 }
-},{"../errors":16,"./_stream_duplex":17,"inherits":8}],21:[function(require,module,exports){
+},{"../errors":16,"./_stream_duplex":17,"inherits":7}],21:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6975,7 +6975,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":16,"./_stream_duplex":17,"./internal/streams/destroy":24,"./internal/streams/state":28,"./internal/streams/stream":29,"_process":6,"buffer":3,"inherits":8,"util-deprecate":32}],22:[function(require,module,exports){
+},{"../errors":16,"./_stream_duplex":17,"./internal/streams/destroy":24,"./internal/streams/state":28,"./internal/streams/stream":29,"_process":9,"buffer":3,"inherits":7,"util-deprecate":32}],22:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -7185,7 +7185,7 @@ var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterat
 
 module.exports = createReadableStreamAsyncIterator;
 }).call(this,require('_process'))
-},{"./end-of-stream":25,"_process":6}],23:[function(require,module,exports){
+},{"./end-of-stream":25,"_process":9}],23:[function(require,module,exports){
 'use strict';
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -7485,7 +7485,7 @@ module.exports = {
   errorOrDestroy: errorOrDestroy
 };
 }).call(this,require('_process'))
-},{"_process":6}],25:[function(require,module,exports){
+},{"_process":9}],25:[function(require,module,exports){
 // Ported from https://github.com/mafintosh/end-of-stream with
 // permission from the author, Mathias Buus (@mafintosh).
 'use strict';
@@ -8104,107 +8104,212 @@ function config (name) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],33:[function(require,module,exports){
-let Peer = require('simple-peer')
-let socket = io(window.location.origin, {query: `session=${sessionid}`})
-const video = document.querySelector('#localVideo')
-let client = {}
-let currentFilter
-//get stream
+const Peer = require('simple-peer');
+const socket = io(window.location.origin, {query: `session=${sessionid}`});
+const video = document.querySelector('#localVideo');
+const client = {};
+// get stream
 
 socket.on('connect', () => {
-  console.log("connected")
+  console.log('connected');
 });
-socket.on('forceDisconnect', function(){
-  console.log("Socket disconnected")
+socket.on('forceDisconnect', function() {
+  console.log('Socket disconnected');
   socket.disconnect();
-})
-navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-        video.srcObject = stream
-        video.muted = true;
-        video.play()
-        //used to initialize a peer
-        function InitPeer(type) {
-            let peer = new Peer({ initiator: (type == 'init') ? true : false, stream: stream, trickle: false })
-            peer.on('stream', function (stream) {
-                CreateVideo(stream)
-            })
-            return peer
-        }
+  client.peer.destroy();
+  endCall();
+});
+socket.once('guideConnected', function() {
+  pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
+  socket.emit('replyGuideConnected');
+  enableCall();
+});
+socket.once('clientConnected', function() {
+  pushNotification('Good news', 'Client has connected!', 'is-success', 30000);
+  socket.emit('replyClientConnected');
+  enableCall();
+});
+navigator.mediaDevices.getUserMedia({video: true, audio: {
+  sampleRate: 48000,
+  channelCount: 2,
+  volume: 1.0,
+}})
+    .then((stream) => {
+      video.srcObject = stream;
+      video.muted = true;
+      video.play();
+      // used to initialize a peer
+      function initPeer(type) {
+        const initConfig = {
+          initiator: (type == 'init') ? true : false,
+          stream: stream,
+          trickle: false,
+        };
+        const peer = new Peer(initConfig);
+        peer.on('stream', function(stream) {
+          createVideo(stream);
+        });
+        return peer;
+      }
 
-        function CreateVideo(stream) {
-            var vid = document.querySelector('#remoteVideo');
-            vid.srcObject = stream;
-            vid.muted = false;
-            vid.play();
+      function createVideo(stream) {
+        const vid = document.querySelector('#remoteVideo');
+        vid.srcObject = stream;
+        vid.muted = false;
+        vid.play();
+      }
 
-        }
+      function MakePeer(data) {
+        console.log('Request received');
+        client.gotAnswer = false;
+        const peer = initPeer('init');
+        peer.on('signal', function(offer) {
+          if (!client.gotAnswer) {
+            socket.emit('offer', {
+              to: data.from,
+              offer: offer,
+            });
+          }
+        });
+        client.peer = peer;
+      }
 
-        function MakePeer(data) {
-            console.log("Request received")
-            client.gotAnswer = false
-            let peer = InitPeer('init')
-            peer.on('signal', function (offer) {
-                if (!client.gotAnswer) {
-                    socket.emit('offer', {
-                      to: data.from,
-                      offer: offer
-                    })
-                }
-            })
-            client.peer = peer
-        }
+      function FrontAnswer(data) {
+        console.log('Offer received');
+        const peer = initPeer('notInit');
+        peer.on('signal', (offer) => {
+          socket.emit('answer', {
+            to: data.from,
+            offer: offer,
+          });
+        });
+        peer.signal(data.offer);
+        client.peer = peer;
+        callStart();
+      }
 
-        function FrontAnswer(data) {
-          console.log("Offer received")
-            let peer = InitPeer('notInit')
-            peer.on('signal', (offer) => {
-                socket.emit('answer', {
-                  to: data.from,
-                  offer: offer
-                })
-            })
-            peer.signal(data.offer)
-            client.peer = peer
-        }
+      function SignalAnswer(answer) {
+        console.log('got answer');
+        client.gotAnswer = true;
+        const peer = client.peer;
+        peer.signal(answer);
+        callStart();
+      }
 
-        function SignalAnswer(answer) {
-          console.log("got answer");
-            client.gotAnswer = true
-            let peer = client.peer
-            peer.signal(answer)
-        }
-
-        socket.on('backAnswer', SignalAnswer)
-        socket.on("makeOffer", MakePeer)
-        socket.on("frontAnswer", FrontAnswer)
-
+      socket.on('backAnswer', SignalAnswer);
+      socket.on('makeOffer', MakePeer);
+      socket.on('frontAnswer', FrontAnswer);
     })
-    .catch(err => console.log(err))
+    .catch((err) => console.log(err));
 
-document.getElementById("join").addEventListener('click', function(){
+$('#startButton').click(function() {
+  console.log('call logged.');
   socket.emit('call');
-})
+});
 
 
-var quill = new Quill('#editor', {
- theme: 'snow'
+const quill = new Quill('#editor', {
+  theme: 'snow',
 });
 
 
 quill.on('text-change', function(delta, oldDelta, source) {
-  console.log(source)
+  console.log(source);
   if (source === 'user') {
-    socket.emit('text change', {'who': socket.id, 'delta': JSON.stringify(delta)});
+    const data = {'who': socket.id, 'delta': JSON.stringify(delta)};
+    socket.emit('text change', data);
   }
 });
 
-socket.on('text change', function(msg){
+socket.on('text change', function(msg) {
   console.log(msg);
-  if(msg.who != socket.id) {
-    var del = JSON.parse(msg.delta);
+  if (msg.who != socket.id) {
+    const del = JSON.parse(msg.delta);
     quill.updateContents(del, msg.who);
   }
 });
+
+
+// Start
+let whenCallStarted;
+let intervalProcess;
+init();
+function init() {
+  endButton.style['display'] = 'none';
+  startButton.setAttribute('disabled', '');
+
+  endButton.addEventListener('click', function() {
+    endCall();
+  });
+}
+
+function callStart() {
+  whenCallStarted = new Date(Date.now());
+  endButton.style['display'] = '';
+  startButton.setAttribute('disabled', '');
+  startButton.style['display'] = 'none';
+  intervalProcess = setInterval(() => {
+    displayTimer();
+  }, 1000);
+}
+
+function endCall() {
+  clearInterval(intervalProcess);
+  socket.emit('callEnd');
+}
+
+function enableCall() {
+  startButton.removeAttribute('disabled');
+  startButton.style['display'] = '';
+}
+
+function displayTimer() {
+  const diff = parseInt(Date.now() - whenCallStarted) / 1000;
+  const seconds = pad(parseInt(diff % 60));
+  const minutes = pad(parseInt(diff / 60));
+  timerDisplay.textContent = `${minutes}:${seconds}`;
+}
+
+function pad(val) {
+  const valString = val + '';
+  if (valString.length < 2) {
+    return '0' + valString;
+  } else {
+    return valString;
+  }
+}
+
+
+function deleteNotification(el) {
+  const parentArticle = el.parentElement.parentElement;
+  notification.removeChild(parentArticle);
+}
+
+function pushNotification(title, message, type, timer = null) {
+  const notificationElement = document.createElement('article');
+  notificationElement.setAttribute('class', `message ${type}`);
+
+  const messageInnerHtml = `
+         <div class=\"message-header\">
+                  <p>${title}</p>
+                  <button class=\"delete\" aria-label=\"delete\"></button>
+                </div>
+                <div class=\"message-body\">
+                    ${message}
+                </div>`;
+  notificationElement.innerHTML = messageInnerHtml;
+
+  notification.appendChild(notificationElement);
+  const button = notificationElement.querySelector('button[class=\'delete\'');
+  button.addEventListener('click', function(ev) {
+    deleteNotification(ev.srcElement);
+  });
+  if (timer != null && !
+  isNaN(timer)) {
+    setTimeout(() => {
+      deleteNotification(button);
+    }, timer);
+  }
+}
 
 },{"simple-peer":13}]},{},[33]);

@@ -92,6 +92,20 @@ io.use(function(socket, next) {
   session(socket.request, {}, next);
 });
 
+function handleUserType(socket) {
+  Users.findById(socket.request.session.passport.user)
+      .then((user) => {
+        console.log(user.__t);
+        if (user.__t == 'guides') {
+          socket.to(socket.request._query['session']).emit('guideConnected');
+        } else if (user.__t == 'clients') {
+          socket.to(socket.request._query['session']).emit('clientConnected');
+        }
+      })
+      .catch((err) => {});
+}
+
+
 io.on('connection', function(socket, req, res) {
   if (!socket.request.session.passport) {
     socket.emit('forceDisconnect');
@@ -99,16 +113,36 @@ io.on('connection', function(socket, req, res) {
   }
   // join room for private messages
   socket.join(socket.request.session.passport.user);
+  // Join's session room.
+  socket.join(socket.request._query['session']);
 
+  handleUserType(socket);
+  socket.once('replyGuideConnected', function() {
+    socket.to(socket.request._query['session']).emit('clientConnected');
+  });
+
+  socket.once('replyClientConnected', function() {
+    socket.to(socket.request._query['session']).emit('guideConnected');
+  });
 
   socket.on('call', function() {
     console.log('got call');
     Sessions.findById(socket.request._query['session'])
         .exec(function(err, session) {
           if (err) return;
-          socket.to(session.createdBy).emit('makeOffer', {
-            from: socket.request.session.passport.user,
-          });
+          if (socket.request.session.passport.user == session.createdBy.toString()) {
+            for (let i = 0; i < session.clients.length; i++) {
+              console.log('guide attempting to call');
+              socket.to(session.clients[i]).emit('makeOffer', {
+                from: socket.request.session.passport.user,
+              });
+            }
+            return;
+          } else {
+            socket.to(session.createdBy).emit('makeOffer', {
+              from: socket.request.session.passport.user,
+            });
+          }
         });
   });
   socket.on('offer', function(data) {
@@ -123,9 +157,33 @@ io.on('connection', function(socket, req, res) {
     socket.to(data.to).emit('backAnswer', data.offer);
   });
 
+  socket.on('disconnect', function() {
+    socket.leave(socket.request.session.passport.user);
+    socket.leave(socket.request._query['session']);
+  });
+
+  socket.on('callEnd', function() {
+    io.to(socket.request._query['session']).emit('forceDisconnect');
+    const endDate = Date.now();
+    Sessions.findById(socket.request._query['session'])
+        .then((session) => {
+          session.completed = true;
+          session.dateCompletedAt = endDate;
+          session.save()
+              .then(() => {
+                // TODO: this thing
+                const diff = parseInt((endDate - session.date) / 1000)
+                const numOfBlocks = Math.ceil((diff / 60) / 15);
+                console.log(numOfBlocks);
+              })
+              .catch((err) => console.log('something occurred'));
+        })
+        .catch((err) => console.log('Could not find session'));
+  });
+
 
   socket.on('text change', function(data) {
-    socket.to('document ' + data.doc_id).emit('text change', data);
+    socket.to('document ' + data.doc_id).to(socket.request._query['session']).emit('text change', data);
   });
   socket.on('join document room', function(docId) {
     const sessionId = socket.request.session.passport.user;

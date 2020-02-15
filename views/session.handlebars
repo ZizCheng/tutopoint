@@ -6,29 +6,76 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+    <link rel="stylesheet" href="/css/sessionStyle.css">
     <link rel="stylesheet" href="/css/bulma.min.css">
-    <link rel="stylesheet" href="/css/video-call.css">
 
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+    <script src="https://kit.fontawesome.com/ec65ba9ed4.js" crossorigin="anonymous"></script>
 
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   </head>
   <body>
-    <div class="page-container columns">
-      <div class="chat-container column is-one-third">
-        <div id="editor">
-          <p>You can take notes here.</p>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-start">
+              <!-- navbar items -->
+            </div>
+
+            <div class="navbar-end " style="margin-top: .5em; margin-right: 5px;">
+                <div class="callButtons">
+                    <div class="field is-grouped is-grouped-right">
+                        <p class="control has-icons-left">
+                          <a id="startButton" class="button is-success">
+                            <span class="icon is-small is-left"><i class="fas fa-phone-alt"></i></span> <span>&nbsp;&nbsp;Start Session</span>
+                          </a>
+
+                        </p>
+                        <p class="control">
+                            <div id="endButton" class="buttons has-addons">
+                                <button class="button is-danger is-selected">End</button>
+                                <button id="timerDisplay" class="button is-dark">0:00</button>
+                              </div>
+
+                          </p>
+                      </div>
+                </div>
+            </div>
+          </div>
+      </nav>
+    <div class="fullheight container is-fluid">
+        <div id="notification">
         </div>
-      </div>
-      <button id="join">join</button>
-      <div class="video-container column is-two-thirds">
-        <div class="their-video-container" >
-          <video class="video" id="remoteVideo"></video>
-        </div>
-        <div class="my-video-container" >
-          <video class="video" id="localVideo"></video>
-        </div>
-      </div>
+        <div class="fullheight columns">
+            <div class="column is-one-third" style="margin: 2em;">
+              <div id="editor">
+                <p>You can take notes here.</p>
+                </div>
+            </div>
+
+            <div class="column is-two-thirds">
+              <div id="remoteVideoContainer" >
+                <video class="video" id="remoteVideo">
+                  <p class="buttons">
+                  <button class="button">
+                    <span class="icon is-small">
+                      <i class="fas fa-bold"></i>
+                    </span>
+                  </button>
+                  <button class="button">
+                    <span class="icon is-small">
+                      <i class="fas fa-bold"></i>
+                    </span>
+                  </button>
+                </p>
+                </video>
+                <
+              </div>
+              <div id="localVideoContainer" >
+                <video class="video" id="localVideo">
+                </video>
+
+              </div>
+            </div>
+          </div>
     </div>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="/socket.io/socket.io.js"></script>

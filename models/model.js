@@ -90,6 +90,13 @@ const Session = new Schema({
     type: Boolean,
     default: false,
   },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+  dateCompletedAt: {
+    type: Date,
+  },
 });
 
 const Document = new Schema({
@@ -131,7 +138,7 @@ const Clients = Users.discriminator('clients', Client);
 const Sessions = mongoose.model('sessions', Session);
 const Documents = mongoose.model('documents', Document);
 const ReferralDocs = mongoose.model('referrals', Referrals);
-const VerifyTokens = mongoose.model('verifyTokens', VerifyToken)
+const VerifyTokens = mongoose.model('verifyTokens', VerifyToken);
 module.exports = {
   Users: Users,
   Clients: Clients,
