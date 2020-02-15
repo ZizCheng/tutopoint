@@ -8,62 +8,78 @@
 
     <link rel="stylesheet" href="/css/bulma.min.css">
     <link rel="stylesheet" href="/css/schedule.css">
+    <link rel="stylesheet" href="/css/navbar.css">
     <script src="/js/schedule.js"></script>
 
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   </head>
   <body>
-    <div class="content-container">
-      <div class="left-container">
-        <div class="calendar-container">
-          <table>
-            <thead>
-              <td class="calendar-day-label">S</td>
-              <td class="calendar-day-label">M</td>
-              <td class="calendar-day-label">T</td>
-              <td class="calendar-day-label">W</td>
-              <td class="calendar-day-label">T</td>
-              <td class="calendar-day-label">F</td>
-              <td class="calendar-day-label">S</td>
-            </thead>
-            <tbody class="calendar-body">
-
-            </tbody>
-          </table>
-        </div>
-        <button class="button is-primary" onclick="saveSchedule()">Save</button>
+<div class="page-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">Tutopoint</a>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <a class="button is-light" href="/login">Log in</a>
       </div>
-      <div class="right-container">
-        <div class="day-container">
-          <h1 class="day-title title"></h1>
-          <div class="insert-type-wrapper control">
-            <p>Add available times:</p>
-            <label class="radio">
-              <input type="radio" name="insertType" value="oneTime" checked>
-              This day only
-            </label>
-            <label class="radio">
-              <input type="radio" name="insertType" value="daily">
-              Every day (for the next 28 days)
-            </label>
-            <label class="radio">
-              <input type="radio" name="insertType" value="weekly">
-              This day of every week (for the next 4 weeks)
-            </label>
+    </div>
+  </nav>
+  <div class="content-container">
+    <div class="left-container">
+      <div class="calendar-container">
+        <table>
+          <thead>
+            <td class="calendar-day-label">S</td>
+            <td class="calendar-day-label">M</td>
+            <td class="calendar-day-label">T</td>
+            <td class="calendar-day-label">W</td>
+            <td class="calendar-day-label">T</td>
+            <td class="calendar-day-label">F</td>
+            <td class="calendar-day-label">S</td>
+          </thead>
+          <tbody class="calendar-body">
+
+          </tbody>
+        </table>
+      </div>
+      <button class="button is-primary" onclick="saveSchedule()">Save</button>
+      <div class="insert-type-wrapper control">
+        <p>Add available times:</p>
+        <label class="radio">
+          <input type="radio" name="insertType" value="oneTime" checked>
+          This day only
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="daily">
+          Every day (for the next 28 days)
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="weekly">
+          This day of every week (for the next 4 weeks)
+        </label>
+      </div>
+    </div>
+    <div class="right-container">
+      <div class="day-container">
+        <div class="time-labels">
+
+        </div>
+        <div class="day-wrapper">
+          <div class="day">
+
           </div>
-          <div class="day-wrapper">
-            <div class="day">
+          <div class="cursor">
+            <div class="cursor-text">
 
-            </div>
-            <div class="cursor">
-              <div class="cursor-text">
-
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
     <script>
       //JSON.parse changes dates into strings, need to convert back
       var schedule = JSON.parse(`{{{schedule}}}`);
@@ -82,12 +98,25 @@
       var year = 2020;
       var day;
 
+      $(".day-container").hide();
+      $(".day-container").css({
+        "height": $(window).height() - $(".navbar").height()
+      });
+
       newCalendar(new Date(year, month));
 
-      $(".cursor").css({bottom: 0});
 
       var firstDate = null;
       var secondDate = null;
+
+      (function($) {
+          $.fn.hasScrollBar = function() {
+              return this.get(0).scrollHeight > this.height();
+          }
+      })(jQuery);
+      $("*").each(function(){
+        if(this.scrollHeight > this.clientHeight) console.log(this);
+      })
 
     </script>
   </body>

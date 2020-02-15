@@ -35,6 +35,8 @@ function createDate(date) {
         .html(date)
         .data('date', date)
         .click(function() {
+          $(".calendar-selected-date").removeClass("calendar-selected-date");
+          $(this).addClass("calendar-selected-date");
           day = $(this).data('date');
           newDay($(".day"));
         });
@@ -46,7 +48,6 @@ function createDate(date) {
 // DAY
 function newDay(dayEle) {
   $('.day-container').show();
-  $(".day-title").html((month+1) + "/" + day)
   $(dayEle).html('');
   const dayStart = new Date(year, month, day);
   const dayEnd = new Date(year, month, day+1);
@@ -58,8 +59,9 @@ function newDay(dayEle) {
   for(let i = 0;i<24;i++) {
     var hourDate = new Date(year, month, day, i);
     var timeLabel = newTimeLabel(hourDate);
-    $(timeLabel).css({"top": getTopPosFromDate(hourDate)});
-    $(dayEle).append(timeLabel);
+    var timeLabelLine = newTimeLabelLine(hourDate);
+    $(".time-labels").append(timeLabel);
+    $(dayEle).append(timeLabelLine);
   }
 
   $(dayEle).mousemove(function(event){
@@ -115,8 +117,8 @@ function newInterval(interval) {
       .mouseleave(function() {
         $(this).children('.remove-interval').hide();
       });
-  const removeDiv = document.createElement('button');
-  $(removeDiv)
+  const removeButton = document.createElement('button');
+  $(removeButton)
       .addClass('remove-interval button')
       .html('Remove')
       .css({"z-index": "2"})
@@ -126,31 +128,33 @@ function newInterval(interval) {
         $(this).parent().remove();
       });
 
-  const topLabel = $(newIntervalLabel(start)).css({"top": 0});
-  const bottomLabel = $(newIntervalLabel(end)).css({"bottom": 0});
-
-  $(intervalDiv).append(topLabel).append(bottomLabel).append(removeDiv);
-  return intervalDiv;
-}
-//create start and end labels for interval
-function newIntervalLabel(date) {
-  const label = document.createElement('span');
+  const label = document.createElement("div");
   $(label)
       .addClass('interval-label')
-      .html(formatDate(date));
-  return label;
+      .html(formatHHMM(start) + " &ndash; " + formatHHMM(end));
+
+  $(intervalDiv).append(label).append(removeButton);
+  return intervalDiv;
 }
 //create a time label
 function newTimeLabel(date) {
-  const label = document.createElement('div');
-  $(label)
-    .addClass('time-label')
+  const labelSpacer = document.createElement('div');
+  $(labelSpacer)
+    .addClass('time-label-spacer')
+    .css({"height": getHeightPerHour()});
   const labelText = document.createElement('span');
   $(labelText)
     .addClass("time-label-text")
-    .html(formatDate(date));
-  $(label).append(labelText);
-  return label;
+    .html(formatHHPP(date));
+  $(labelSpacer).append(labelText);
+  return labelSpacer;
+}
+function newTimeLabelLine(date) {
+  const labelLine = document.createElement('div');
+  $(labelLine)
+    .addClass('time-label-line')
+    .css({"top": getTopPosFromDate(date)});
+  return labelLine;
 }
 
 
@@ -161,7 +165,7 @@ function moveCursor(date) {
   var roundedDate = roundDate(date);
   var cursorTop = getTopPosFromDate(roundedDate);
   $(".cursor").css({"top": cursorTop});
-  $(".cursor-text").html(formatDate(roundedDate))
+  $(".cursor-text").html(formatHHMM(roundedDate))
 }
 
 
@@ -230,10 +234,27 @@ function getBottomPosFromDate(date) {
   const datePercentDiff = dateDiff/(1000*60*60*24);
   return $('.day').height() * (1-datePercentDiff);
 }
-function formatDate(date) {
-  let minutes = date.getMinutes();
+function getHeightPerHour() {
+  return $('.day').height()/24;
+}
+//HH:MM
+function formatHHMM(date) {
+  var minutes = date.getMinutes();
   if (minutes<10) minutes = '0' + minutes;
   return date.getHours() + ':' + minutes;
+}
+//HH PP
+//P is the period, or AM/PM
+function formatHHPP(date) {
+  var hour = date.getHours();
+  var period = "AM";
+  if(hour >= 12)
+  {
+    period = "PM";
+    hour -= 12;
+  }
+  if(hour == 0) hour = 12;
+  return hour + ' ' + period;
 }
 
 
