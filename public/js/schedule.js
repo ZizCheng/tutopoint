@@ -186,7 +186,7 @@ function insertIntervalDaily(interval) {
 //insert interval per day of week for next 4 weeks, starting on current day
 function insertIntervalWeekly(interval) {
   for(var i = 0;i<4;i++) {
-    insertInterval(addDaysToDate(interval,i*7),schedule);
+    insertInterval(addDaysToInterval(interval,i*7),schedule);
   }
 }
 function addDaysToInterval(interval, days) {
