@@ -1,3 +1,10 @@
+body
+{
+  padding: 0 5rem;
+}
+
+
+/* CALENDAR */
 .calendar-date
 {
   padding: 10px;
@@ -5,19 +12,25 @@
 .calendar-real-date
 {
   border: 1px solid black;
+  cursor: pointer;
+}
+.calendar-real-date:hover
+{
+  background-color: #ffffc9;
 }
 
+/* DAY */
 .day-container
 {
-  position: relative;
-  overflow-x: scroll;
-  overflow-y: visible;
   display: none;
+  height: 60vh;
+  position: relative;
+  overflow-y: scroll;
   padding: 4rem 0 0 0;
 }
 .day-wrapper
 {
-  height: 4000px;
+  height: 200vh;
   width: 400px;
   margin: 0;
   position: relative;
@@ -29,12 +42,33 @@
   height: 100%;
   background-color: #bbddff;
 }
-.time
+.insert-type-wrapper
 {
-  display: inline-block;
-  border: 1px solid black;
-  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 2rem 1rem;
 }
+.insert-type-wrapper .radio
+{
+  margin-left: 0.5rem;
+}
+.time-label
+{
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  background-color: #B5B5B5;
+}
+.time-label-text
+{
+  position: absolute;
+  top: 50%;
+  right: -3rem;
+  transform: translateY(-50%);
+  color: #B5B5B5;
+}
+
+/* INTERVAL */
 .interval
 {
   position: absolute;
@@ -52,6 +86,8 @@
   top: 50%;
   transform: translate(-50%,-50%);
 }
+
+/* CURSOR */
 .cursor
 {
   position: absolute;
@@ -62,8 +98,21 @@
   z-index: 1;
   pointer-events: none;
 }
+.cursor::after
+{
+  content: "";
+  position: absolute;
+  right: -0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 0.5rem;
+  border-color: transparent red transparent transparent;
+  border-style: solid;
+}
 .cursor-text
 {
+  display: none;
+
   position: absolute;
   right: -60px;
   top: 50%;

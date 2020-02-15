@@ -30,9 +30,24 @@
       </table>
     </div>
     <div class="day-container">
+      <h1 class="day-title title"></h1>
+      <div class="insert-type-wrapper control">
+        <p>Add available times:</p>
+        <label class="radio">
+          <input type="radio" name="insertType" value="oneTime" checked>
+          This day only
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="daily">
+          Every day (for the next 28 days)
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="weekly">
+          This day of every week (for the next 4 weeks)
+        </label>
+      </div>
       <div class="day-wrapper">
         <div class="day">
-
 
         </div>
         <div class="cursor">
@@ -42,7 +57,7 @@
         </div>
       </div>
     </div>
-    <button onclick="saveSchedule()">Save</button>
+    <button class="button is-primary" onclick="saveSchedule()">Save</button>
     <script>
       //JSON.parse changes dates into strings, need to convert back
       var schedule = JSON.parse(`{{{schedule}}}`);
@@ -64,45 +79,10 @@
       newCalendar(new Date(year, month));
 
       $(".cursor").css({bottom: 0});
-      $(".day").mousemove(function(event){
-        var top = event.pageY - $(".day").offset().top;
-        var date = getDateFromTopPos(top);
-        moveCursor(date);
-      });
 
       var firstDate = null;
       var secondDate = null;
-      $(".day").click(function(event){
-        var top = event.pageY - $(".day").offset().top;
-        var date = getDateFromTopPos(top);
-        var roundedDate = roundDate(date);
 
-        if(!firstDate)
-        {
-          firstDate = roundedDate;
-        }
-        else
-        {
-          secondDate = roundedDate;
-          console.log(firstDate + " " + secondDate);
-          //vars must be ordered, distinct dates
-          if(firstDate.getTime() != secondDate.getTime())
-          {
-            //make sure times are ordered
-            if(firstDate.getTime() > secondDate.getTime()) {
-              var temp = firstDate;
-              firstDate = secondDate;
-              secondDate = temp;
-            }
-            insertInterval([firstDate,secondDate],schedule);
-            console.log(schedule);
-            newDay(); //update day to show change
-            firstDate = null;
-
-            console.log(schedule);
-          }
-        }
-      })
     </script>
   </body>
 </html>

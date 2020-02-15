@@ -35,39 +35,69 @@ function createDate(date) {
         .html(date)
         .data('date', date)
         .click(function() {
-          dateClick(this);
+          day = $(this).data('date');
+          newDay($(".day"));
         });
   }
   return newDate;
 }
-function dateClick(dateEle) {
-  day = $(dateEle).data('date');
-  newDay();
-}
 
 
 // DAY
-function newDay() {
-  $('.day').html('');
+function newDay(dayEle) {
+  $('.day-container').show();
+  $(".day-title").html((month+1) + "/" + day)
+  $(dayEle).html('');
   const dayStart = new Date(year, month, day);
   const dayEnd = new Date(year, month, day+1);
   for (let i = 0; i<schedule.length; i++) {
     if (dateBetween(schedule[i][0], dayStart, dayEnd) || dateBetween(schedule[i][1], dayStart, dayEnd)) {
-      newInterval(schedule[i]);
+      $(dayEle).append(newInterval(schedule[i]));
     }
   }
-  $('.day-container').show();
-}
-/*
-function newChunk(date) {
-  const timeStr = formatDate(date);
-  const chunkDiv = document.createElement('div');
-  $(chunkDiv)
-    .addClass('chunk')
-    .data('date',date)
+  for(let i = 0;i<24;i++) {
+    var hourDate = new Date(year, month, day, i);
+    var timeLabel = newTimeLabel(hourDate);
+    $(timeLabel).css({"top": getTopPosFromDate(hourDate)});
+    $(dayEle).append(timeLabel);
+  }
 
+  $(dayEle).mousemove(function(event){
+    var top = event.pageY - $(".day").offset().top;
+    var date = getDateFromTopPos(top);
+    moveCursor(date);
+  });
+  $(dayEle).click(function(event){
+    var top = event.pageY - $(".day").offset().top;
+    var date = getDateFromTopPos(top);
+    var roundedDate = roundDate(date);
+
+    if(!firstDate)
+    {
+      firstDate = roundedDate;
+    }
+    else
+    {
+      secondDate = roundedDate;
+      //vars must be ordered, distinct dates
+      if(firstDate.getTime() != secondDate.getTime())
+      {
+        //make sure times are ordered
+        if(firstDate.getTime() > secondDate.getTime()) {
+          var temp = firstDate;
+          firstDate = secondDate;
+          secondDate = temp;
+        }
+        //insert type
+        var insertType = $(".insert-type-wrapper input[type='radio']:checked").val();
+        insertIntervalWithType([firstDate,secondDate],insertType);
+        newDay(this); //update day to show change
+        firstDate = null;
+      }
+    }
+  })
 }
-*/
+//create the yellow block
 function newInterval(interval) {
   const start = interval[0];
   const end = interval[1];
@@ -76,7 +106,7 @@ function newInterval(interval) {
   const intervalDiv = document.createElement('div');
   $(intervalDiv)
       .addClass('interval')
-      .css({top: top, bottom: bottom})
+      .css({"top": top, "bottom": bottom})
       .data('start', start)
       .data('end', end)
       .mouseenter(function() {
@@ -85,22 +115,24 @@ function newInterval(interval) {
       .mouseleave(function() {
         $(this).children('.remove-interval').hide();
       });
-  const removeDiv = document.createElement('div');
+  const removeDiv = document.createElement('button');
   $(removeDiv)
-      .addClass('remove-interval')
+      .addClass('remove-interval button')
       .html('Remove')
+      .css({"z-index": "2"})
       .hide()
       .click(function(event) {
         event.stopPropagation();
         $(this).parent().remove();
       });
 
-  const topLabel = $(newIntervalLabel(start)).css({top: 0});
-  const bottomLabel = $(newIntervalLabel(end)).css({bottom: 0});
+  const topLabel = $(newIntervalLabel(start)).css({"top": 0});
+  const bottomLabel = $(newIntervalLabel(end)).css({"bottom": 0});
 
-  $('.day').append(intervalDiv);
   $(intervalDiv).append(topLabel).append(bottomLabel).append(removeDiv);
+  return intervalDiv;
 }
+//create start and end labels for interval
 function newIntervalLabel(date) {
   const label = document.createElement('span');
   $(label)
@@ -108,9 +140,70 @@ function newIntervalLabel(date) {
       .html(formatDate(date));
   return label;
 }
+//create a time label
+function newTimeLabel(date) {
+  const label = document.createElement('div');
+  $(label)
+    .addClass('time-label')
+  const labelText = document.createElement('span');
+  $(labelText)
+    .addClass("time-label-text")
+    .html(formatDate(date));
+  $(label).append(labelText);
+  return label;
+}
 
 
-// SERVER
+
+
+
+function moveCursor(date) {
+  var roundedDate = roundDate(date);
+  var cursorTop = getTopPosFromDate(roundedDate);
+  $(".cursor").css({"top": cursorTop});
+  $(".cursor-text").html(formatDate(roundedDate))
+}
+
+
+//CALCULATIONS
+//oneTime, daily, weekly
+function insertIntervalWithType(interval, insertType)
+{
+  if(insertType == "oneTime") insertInterval(interval, schedule);
+  if(insertType == "daily") insertIntervalDaily(interval);
+  if(insertType == "weekly") insertIntervalWeekly(interval);
+}
+//insert interval for the next 28 days
+function insertIntervalDaily(interval) {
+  for(var i = 0;i<28;i++) {
+    insertInterval(addDaysToInterval(interval,i),schedule);
+  }
+}
+//insert interval per day of week for next 4 weeks, starting on current day
+function insertIntervalWeekly(interval) {
+  for(var i = 0;i<4;i++) {
+    insertInterval(addDaysToDate(interval,i*7),schedule);
+  }
+}
+function addDaysToInterval(interval, days) {
+  var newInterval = [];
+  newInterval.push(addDaysToDate(interval[0],days));
+  newInterval.push(addDaysToDate(interval[1],days));
+  return newInterval;
+}
+function addDaysToDate(date, days) {
+  var newDate = new Date(Number(date));
+  newDate.setDate(date.getDate() + days);
+  return newDate;
+}
+function roundDate(date) {
+  const dateMs = date.getTime();
+  const chunkMs = 1000*60*60/config.hourChunks;
+  return new Date(Math.round(dateMs/chunkMs) * chunkMs);
+}
+
+
+//SERVER COMMUNICATION
 function saveSchedule() {
   $.post('/schedule', {
     schedule: schedule,
@@ -118,12 +211,7 @@ function saveSchedule() {
 }
 
 
-// HELPER
-function roundDate(date) {
-  const dateMs = date.getTime();
-  const chunkMs = 1000*60*60/config.hourChunks;
-  return new Date(Math.round(dateMs/chunkMs) * chunkMs);
-}
+// UI HELPER
 function getDateFromTopPos(offset) {
   const percentDiff = offset/$('.day').height();
   const dayStart = new Date(year, month, day);
@@ -147,21 +235,30 @@ function formatDate(date) {
   if (minutes<10) minutes = '0' + minutes;
   return date.getHours() + ':' + minutes;
 }
-function moveCursor(date) {
-  var roundedDate = roundDate(date);
-  var cursorTop = getTopPosFromDate(roundedDate);
-  $(".cursor").css({top: cursorTop});
-  $(".cursor-text").html(formatDate(roundedDate))
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
 // SAME AS BACK END
+
 // CORE FUNCTIONS
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
+  console.log(temp);
   if (temp == -1) return false;
   return dateBetween(date, schedule[temp][0], schedule[temp][1]);
 }
@@ -227,22 +324,6 @@ function removeInterval(interval, schedule) {
       i--;
     }
   }
-}
-// find all guides with available interval
-function queryByDate(interval, Guides, callback) {
-  Guides.find({}).exec(function(err, guides) {
-    const res = [];
-    console.log(guides[0]);
-    for (let i = 0; i<guides.length; i++) {
-      guide = guides[i];
-      if (!guide.schedule) continue;
-      if (intervalAvailable(interval, guide.schedule)) {
-        res.push(guide);
-      }
-    }
-
-    callback(res);
-  });
 }
 
 
