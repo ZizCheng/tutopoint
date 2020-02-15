@@ -13,51 +13,57 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
   </head>
   <body>
-    <div class="calendar-container">
-      <table>
-        <thead>
-          <th>Su</th>
-          <th>Mo</th>
-          <th>Tu</th>
-          <th>We</th>
-          <th>Th</th>
-          <th>Fr</th>
-          <th>Sa</th>
-        </thead>
-        <tbody class="calendar-body">
+    <div class="content-container">
+      <div class="left-container">
+        <div class="calendar-container">
+          <table>
+            <thead>
+              <td class="calendar-day-label">S</td>
+              <td class="calendar-day-label">M</td>
+              <td class="calendar-day-label">T</td>
+              <td class="calendar-day-label">W</td>
+              <td class="calendar-day-label">T</td>
+              <td class="calendar-day-label">F</td>
+              <td class="calendar-day-label">S</td>
+            </thead>
+            <tbody class="calendar-body">
 
-        </tbody>
-      </table>
-    </div>
-    <div class="day-container">
-      <h1 class="day-title title"></h1>
-      <div class="insert-type-wrapper control">
-        <p>Add available times:</p>
-        <label class="radio">
-          <input type="radio" name="insertType" value="oneTime" checked>
-          This day only
-        </label>
-        <label class="radio">
-          <input type="radio" name="insertType" value="daily">
-          Every day (for the next 28 days)
-        </label>
-        <label class="radio">
-          <input type="radio" name="insertType" value="weekly">
-          This day of every week (for the next 4 weeks)
-        </label>
-      </div>
-      <div class="day-wrapper">
-        <div class="day">
-
+            </tbody>
+          </table>
         </div>
-        <div class="cursor">
-          <div class="cursor-text">
+        <button class="button is-primary" onclick="saveSchedule()">Save</button>
+      </div>
+      <div class="right-container">
+        <div class="day-container">
+          <h1 class="day-title title"></h1>
+          <div class="insert-type-wrapper control">
+            <p>Add available times:</p>
+            <label class="radio">
+              <input type="radio" name="insertType" value="oneTime" checked>
+              This day only
+            </label>
+            <label class="radio">
+              <input type="radio" name="insertType" value="daily">
+              Every day (for the next 28 days)
+            </label>
+            <label class="radio">
+              <input type="radio" name="insertType" value="weekly">
+              This day of every week (for the next 4 weeks)
+            </label>
+          </div>
+          <div class="day-wrapper">
+            <div class="day">
 
+            </div>
+            <div class="cursor">
+              <div class="cursor-text">
+
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <button class="button is-primary" onclick="saveSchedule()">Save</button>
     <script>
       //JSON.parse changes dates into strings, need to convert back
       var schedule = JSON.parse(`{{{schedule}}}`);

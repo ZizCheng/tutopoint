@@ -1,17 +1,26 @@
-body
+.content-container
 {
-  padding: 0 5rem;
+  display: flex;
+  flex-direction: row;
+}
+.left-container
+{
+  padding: 0.5rem;
 }
 
 
 /* CALENDAR */
+.calendar-day-label
+{
+  text-align: center !important;
+}
 .calendar-date
 {
-  padding: 10px;
+  padding: 6px 8px;
+  text-align: center !important;
 }
 .calendar-real-date
 {
-  border: 1px solid black;
   cursor: pointer;
 }
 .calendar-real-date:hover
