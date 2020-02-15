@@ -78,7 +78,7 @@
         })
 
 
-        function pollSource(src, timeout = 30000, interval = 500, start = null){
+        function pollSource(src, timeout = 300000, interval = 500, start = null){
           const endStates = ['pending', 'canceled', 'failed', 'consumed'];
           start = start ? start : Date.now()
           stripe
