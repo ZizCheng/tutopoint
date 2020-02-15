@@ -42,7 +42,7 @@
       </div>
     </div>
     <script>
-    var stripe = Stripe('pk_live_YiCER6hWfpRLsNTtbmZnsqPZ00MHTsTLkH');
+    var stripe = Stripe('{{stripePK}}');
     var elements = stripe.elements();
     // Create an instance of the card Element.
     var card = elements.create('card');

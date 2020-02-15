@@ -41,7 +41,7 @@
       </div>
     </div>
     <script>
-        var stripe = Stripe('pk_live_YiCER6hWfpRLsNTtbmZnsqPZ00MHTsTLkH');
+        var stripe = Stripe('{{stripePK}}');
 
         paymentMethod.addEventListener('change', function() {
           const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value

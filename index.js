@@ -22,6 +22,8 @@ const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
 const adminRouter = require('./routes/adminRouter.js');
 
+const secret = require('./secret.js').stripe;
+
 const session = expressSession({
   secret: '385willneverlovetitor',
   saveUninitialized: true,
@@ -34,9 +36,15 @@ mongoose.connect('mongodb://localhost:27017/TutoPoint');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
+app.use(function(req, res, next) {
+  res.locals.stripePK = secret.pk_key;
+  next();
+});
+
 app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 app.use(authRouter);
 app.use('/schedule', scheduleRouter);
