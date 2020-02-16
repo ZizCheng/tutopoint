@@ -28,6 +28,10 @@
   <div class="content-container">
     <div class="left-container">
       <div class="calendar-container">
+        <div class="calendar-arrow-container">
+          <div class="calendar-arrow calendar-right-arrow">&#8249;</div>
+          <div class="calendar-arrow calendar-left-arrow">&#8250;</div>
+        </div>
         <table>
           <thead>
             <td class="calendar-day-label">S</td>
@@ -43,7 +47,7 @@
           </tbody>
         </table>
       </div>
-      <button class="button is-primary" onclick="saveSchedule()">Save</button>
+      <button class="save-button button is-primary" onclick="saveSchedule()">Save</button>
       <div class="insert-type-wrapper control">
         <p>Add available times:</p>
         <label class="radio">
@@ -94,9 +98,10 @@
         hourChunks: 4 //number of chunks an hour is split into
       }
 
-      var month = 1;
-      var year = 2020;
-      var day;
+      var today = new Date();
+      var month = today.getMonth();
+      var year = today.getFullYear();
+      var day = today.getDate();
 
       $(".day-container").hide();
       $(".day-container").css({
@@ -105,18 +110,67 @@
 
       newCalendar(new Date(year, month));
 
-
+      //day one-time
+      for(let i = 0;i<24;i++) {
+        var hourDate = new Date(year, month, day, i);
+        var timeLabel = newTimeLabel(hourDate);
+        var timeLabelLine = newTimeLabelLine(hourDate);
+        $(".time-labels").append(timeLabel);
+        $(".day-wrapper").append(timeLabelLine);
+      }
       var firstDate = null;
       var secondDate = null;
+      $(".day").click(function(event){
+        var top = event.pageY - $(".day").offset().top;
+        var date = getDateFromTopPos(top);
+        var roundedDate = roundDate(date);
 
-      (function($) {
-          $.fn.hasScrollBar = function() {
-              return this.get(0).scrollHeight > this.height();
+        if(!firstDate)
+        {
+          firstDate = roundedDate;
+        }
+        else
+        {
+          secondDate = roundedDate;
+          //vars must be ordered, distinct dates
+          if(firstDate.getTime() != secondDate.getTime())
+          {
+            //make sure times are ordered
+            if(firstDate.getTime() > secondDate.getTime()) {
+              var temp = firstDate;
+              firstDate = secondDate;
+              secondDate = temp;
+            }
+            //insert type
+            var insertType = $(".insert-type-wrapper input[type='radio']:checked").val();
+            insertIntervalWithType([firstDate,secondDate],insertType);
+            newDay(this); //update day to show change
+            firstDate = null;
+            secondDate = null;
           }
-      })(jQuery);
-      $("*").each(function(){
-        if(this.scrollHeight > this.clientHeight) console.log(this);
-      })
+        }
+      });
+
+
+
+      $(".left-calendar-arrow").click(function(){
+        day = 1;
+        month--;
+        if(month == -1)
+        {
+          month = 11;
+          year--;
+        }
+      });
+      $(".left-calendar-arrow").click(function(){
+        day = 1;
+        month++;
+        if(month == 12)
+        {
+          month = 0;
+          year++;
+        }
+      });
 
     </script>
   </body>

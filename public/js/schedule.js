@@ -13,7 +13,12 @@ function newCalendar(date) {
   $(row).addClass('calendar-row');
 
   for (let i = 1-firstDay.getDay(); i<=lastDay.getDate(); i++) {
-    if (i>0) $(row).append(createDate(i));
+    if (i>0)
+    {
+      var dateEle = createDate(i);
+      $(row).append(dateEle);
+      if(i == day) dateClicked(dateEle);
+    }
     else $(row).append(createDate(0));
 
     rowCounter++;
@@ -35,13 +40,17 @@ function createDate(date) {
         .html(date)
         .data('date', date)
         .click(function() {
-          $(".calendar-selected-date").removeClass("calendar-selected-date");
-          $(this).addClass("calendar-selected-date");
-          day = $(this).data('date');
-          newDay($(".day"));
+          dateClicked(this);
         });
   }
   return newDate;
+}
+function dateClicked(dateEle)
+{
+  $(".calendar-selected-date").removeClass("calendar-selected-date");
+  $(dateEle).addClass("calendar-selected-date");
+  day = $(dateEle).data('date');
+  newDay($(".day")[0]);
 }
 
 
@@ -56,48 +65,12 @@ function newDay(dayEle) {
       $(dayEle).append(newInterval(schedule[i]));
     }
   }
-  for(let i = 0;i<24;i++) {
-    var hourDate = new Date(year, month, day, i);
-    var timeLabel = newTimeLabel(hourDate);
-    var timeLabelLine = newTimeLabelLine(hourDate);
-    $(".time-labels").append(timeLabel);
-    $(dayEle).append(timeLabelLine);
-  }
 
   $(dayEle).mousemove(function(event){
     var top = event.pageY - $(".day").offset().top;
     var date = getDateFromTopPos(top);
     moveCursor(date);
   });
-  $(dayEle).click(function(event){
-    var top = event.pageY - $(".day").offset().top;
-    var date = getDateFromTopPos(top);
-    var roundedDate = roundDate(date);
-
-    if(!firstDate)
-    {
-      firstDate = roundedDate;
-    }
-    else
-    {
-      secondDate = roundedDate;
-      //vars must be ordered, distinct dates
-      if(firstDate.getTime() != secondDate.getTime())
-      {
-        //make sure times are ordered
-        if(firstDate.getTime() > secondDate.getTime()) {
-          var temp = firstDate;
-          firstDate = secondDate;
-          secondDate = temp;
-        }
-        //insert type
-        var insertType = $(".insert-type-wrapper input[type='radio']:checked").val();
-        insertIntervalWithType([firstDate,secondDate],insertType);
-        newDay(this); //update day to show change
-        firstDate = null;
-      }
-    }
-  })
 }
 //create the yellow block
 function newInterval(interval) {
@@ -121,7 +94,6 @@ function newInterval(interval) {
   $(removeButton)
       .addClass('remove-interval button')
       .html('Remove')
-      .css({"z-index": "2"})
       .hide()
       .click(function(event) {
         event.stopPropagation();
@@ -131,7 +103,7 @@ function newInterval(interval) {
   const label = document.createElement("div");
   $(label)
       .addClass('interval-label')
-      .html(formatHHMM(start) + " &ndash; " + formatHHMM(end));
+      .html(formatHHMMPP(start) + " &ndash; " + formatHHMMPP(end));
 
   $(intervalDiv).append(label).append(removeButton);
   return intervalDiv;
@@ -241,7 +213,9 @@ function getHeightPerHour() {
 function formatHHMM(date) {
   var minutes = date.getMinutes();
   if (minutes<10) minutes = '0' + minutes;
-  return date.getHours() + ':' + minutes;
+  var hour = date.getHours();
+  if(hour == 0) hour = 12;
+  return hour + ':' + minutes;
 }
 //HH PP
 //P is the period, or AM/PM
@@ -255,6 +229,21 @@ function formatHHPP(date) {
   }
   if(hour == 0) hour = 12;
   return hour + ' ' + period;
+}
+//HH:MM PP
+//P is the period, or AM/PM
+function formatHHMMPP(date) {
+  var hour = date.getHours();
+  var minutes = date.getMinutes();
+  if (minutes<10) minutes = '0' + minutes;
+  var period = "AM";
+  if(hour >= 12)
+  {
+    period = "PM";
+    hour -= 12;
+  }
+  if(hour == 0) hour = 12;
+  return hour + ':' + minutes + ' ' + period;
 }
 
 
