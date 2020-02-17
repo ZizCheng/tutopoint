@@ -39,8 +39,15 @@ const Guide = new Schema({
   major: {
     type: String,
   },
-  info: {
+  bio: {
     type: String,
+  },
+  profilePic: {
+    type: String,
+  },
+  language: {
+    type: String,
+    default: 'en',
   },
   // schedule is sorted based on first index of array
   schedule: [

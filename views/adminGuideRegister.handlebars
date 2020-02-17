@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <title>Tutopoint</title>
-  <link rel="stylesheet" href="./css/bulma.min.css">
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="/css/bulma.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://kit.fontawesome.com/ec65ba9ed4.js" crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
@@ -49,12 +50,29 @@
         <h1 class="is-size-3 has-text-centered"> Apply to become a guide! </h1>
         <div class="card">
             <div class="card-content">
-              <form method="post" action="/admin/guide/register">
+              <form method="post" action="/admin/guide/register" enctype="multipart/form-data">
                 <div class="select guide-userType">
                   <select>
                     <option value="client">Customer</option>
                     <option value="guide" selected>Guide</option>
                   </select>
+                </div>
+                <div class="field">
+                  <label class="label">Upload Profile picture</label>
+                  <div class="show-file-name file has-name">
+                    <label class="file-label">
+                      <input class="file-input" type="file" name="profilePic">
+                      <span class="file-cta">
+                        <span class="file-icon">
+                          <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                          Choose a file…
+                        </span>
+                      </span>
+                      <span class="file-name">No file chosen</span>
+                    </label>
+                  </div>
                 </div>
                 <div class="field">
                   <label class="label">Email</label>
@@ -95,7 +113,18 @@
                     <input class="input" type="text" name="major">
                   </div>
                 </div>
-
+                <div class="field">
+                  <label class="label">Language (ISO 639-1 Standard)</label>
+                  <div class="control">
+                    <input class="input" type="text" name="language">
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="label">Bio</label>
+                  <div class="control">
+                    <input class="input" type="text" name="bio">
+                  </div>
+                </div>
               <div class="field">
                 <label class="label">Password</label>
                 <div class="control">
@@ -134,6 +163,15 @@ $(".guide-userType").change(function(){
   $(".client-signup").show();
   $(".client-userType").val("guide");
 });
+
+</script>
+<script>
+  const fileInput = $(".show-file-name input[type=file]");
+  fileInput.change(function(){
+    if (this.files.length > 0) {
+      $(this).parents(".show-file-name").find(".file-name").html(this.files[0].name);
+    }
+  })
 </script>
 </body>
 </html>

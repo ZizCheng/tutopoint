@@ -6,6 +6,32 @@ const Guides = require('../models/model.js').Guides;
 const passcode = require('../secret.js').adminAuth.password;
 const bcrypt = require('bcrypt');
 
+
+const multer = require('multer');
+const awsS3 = require('../secret.js').aws_s3;
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3({
+  accessKeyId: awsS3['accessKeyId'],
+  secretAccessKey: awsS3['secretAccessKey'],
+});
+
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'tutopoint-img-bucket',
+    metadata: function(req, file, cb) {
+      cb(null, {fieldName: file.fieldname});
+    },
+    key: function(req, file, cb) {
+      cb(null, `${file.fieldname}_${Date.now().toString()}`);
+    },
+  }),
+});
+
+const everything = upload.fields([{name: 'profilePic', maxCount: 1}]);
+
 const ensureAdmin = function(req, res, next) {
   if (req.session.admin == passcode) {
     next();
@@ -41,7 +67,7 @@ router.get('/guide/register', ensureAdmin, function(req, res) {
 });
 
 
-router.post('/guide/register', ensureAdmin, function(req, res, next) {
+router.post('/guide/register', ensureAdmin, everything, function(req, res, next) {
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     const userInfo = {
       name: req.body.name,
@@ -50,6 +76,9 @@ router.post('/guide/register', ensureAdmin, function(req, res, next) {
       university: req.body.university,
       grade: req.body.grade,
       major: req.body.major,
+      language: req.body.language,
+      bio: req.body.bio,
+      profilePic: req.files['profilePic'][0].location,
     };
 
     user = new Guides(userInfo);

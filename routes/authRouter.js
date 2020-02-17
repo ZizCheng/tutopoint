@@ -1,12 +1,13 @@
 const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
+
 const Token = require('../models/model.js').VerifyToken;
 const Users = require('../models/model.js').Users;
 const Referrals = require('../models/model.js').Referrals;
+
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
-
 
 router.get('/login', function(req, res) {
   res.render('login', {

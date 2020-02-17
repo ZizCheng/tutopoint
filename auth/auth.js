@@ -185,41 +185,7 @@ exports.newUser = function(req, res, next) {
         );
       });
     } else if (req.body.userType == 'guide') {
-      const userInfo = {
-        name: req.body.name,
-        password: hash,
-        email: req.body.email,
-        university: req.body.university,
-        grade: req.body.grade,
-        major: req.body.major,
-      };
-
-      user = new Guides(userInfo);
-      console.log(user);
-      user.save(function(err, user) {
-        if (err) return next(err);
-        stripe.accounts.create(
-            {
-              type: 'custom',
-              country: 'US',
-              email: req.body.email,
-              business_type: 'individual',
-              requested_capabilities: [
-                'card_payments',
-                'transfers',
-              ],
-            },
-            function(err, account) {
-              if (err) return next(err);
-              user.stripeAccountId = account.id.toString();
-              user.save(function(err, user) {
-                if (err) next(err);
-                next();
-              });
-            },
-
-        );
-      });
+      res.redirect('/apply');
     } else res.send('Error occurred');
   });
 };
