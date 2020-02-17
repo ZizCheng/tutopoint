@@ -8,18 +8,24 @@ discover.use(auth.loggedIn);
 discover.use(auth.ensureUserIsClient);
 
 
+const chunk = (arr, size) =>
+  Array.from({length: Math.ceil(arr.length / size)}, (v, i) =>
+    arr.slice(i * size, i * size + size),
+  );
+
+
 discover.get('/', function(req, res) {
   Guides
       .find({})
-      .select('name')
-      .then((listOfGuides) => res.render('discover', {guides: JSON.parse(JSON.stringify(listOfGuides)), layout: false}))
+      .select('_id name university major grade university profilePic')
+      .then((listOfGuides) => res.render('discover', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
       .catch((err) => next(err));
 });
 
 discover.get('/:id', function(req, res) {
   Guides
       .findOne({_id: req.params.id})
-      .select('_id name university major grade')
+      .select('_id name university major grade university profilePic')
       .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), layout: false}))
       .catch((err) => next(err));
 });
