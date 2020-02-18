@@ -108,7 +108,7 @@ function handleReferral(client, referralCode) {
               })
               .catch((err) => reject(new Error('Database Error')));
         })
-        .catch((err) => reject(new Error('Cannot find referer')));
+        .catch((err) => resolve(client));
   });
 }
 

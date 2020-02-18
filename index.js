@@ -133,7 +133,6 @@ function chargeUser(io, socket, sessionid, user, count) {
                 stripe.customers.retrieve(
                     customerAccount.stripeCustomerId,
                     function(err, customer) {
-                      console.log(`Not enough balance? ${customer.balance} and -1500`);
                       if (customer.balance <= -1500) {
                         stripe.customers.createBalanceTransaction(
                             customerAccount.stripeCustomerId,
