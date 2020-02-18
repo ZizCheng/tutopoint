@@ -29,6 +29,12 @@ discover.get('/:id', function(req, res) {
       .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), layout: false}))
       .catch((err) => next(err));
 });
+discover.get('/:id/rating', function(req,res) {
+  Guides.findById(req.params.id, function(err, guide) {
+    if(err) res.send(err);
+    else res.send(guide.ratings);
+  });
+});
 
 // search by date
 discover.post('/date', function(req, res) {
