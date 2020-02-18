@@ -9,6 +9,9 @@ const handlebars = require('express-handlebars');
 const expressSession = require('express-session');
 const io = require('socket.io')(http);
 
+const secret = require('./secret.js').stripe;
+const stripe = require('stripe')(secret.sk_key);
+
 const Users = require('./models/model.js').Users;
 const Sessions = require('./models/model.js').Sessions;
 
@@ -22,7 +25,6 @@ const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
 const adminRouter = require('./routes/adminRouter.js');
 
-const secret = require('./secret.js').stripe;
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -106,6 +108,81 @@ function handleUserType(socket) {
 }
 
 
+function chargeUser(io, socket, sessionid, user, count) {
+  Sessions.findById(sessionid)
+      .populate('createdBy')
+      .then((session) => {
+        if (session.completed) {
+          const calculatedCost = parseInt(count * 900);
+          stripe.transfers.create(
+              {
+                amount: calculatedCost,
+                currency: 'usd',
+                destination: session.createdBy.stripeAccountId,
+              },
+              function(err, transfer) {
+                // asynchronously called
+                if (err) console.log(err);
+                console.log('transfer complete');
+              },
+          );
+          return;
+        } else {
+          Users.findById(user)
+              .then((customerAccount) => {
+                stripe.customers.retrieve(
+                    customerAccount.stripeCustomerId,
+                    function(err, customer) {
+                      console.log(`Not enough balance? ${customer.balance} and -1500`);
+                      if (customer.balance <= -1500) {
+                        stripe.customers.createBalanceTransaction(
+                            customerAccount.stripeCustomerId,
+                            {amount: 1500, currency: 'usd', description: 'Session charge.'},
+                            function(err, customerAfterCharge) {
+                              console.log(err);
+                              if (err) return; // Handle when it could not charge.
+                              io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'You have been charged.', message: `You have been charged $15 for this session. You have $${customerAfterCharge.ending_balance / 100 * -1} remaining`, style: 'is-primary'});
+                              if (!(customerAfterCharge.ending_balance <= -1500)) {
+                                io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Low balance', message: 'You do not have enough credits to continue with this session in 15 minutes!', style: 'is-danger'});
+                              }
+                              setTimeout(() => {
+                                chargeUser(io, socket, sessionid, user, count+1);
+                              }, 20000);
+                            },
+                        );
+                      } else {
+                        setTimeout(() => {
+                          chargeUser(io, socket, sessionid, user, count);
+                        }, 20000);
+                        endCall(io, socket);
+                        return;
+                      }
+                    },
+                );
+              });
+        }
+      });
+}
+
+function endCall(io, socket) {
+  io.to(socket.request._query['session']).emit('forceDisconnect');
+  const endDate = Date.now();
+  Sessions.findById(socket.request._query['session'])
+      .then((session) => {
+        session.completed = true;
+        session.dateCompletedAt = endDate;
+        session.save()
+            .then(() => {
+              // TODO: this thing
+              const diff = parseInt((endDate - session.date) / 1000);
+              const numOfBlocks = Math.ceil((diff / 60) / 15);
+              console.log(numOfBlocks);
+            })
+            .catch((err) => console.log('something occurred'));
+      })
+      .catch((err) => console.log('Could not find session'));
+}
+
 io.on('connection', function(socket, req, res) {
   if (!socket.request.session.passport) {
     socket.emit('forceDisconnect');
@@ -163,20 +240,26 @@ io.on('connection', function(socket, req, res) {
   });
 
   socket.on('callEnd', function() {
-    io.to(socket.request._query['session']).emit('forceDisconnect');
-    const endDate = Date.now();
-    Sessions.findById(socket.request._query['session'])
+    endCall(io, socket);
+  });
+
+  socket.on('callStart', function() {
+    const sessionid = socket.request._query['session'];
+    Sessions.findById(sessionid)
         .then((session) => {
-          session.completed = true;
-          session.dateCompletedAt = endDate;
-          session.save()
-              .then(() => {
-                // TODO: this thing
-                const diff = parseInt((endDate - session.date) / 1000)
-                const numOfBlocks = Math.ceil((diff / 60) / 15);
-                console.log(numOfBlocks);
-              })
-              .catch((err) => console.log('something occurred'));
+          if (socket.request.session.passport.user == session.createdBy.toString()) {
+            return;
+          }
+          io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Alert', message: 'You will be charged in 5 minutes.', style: 'is-warning'});
+          if (session.date > Date.now()) {
+            // Do not charge
+            // Setup timout till it's that date.
+          } else {
+            // Charge 5 minutes later.
+            setTimeout(() => {
+              chargeUser(io, socket, sessionid, socket.request.session.passport.user, 0);
+            }, 10000);
+          }
         })
         .catch((err) => console.log('Could not find session'));
   });

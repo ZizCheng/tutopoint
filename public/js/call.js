@@ -123,6 +123,10 @@ socket.on('text change', function(msg) {
   }
 });
 
+socket.on('notification', function(msg) {
+  pushNotification(msg.title, msg.message, msg.style, 30000);
+});
+
 
 // Start
 let whenCallStarted;
@@ -142,6 +146,7 @@ function callStart() {
   endButton.style['display'] = '';
   startButton.setAttribute('disabled', '');
   startButton.style['display'] = 'none';
+  socket.emit('callStart');
   intervalProcess = setInterval(() => {
     displayTimer();
   }, 1000);
