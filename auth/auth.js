@@ -236,6 +236,7 @@ exports.serializeUser = function(user, cb) {
 exports.deserializeUser = function(id, cb) {
   Users.findById(id)
       .populate('sessions')
+      .populate('ratedSessions')
       .populate('documents')
       .exec(function(err, user) {
         cb(err, user);
