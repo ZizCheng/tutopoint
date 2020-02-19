@@ -25,13 +25,51 @@
     </aside>
     <div class="content-container" id="upcoming-sessions">
       <h1 class="title">Your sessions</h1>
-      <div class="grid-card-container">
-        {{#each sessions}}
-          <div class="grid-card">
-            <a href="/session/{{this._id}}">{{this.title}}</a>
-            <p class="session-date" data-date="{{this.date}}"></p>
+      {{#each sessions}}
+      <div class="session card">
+        <div class="card-content">
+          <div class="content">
+            <div class="columns">
+              <div class="column is-1">
+                <figure class="profilepicture image is-square">
+                  <img src="{{this.createdBy.profilePic}}">
+                </figure>
+              </div>
+              <div class="column is-5">
+                <p class="description is-size-3">
+                  {{this.title}}
+                </p>
+                <p class="description is-size-5">
+                  {{this.createdBy.university}}
+                </p>
+                <p class="description is-size-4">
+                  {{this.createdBy.grade}} / {{this.createdBy.major}}
+                </p>
+                <p class="description session-date is-size-5" data-date="{{this.date}}"></p>
+                {{#if this.confirmed}}
+                  <p class="description is-size-5 is-success">Confirmed</p>
+                {{/if}}
+                {{#unless this.confirmed}}
+                  <p class="description is-size-5 is-success">Pending</p>
+                {{/unless}}
+
+              </div>
+              <div class="column is-3" style="margin-top: auto;">
+                <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
+                <button class="button is-success is-large is-fullwidth" disabled="">Join</button>
+              </div>
+              <div class="column is-2 is-offset-1" style="margin-top: auto;">
+                <buttons>
+                  <button class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Reschedule</button>
+                <button class="button is-danger is-medium is-fullwidth" style="display:block;">Cancel</button>
+                </buttons>
+
+              </div>
+            </div>
           </div>
-        {{/each}}
+          </div>
+        </div>
+      {{/each}}
       </div>
     </div>
     <div class="content-container" id="my-documents">
@@ -80,6 +118,7 @@
     </div>
   </div>
   <script>
+    initializeTimer()
 
     changePage("upcoming-sessions");
     $(".menu-link").click(function(){
@@ -92,11 +131,61 @@
       $("#" + pageId).show();
     }
 
+    function pad2(number) {
+
+     return (number < 10 ? '0' : '') + number
+
+    }
     $(".session-date").html(formatDate(new Date($(".session-date").data("date"))))
 
     function formatDate(date)
     {
       return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+    }
+    function initializeTimer(){
+      const timers = document.getElementsByClassName('timer');
+      for(let i = 0; i < timers.length; i++){
+        const timer = timers[i];
+        const timerDate = new Date(parseInt(timer.getAttribute('data-date')));
+        const diff = timerDate - Date.now();
+        if(!(diff < 0)){
+          if( Math.floor((((diff / 1000) / 60) / 60) / 24) >= 2){
+            const days = Math.floor((((diff / 1000) / 60) / 60) / 24);
+            timer.textContent = `Starts in ${days} days`
+          }
+          else {
+            setInterval(() => {
+              updateTimer(i)
+            }, 1000)
+          }
+        }
+
+      }
+    }
+    function updateTimer(index) {
+        let timers = document.getElementsByClassName('timer');
+        let timer = timers[index];
+        let timerDate = new Date(parseInt(timer.getAttribute('data-date')));
+        let diff = timerDate - Date.now();
+        console.log("Date updated")
+        if(!(diff < 0)){
+          if( Math.floor((((diff / 1000) / 60) / 60) / 24) >= 2){
+            const days = Math.floor((((diff / 1000) / 60) / 60) / 24);
+            timer.textContent = `Starts in ${days} days`
+          }
+          else {
+            const seconds = pad2(Math.floor(diff / 1000) % 60);
+            const minutes = pad2(Math.floor((diff / 1000) / 60 % 60));
+            const hours = pad2(Math.floor((((diff / 1000) / 60) / 60)) % 60);
+            timer.textContent = `Starts in: ${hours}:${minutes}:${seconds}`
+          }
+          if(diff < 300000 && !(diff < 0)){
+            const joinButton = timer.parentElement.children[1];
+            joinButton.removeAttribute('disabled')
+          }
+        }
+
+
     }
   </script>
   </body>
