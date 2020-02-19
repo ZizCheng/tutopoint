@@ -21,11 +21,7 @@ function requestSession(client, guide, date) {
   clients.push(client);
 
   const newSession = new Sessions({
-<<<<<<< HEAD
     title: `Session with ${guide.name}`,
-=======
-    title: 'Untitled Session',
->>>>>>> bf287f4375b2190ca6f98e012a3f4fc81d5c4bc4
     createdBy: guide,
     clients: clients,
     date: date,
@@ -86,18 +82,13 @@ function confirmSession(session) {
 
 // session (confirmed or not) is cancelled
 function cancelSession(session) {
-<<<<<<< HEAD
-=======
   const t = session.date;
->>>>>>> bf287f4375b2190ca6f98e012a3f4fc81d5c4bc4
   session
       .populate('createdBy')
       .populate('clients')
       .exec(function(err, session) {
       // remove user and guide from session, remove session from user and guide
       });
-<<<<<<< HEAD
-=======
   Guides.findById(session.createdBy, function(err, guide) {
     const email = guide.email;
     const name = guide.name;
@@ -124,7 +115,6 @@ function rescheduleSession(session, date) {
   const clients = session.clients;
   cancelSession(session);
   requestSession(clients[0], guide, date);
->>>>>>> bf287f4375b2190ca6f98e012a3f4fc81d5c4bc4
 }
 
 // list all sessions belonging to user (client or guide)
