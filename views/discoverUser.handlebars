@@ -1,25 +1,83 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
     <link rel="stylesheet" href="/css/bulma.css">
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/discoverUser.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
   </head>
-  <body>
-    <h1> {{guide.name}} </h1>
+
+
+  <header>
+    <div class="nav-shadow">
+      <div class="mcontainer">
+        <nav class="top-nav">
+            <div class="left-nav">
+              <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="logo" class="logo">
+              <h2>TUTOPOINT</h2>
+            </div>
+
+            <div class="select is-rounded language">
+              <select>
+                <option>English</option>
+                <option>Chinese</option>
+              </select>
+            </div>
+
+            <ul class="right-nav">
+              <li><a>Dashboard</a></li>
+              <li><a>Log Out</a></li>
+            </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  
+    <body>
+      <div class="mcontainer">
+        <div class="columns">
+          <div class="column is-two-thirds">
+            <div class="columns guideinfo">
+              <div class="column" class="guide-pictures">
+                <img src="/images/nani.jpg" class="profile-pic"> <br>
+                <img src="/images/berkeley.jpg" class="college-pic">
+              </div>
+              <div class="column is-two-thirds" class="guide-text">
+                  <ul class="stats">
+                    <li>Ziz Cheng</li>
+                    <li>UC Berkeley</li>
+                    <li>Computer Science</li>
+                    <li>Freshman</li>
+                  </ul>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            
+          </div>
+        </div>
+      </div>
+      
+    </body>
+</div>
+</html>
+
+
+<!--
+  <h1> {{guide.name}} </h1>
     <h1> {{guide.university}} </h1>
     <h1> {{guide.major}} </h1>
-    <h1> {{guide.grade}} </h1>
-    <input class="session-time-picker" type="datetime-local">
-    <button class="schedule-button button is-primary">Schedule Session</button>
-    <script>
-      var guideId = "{{guide._id}}";
-    </script>
+    <h1> {{guide.grade}} </h1> 
+    
     <script>
       $(".schedule-button").click(function(){
         var date = $(".session-time-picker").val();
         $.post("/session/request", {guideId: guideId, date: date});
       });
     </script>
-  </body>
-</html>
+    
+    <script>
+      var guideId = "{{guide._id}}";
+    </script>
+    -->
+    

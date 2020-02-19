@@ -19,6 +19,10 @@ const User = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'sessions',
   }],
+  ratedSessions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'sessions',
+  }],
   documents: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'documents',

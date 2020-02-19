@@ -1,7 +1,4 @@
 
-function addRating(rating, ratings) {
-  return ratings.push(rating);
-}
 function calculateRating(ratings) {
   let sum = 0;
   let numOfRatings = 0;
