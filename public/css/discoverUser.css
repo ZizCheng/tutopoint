@@ -74,8 +74,6 @@ body {
 .work {
     font-family: 'Lato', sans-serif;
 }
-<<<<<<< HEAD
-=======
 
 .bold {
     font-weight: 700;
@@ -181,4 +179,7 @@ h1 {
 .review-text {
     margin-left: 10px;
 }
->>>>>>> bf287f4375b2190ca6f98e012a3f4fc81d5c4bc4
+
+.selected {
+  background-color: lightgreen !important;
+}

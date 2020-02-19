@@ -17,38 +17,46 @@ const transporter = nodemailer.createTransport({
 // create a new session, add to client and guide
 function requestSession(client, guide, date) {
   // if we ever want multiple clients
-  const clients = [];
-  clients.push(client);
 
-  const newSession = new Sessions({
-    title: `Session with ${guide.name}`,
-    createdBy: guide,
-    clients: clients,
-    date: date,
-    confirmed: false,
-  });
-  newSession.save(function(err) {
-    if (err) console.log(err);
-    client.sessions.push(newSession);
-    client.save();
-    guide.sessions.push(newSession);
-    guide.save();
-    const email = guide.email;
-    const name = guide.name;
-    const mailOptions = {
-      from: 'tutopointauth@gmail.com',
-      to: email,
-      subject: '[TutoPoint] New Booking',
-      text: 'Hello ' + name + ', someone has booked your time at ' +
-       date + ' please confirm this session on your guide dashboard at ' +
-       'https://tutopoint.com/dashboard' + '\n\nBest,\nTutoPoint LLC',
-    };
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent1');
-      }
+  return new Promise((resolve, reject) => {
+    const clients = [];
+    clients.push(client);
+    console.log(guide)
+    const newSession = new Sessions({
+      title: `Session with ${guide.name}`,
+      createdBy: guide,
+      clients: clients,
+      date: date,
+      confirmed: false,
+    });
+    newSession.save(function(err) {
+      if (err) {
+        console.log(err);
+        reject(err);
+      };
+      client.sessions.push(newSession);
+      client.save();
+      guide.sessions.push(newSession);
+      guide.save();
+      const email = guide.email;
+      const name = guide.name;
+      const mailOptions = {
+        from: 'tutopointauth@gmail.com',
+        to: email,
+        subject: '[TutoPoint] New Booking',
+        text: 'Hello ' + name + ', someone has booked your time at ' +
+         date + ' please confirm this session on your guide dashboard at ' +
+         'https://tutopoint.com/dashboard' + '\n\nBest,\nTutoPoint LLC',
+      };
+      transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+          console.log(error);
+          reject(error);
+        } else {
+          console.log('Email sent1');
+        }
+      });
+      resolve(newSession);
     });
   });
 }

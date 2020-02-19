@@ -36,8 +36,8 @@ body
 }
 
 .profilepicture {
-  margin-left: 0px !important; 
-  margin-right: 0px !important; 
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }
 .profilepicture img {
   border-radius: 10px;
@@ -49,4 +49,7 @@ body
 
 .card {
   max-width: 100% !important;
+}
+.session {
+  margin-top: 2em;
 }

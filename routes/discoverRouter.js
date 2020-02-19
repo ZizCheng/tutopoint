@@ -25,13 +25,16 @@ discover.get('/', function(req, res) {
 discover.get('/:id', function(req, res) {
   Guides
       .findOne({_id: req.params.id})
-      .select('_id name university major grade university profilePic')
-      .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), layout: false}))
-      .catch((err) => next(err));
+      .select('_id name university major grade university profilePic schedule')
+      .slice('schedule', [0, 10])
+      .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), schedule: JSON.parse(JSON.stringify(guide.schedule)), layout: false}))
+      .catch((err) => {
+        console.log(err); res.send('Internal Server Error.');
+      });
 });
-discover.get('/:id/rating', function(req,res) {
+discover.get('/:id/rating', function(req, res) {
   Guides.findById(req.params.id, function(err, guide) {
-    if(err) res.send(err);
+    if (err) res.send(err);
     else res.send(guide.ratings);
   });
 });

@@ -24,15 +24,14 @@
             </div>
 
             <ul class="right-nav">
-              <li><a>Dashboard</a></li>
-              <li><a>Log Out</a></li>
+              <li><a href="/dashboard">Dashboard</a></li>
             </ul>
         </nav>
       </div>
     </div>
   </header>
 
-  
+
     <body>
       <div class="mcontainer">
         <div class="columns">
@@ -41,18 +40,18 @@
           <div class="column is-two-thirds">
             <div class="columns guideinfo">
               <div class="column" class="guide-pictures">
-                <img src="/images/nani.jpg" class="profile-pic"> <br>
+                <img src="{{guide.profilePic}}" class="profile-pic"> <br>
                 <img src="/images/berkeley.jpg" class="college-pic">
               </div>
               <div class="column is-four-fifths" class="guide-text">
                   <ul class="stats">
-                    <li class="bold">Ziz Cheng</li>
-                    <li class="bold">UC Berkeley</li>
-                    <li class="light">Computer Science</li>
-                    <li class="light">Freshman</li>
+                    <li class="bold">{{guide.name}}</li>
+                    <li class="bold">{{guide.university}}</li>
+                    <li class="light">{{guide.major}}</li>
+                    <li class="light">{{guide.grade}}</li>
                   </ul>
                   <p class="bio-text">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. Vestibulum fringilla consequat
+                    {{guide.bio}}
                   </p>
               </div>
             </div>
@@ -66,14 +65,14 @@
                       <option>Tomorrow</option>
                     </select>
                   </div>
-                
+
                       <input class="input" type="text" placeholder="Start Date">
-                  
-          
+
+
                       <input class="input" type="text" placeholder="End Date">
-                    
-            
-                  
+
+
+
                 </div>
 
                 <div class="filter-right">
@@ -82,20 +81,23 @@
               </div>
               <div class="cards">
                 <!-- repeat this thing -->
-                <div class="timeslot-card"><h1>Friday 2/21 <br>4:00 PM</h1></div>
-                <div class="timeslot-card"> </div>
-                <div class="timeslot-card"> </div>
-                <div class="timeslot-card"> </div>
-                <div class="timeslot-card"> </div>
-                <div class="timeslot-card"> </div>
-              
+                {{#each schedule}}
+                <div class="group">
+                  <div class="timeslot-card" start-date="{{this.[0]}}" end-date="{{this.[1]}}"> </div>
+
+                </div>
+
+                {{/each}}
+
 
               </div>
 
 
 
           </div>
-          
+
+
+
           <div class="column reviews">
             <!--
             <h1 class="totalrating">Rating x/5</h1>
@@ -105,29 +107,82 @@
             </div>
             -->
           </div>
+
+          <form id="requestSessionForm" action="/session/request" method="post">
+
+
+          </form>
         </div>
       </div>
-      
+    </div>
+    <script>
+      initializeTimeSlotCards();
+      let currentSelectedDate = null;
+      let guideId = "{{guide._id}}"
+
+
+      function initializeTimeSlotCards() {
+        const timeslotCards = document.getElementsByClassName('timeslot-card');
+        for(let i = 0; i < timeslotCards.length; i++){
+          const timeslotCard = timeslotCards[i];
+          const startDate = new Date(timeslotCard.getAttribute('start-date'));
+          const endDate = new Date(timeslotCard.getAttribute('end-date'));
+
+          const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
+          const localeDay = startDate.toLocaleDateString("en-us", optionsFullDisplay)
+
+          const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+          const startDay =  startDate.toLocaleTimeString('en-US', timeOptions)
+          const endDay =  endDate.toLocaleTimeString('en-US', timeOptions)
+
+          const dataText = `<h1>${localeDay} <br>${startDay}</br></h1>`
+          timeslotCard.setAttribute('data-text', dataText)
+          timeslotCard.innerHTML = dataText
+
+          timeslotCard.addEventListener('click', function(){
+            if(timeslotCard.classList.contains("selected")){
+              // Insert the token ID into the form so it gets submitted to the server
+              var form = document.getElementById('requestSessionForm');
+              var hiddenInput = document.createElement('input');
+              hiddenInput.setAttribute('type', 'hidden');
+              hiddenInput.setAttribute('name', 'date');
+              hiddenInput.setAttribute('value', timeslotCard.getAttribute('start-date'));
+
+              var hiddenGuideInput = document.createElement('input');
+              hiddenGuideInput.setAttribute('type', 'hidden');
+              hiddenGuideInput.setAttribute('name', 'guideId');
+              hiddenGuideInput.setAttribute('value', guideId);
+
+              form.appendChild(hiddenGuideInput);
+              form.appendChild(hiddenInput);
+
+              // Submit the form
+              form.submit();
+            }
+            else {
+              scheduleConfirm(i)
+            }
+
+          })
+        }
+
+
+      }
+
+      function scheduleConfirm(index) {
+        let currentSelectedDate = index;
+        const timeslotCards = document.getElementsByClassName('timeslot-card');
+        for(let i = 0; i < timeslotCards.length; i++){
+          if(index == i){
+            timeslotCards[i].classList.add('selected')
+            timeslotCards[i].textContent = "Confirm";
+          }
+          else {
+            timeslotCards[i].classList.remove('selected')
+            timeslotCards[i].innerHTML = timeslotCards[i].getAttribute('data-text')
+          }
+        }
+      }
+    </script>
     </body>
-</div>
 </html>
-
-
-<!--
-  <h1> {{guide.name}} </h1>
-    <h1> {{guide.university}} </h1>
-    <h1> {{guide.major}} </h1>
-    <h1> {{guide.grade}} </h1> 
-    
-    <script>
-      $(".schedule-button").click(function(){
-        var date = $(".session-time-picker").val();
-        $.post("/session/request", {guideId: guideId, date: date});
-      });
-    </script>
-    
-    <script>
-      var guideId = "{{guide._id}}";
-    </script>
-    -->
-    

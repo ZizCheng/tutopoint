@@ -15,7 +15,13 @@ router.get('/list', auth.loggedIn, function(req, res) {
 router.post('/request', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
   console.log(req.body.date);
   Guides.findById(req.body.guideId).exec(function(err, guide) {
-    Session.requestSession(req.user, guide, new Date(req.body.date));
+    Session.requestSession(req.user, guide, new Date(req.body.date))
+        .then(() => {
+          res.redirect('/dashboard');
+        })
+        .catch((err) => {
+          console.log(err); res.send('Internal Server Error.');
+        });
   });
 });
 router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
