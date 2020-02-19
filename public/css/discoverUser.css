@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700&display=swap');
+
+.mcontainer {
+    width: 80%;
+    margin: auto;
+}
+
+.top-nav {
+    padding: 15px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.nav-shadow {
+    box-shadow: 7px 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+
+.logo {
+    width: 60px;    
+}
+
+.left-nav h2 {
+    font-size: 30px;
+}
+
+.right-nav {
+    display: flex;
+    align-items: center;
+}
+
+.right-nav li {
+    padding-left: 40px;
+}
+
+.right-nav li a {
+    text-decoration: none;
+    color: black;
+    font-size: 22px;
+}
+
+.left-nav {
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic {
+    margin-top: 40px;
+    width: 200px;
+}
+
+.college-pic {
+    width: 200px;
+    margin-top: 50px;
+}
+
+.stats {
+    margin-top: 40px;
+}
+
+.stats li {
+    font-family: 'Lato', sans-serif !important;
+    font-weight: 100;
+    font-size: 30px;
+    margin-bottom: 16px;
+}
+
+.work {
+    font-family: 'Lato', sans-serif;
+}
