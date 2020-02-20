@@ -83,12 +83,6 @@ function confirmSession(session) {
 // session (confirmed or not) is cancelled
 function cancelSession(session) {
   const t = session.date;
-  session
-      .populate('createdBy')
-      .populate('clients')
-      .exec(function(err, session) {
-      // remove user and guide from session, remove session from user and guide
-      });
   Guides.findById(session.createdBy, function(err, guide) {
     const email = guide.email;
     const name = guide.name;
@@ -108,13 +102,21 @@ function cancelSession(session) {
       }
     });
   });
+  session
+      .populate('createdBy')
+      .populate('clients')
+      .exec(function(err, session) {
+      // remove user and guide from session, remove session from user and guide
+      });
 }
 
-function rescheduleSession(session, date) {
-  const guide = session.createdBy;
-  const clients = session.clients;
-  cancelSession(session);
-  requestSession(clients[0], guide, date);
+function rescheduleSession(oldSession, date) {
+  Guides.findById(oldSession.createdBy, function(err, guide) {
+    Users.findById(oldSession.clients[0], function(err, client) {
+      requestSession(clients[0], guide, date);
+    });
+  });
+  cancelSession(oldSession);
 }
 
 // list all sessions belonging to user (client or guide)
