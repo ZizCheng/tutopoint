@@ -1,96 +1,54 @@
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="/css/bulma.css">
-    <link rel="stylesheet" href="/css/discoverUser.css">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
-  </head>
 
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/discoverUser.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
+</head>
 
-  <header>
-    <div class="nav-shadow">
-      <div class="mcontainer">
-        <nav class="top-nav">
-            <div class="left-nav">
-              <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="logo" class="logo">
-              <h2>TUTOPOINT</h2>
-            </div>
+<body>
+  <div class="nav-content">
 
-            <div class="select is-rounded language">
-              <select>
-                <option>English</option>
-                <option>Chinese</option>
-              </select>
-            </div>
-
-            <ul class="right-nav">
-              <li><a href="/dashboard">Dashboard</a></li>
-            </ul>
-        </nav>
-      </div>
+    <div class="side-nav">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+          <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+          <li><a href="/discover">Discover</a></li>
+        </ul>
+        <p class="menu-label">Account</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="balance" href="/pay">Balance: $0</a></li>
+          <li><a href="/logout">Log out</a></li>
+        </ul>
+        <div></div>
+      </aside>
     </div>
-  </header>
-
-
-    <body>
-      <div class="mcontainer">
+    <div class="mcontainer">
+      <div class="main-content">
         <div class="columns">
-
-
-          <div class="column is-two-thirds">
+          <div class="column">
             <div class="columns guideinfo">
               <div class="column" class="guide-pictures">
                 <img src="{{guide.profilePic}}" class="profile-pic"> <br>
                 <img src="/images/berkeley.jpg" class="college-pic">
               </div>
-              <div class="column is-four-fifths" class="guide-text">
-                  <ul class="stats">
-                    <li class="bold">{{guide.name}}</li>
-                    <li class="bold">{{guide.university}}</li>
-                    <li class="light">{{guide.major}}</li>
-                    <li class="light">{{guide.grade}}</li>
-                  </ul>
-                  <p class="bio-text">
-                    {{guide.bio}}
-                  </p>
+              <div class="column is-two-thirds" class="guide-text">
+                <ul class="stats">
+                  <li class="bold">{{guide.name}}</li>
+                  <li class="bold">{{guide.university}}</li>
+                  <li class="light">{{guide.major}}</li>
+                  <li class="light">{{guide.grade}}</li>
+                </ul>
+                <p class="bio-text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et tellus sagittis, imperdiet nisi
+                  elementum, ornare enim. Praesent nec nulla nulla. Vestibulum fringilla consequat{{guide.bio}}
+                </p>
               </div>
             </div>
 
-              <div class="filter-bar">
-                <div class="filter-left">
-                  <a href="#">Clear Filters</a>
-                  <div class="select is-rounded language">
-                    <select>
-                      <option>Today</option>
-                      <option>Tomorrow</option>
-                    </select>
-                  </div>
-
-                      <input class="input" type="text" placeholder="Start Date">
-
-
-                      <input class="input" type="text" placeholder="End Date">
-
-
-
-                </div>
-
-                <div class="filter-right">
-                    <a href="#">Refresh Times</a>
-                </div>
-              </div>
-              <div class="cards">
-                <!-- repeat this thing -->
-                {{#each schedule}}
-                <div class="group">
-                  <div class="timeslot-card" start-date="{{this.[0]}}" end-date="{{this.[1]}}"> </div>
-
-                </div>
-
-                {{/each}}
-
-
-              </div>
 
 
 
@@ -101,7 +59,7 @@
           <div class="column reviews">
             <div class="total-rating-bar">
               <h2>Reviews (98)</h1>
-              <img class="total-rating-icon" src="/images/icons/star_1.png">
+                <img class="total-rating-icon" src="/images/icons/star_1.png">
             </div>
             <div class="reviews-box">
               <!-- repeat this thing for reviews -->
@@ -112,8 +70,8 @@
                 </div>
                 <div class="review-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. 
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla.
                     Vestibulum fringilla consequat purus, et consequat elit tristique luctus.
                   </p>
                 </div>
@@ -126,8 +84,8 @@
                 </div>
                 <div class="review-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. 
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla.
                     Vestibulum fringilla consequat purus, et consequat elit tristique luctus.
                   </p>
                 </div>
@@ -140,8 +98,8 @@
                 </div>
                 <div class="review-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. 
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla.
                     Vestibulum fringilla consequat purus, et consequat elit tristique luctus.
                   </p>
                 </div>
@@ -154,8 +112,8 @@
                 </div>
                 <div class="review-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. 
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla.
                     Vestibulum fringilla consequat purus, et consequat elit tristique luctus.
                   </p>
                 </div>
@@ -168,91 +126,126 @@
                 </div>
                 <div class="review-content">
                   <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla. 
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Fusce et tellus sagittis, imperdiet nisi elementum, ornare enim. Praesent nec nulla nulla.
                     Vestibulum fringilla consequat purus, et consequat elit tristique luctus.
                   </p>
                 </div>
               </div>
-
-              
             </div>
+
           </div>
-          <form id="requestSessionForm" action="/session/request" method="post">
+        </div>
+        <form id="requestSessionForm" action="/session/request" method="post">
 
 
-          </form>
+        </form>
+      </div>
+      <div class="signup-menu">
+        <div class="filter-bar">
+          <div class="filter-left">
+            <a href="#">Clear Filters</a>
+            <div class="select is-rounded is-small language">
+              <select>
+                <option>Today</option>
+                <option>Tomorrow</option>
+              </select>
+            </div>
+
+            <input class="input is-small" type="text" placeholder="Start Date">
+            <input class="input is-small" type="text" placeholder="End Date">
+
+          </div>
+
+          <div class="filter-right">
+            <a href="#">Refresh Times</a>
+          </div>
+        </div>
+        <div class="cards">
+          <!-- repeat this thing -->
+          {{#each schedule}}
+          <div class="group">
+            <div class="timeslot-card" start-date="{{this.[0]}}" end-date="{{this.[1]}}"> </div>
+
+          </div>
+
+          {{/each}}
+
+
         </div>
       </div>
     </div>
-    <script>
-      initializeTimeSlotCards();
-      let currentSelectedDate = null;
-      let guideId = "{{guide._id}}"
+  </div>
+  </div>
+  <script>
+    initializeTimeSlotCards();
+    let currentSelectedDate = null;
+    let guideId = "{{guide._id}}"
 
 
-      function initializeTimeSlotCards() {
-        const timeslotCards = document.getElementsByClassName('timeslot-card');
-        for(let i = 0; i < timeslotCards.length; i++){
-          const timeslotCard = timeslotCards[i];
-          const startDate = new Date(timeslotCard.getAttribute('start-date'));
-          const endDate = new Date(timeslotCard.getAttribute('end-date'));
+    function initializeTimeSlotCards() {
+      const timeslotCards = document.getElementsByClassName('timeslot-card');
+      for (let i = 0; i < timeslotCards.length; i++) {
+        const timeslotCard = timeslotCards[i];
+        const startDate = new Date(timeslotCard.getAttribute('start-date'));
+        const endDate = new Date(timeslotCard.getAttribute('end-date'));
 
-          const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
-          const localeDay = startDate.toLocaleDateString("en-us", optionsFullDisplay)
+        const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
+        const localeDay = startDate.toLocaleDateString("en-us", optionsFullDisplay)
 
-          const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
-          const startDay =  startDate.toLocaleTimeString('en-US', timeOptions)
-          const endDay =  endDate.toLocaleTimeString('en-US', timeOptions)
+        const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+        const startDay = startDate.toLocaleTimeString('en-US', timeOptions)
+        const endDay = endDate.toLocaleTimeString('en-US', timeOptions)
 
-          const dataText = `<h1>${localeDay} <br>${startDay}</br></h1>`
-          timeslotCard.setAttribute('data-text', dataText)
-          timeslotCard.innerHTML = dataText
+        const dataText = `<h1>${localeDay} <br>${startDay}</br></h1>`
+        timeslotCard.setAttribute('data-text', dataText)
+        timeslotCard.innerHTML = dataText
 
-          timeslotCard.addEventListener('click', function(){
-            if(timeslotCard.classList.contains("selected")){
-              // Insert the token ID into the form so it gets submitted to the server
-              var form = document.getElementById('requestSessionForm');
-              var hiddenInput = document.createElement('input');
-              hiddenInput.setAttribute('type', 'hidden');
-              hiddenInput.setAttribute('name', 'date');
-              hiddenInput.setAttribute('value', timeslotCard.getAttribute('start-date'));
+        timeslotCard.addEventListener('click', function () {
+          if (timeslotCard.classList.contains("selected")) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('requestSessionForm');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'date');
+            hiddenInput.setAttribute('value', timeslotCard.getAttribute('start-date'));
 
-              var hiddenGuideInput = document.createElement('input');
-              hiddenGuideInput.setAttribute('type', 'hidden');
-              hiddenGuideInput.setAttribute('name', 'guideId');
-              hiddenGuideInput.setAttribute('value', guideId);
+            var hiddenGuideInput = document.createElement('input');
+            hiddenGuideInput.setAttribute('type', 'hidden');
+            hiddenGuideInput.setAttribute('name', 'guideId');
+            hiddenGuideInput.setAttribute('value', guideId);
 
-              form.appendChild(hiddenGuideInput);
-              form.appendChild(hiddenInput);
+            form.appendChild(hiddenGuideInput);
+            form.appendChild(hiddenInput);
 
-              // Submit the form
-              form.submit();
-            }
-            else {
-              scheduleConfirm(i)
-            }
-
-          })
-        }
-
-
-      }
-
-      function scheduleConfirm(index) {
-        let currentSelectedDate = index;
-        const timeslotCards = document.getElementsByClassName('timeslot-card');
-        for(let i = 0; i < timeslotCards.length; i++){
-          if(index == i){
-            timeslotCards[i].classList.add('selected')
-            timeslotCards[i].textContent = "Confirm";
+            // Submit the form
+            form.submit();
           }
           else {
-            timeslotCards[i].classList.remove('selected')
-            timeslotCards[i].innerHTML = timeslotCards[i].getAttribute('data-text')
+            scheduleConfirm(i)
           }
+
+        })
+      }
+
+
+    }
+
+    function scheduleConfirm(index) {
+      let currentSelectedDate = index;
+      const timeslotCards = document.getElementsByClassName('timeslot-card');
+      for (let i = 0; i < timeslotCards.length; i++) {
+        if (index == i) {
+          timeslotCards[i].classList.add('selected')
+          timeslotCards[i].textContent = "Confirm";
+        }
+        else {
+          timeslotCards[i].classList.remove('selected')
+          timeslotCards[i].innerHTML = timeslotCards[i].getAttribute('data-text')
         }
       }
-    </script>
-    </body>
+    }
+  </script>
+</body>
+
 </html>
