@@ -28,7 +28,9 @@ router.get('/', function(req, res) {
 router.post('/submit', everything, function(req, res, next) {
   const r = req.body;
   if (!(r.email&&r.name&&r.university&&r.major&&r.language&&r.grade&&r.bio&&req.files['profilePic'][0]&&req.files['file1'][0]&&req.files['file2'][0])) {
-    // FOR JASON: pop a message saying they didn't fill in everything
+    res.render('tryAgain', {
+      layout: false,
+    });
   } else {
     const email = r.email;
     const name = r.name;
