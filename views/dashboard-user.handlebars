@@ -24,7 +24,19 @@
       </ul>
     </aside>
     <div class="content-container" id="upcoming-sessions">
-      <h1 class="title">Your sessions</h1>
+            <nav class="level">
+        <!-- Left side -->
+        <div class="level-left">
+          <div class="level-item">
+            <p class="subtitle is-5">
+              <h1 id="upcomingSessionsButton" class="is-size-3 has-text-weight-normal" style="text-decoration: underline;"> Upcoming sessions </h1>
+            </p>
+          </div>
+          <div class="level-item">
+              <h1 id="pastSessionsButton" class="is-size-3"> Past sessions </h1>
+          </div>
+        </div>
+      </nav>
       {{#each sessions}}
       <div class="session card">
         <div class="card-content">
@@ -46,25 +58,50 @@
                   {{this.createdBy.grade}} / {{this.createdBy.major}}
                 </p>
                 <p class="description session-date is-size-5" data-date="{{this.date}}"></p>
-                {{#if this.confirmed}}
-                  <p class="description is-size-5 is-success">Confirmed</p>
+                {{#if this.cancelled}}
+                  <p class="description is-size-5 is-danger" status="cancelled">Cancelled</p>
+                </div>
                 {{/if}}
-                {{#unless this.confirmed}}
-                  <p class="description is-size-5 is-success">Pending</p>
+                {{#unless this.cancelled}}
+                  {{#if this.confirmed}}
+                    {{#if this.completed}}
+                      <p class="description is-size-5 is-danger" status="completed">Completed</p>
+                    </div>
+                    {{/if}}
+                    {{#unless this.completed}}
+                      <p class="description is-size-5 is-success" status="confirmed">Confirmed</p>
+                    </div>
+                    <div class="column is-3" style="margin-top: auto;">
+                      <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
+                      <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth" disabled="">Join</button>
+                    </div>
+                    <div class="column is-2 is-offset-1" style="margin-top: auto;">
+                      <buttons>
+                        <button class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Reschedule</button>
+                      <button onclick="location.href='/session/cancel/{{this._id}}';" class="button is-danger is-medium is-fullwidth" style="display:block;">Cancel</button>
+                      </buttons>
+
+                    </div>
+                    {{/unless}}
+                  {{/if}}
+                  {{#unless this.confirmed}}
+                    <p class="description is-size-5 is-success" status="pending">Pending</p>
+                  </div>
+                  <div class="column is-3" style="margin-top: auto;">
+                    <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
+                    <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth" disabled="">Join</button>
+                  </div>
+                  <div class="column is-2 is-offset-1" style="margin-top: auto;">
+                    <buttons>
+                      <button class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Reschedule</button>
+                    <button onclick="location.href='/session/cancel/{{this._id}}';" class="button is-danger is-medium is-fullwidth" style="display:block;">Cancel</button>
+                    </buttons>
+
+                  </div>
+                  {{/unless}}
                 {{/unless}}
 
-              </div>
-              <div class="column is-3" style="margin-top: auto;">
-                <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
-                <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth" disabled="">Join</button>
-              </div>
-              <div class="column is-2 is-offset-1" style="margin-top: auto;">
-                <buttons>
-                  <button class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Reschedule</button>
-                <button onclick="location.href='/session/cancel/{{this._id}}';" class="button is-danger is-medium is-fullwidth" style="display:block;">Cancel</button>
-                </buttons>
 
-              </div>
             </div>
           </div>
           </div>
@@ -120,6 +157,34 @@
   <script>
     initializeTimer()
     initializeDates()
+    initializeUpComingSessions()
+
+
+    function initializeUpComingSessions() {
+      upcomingSessionsButton.style['text-decoration'] = 'underline';
+      pastSessionsButton.style['text-decoration'] = 'none'
+      const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
+      hideSessionsFromDescriptionEl(cc)
+      const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
+      showSessionsFromDescriptionEl(ss)
+    }
+    upcomingSessionsButton.addEventListener('click', function(ev){
+      ev.srcElement.style['text-decoration'] = 'underline';
+      pastSessionsButton.style['text-decoration'] = 'none'
+      const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
+      hideSessionsFromDescriptionEl(cc)
+      const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
+      showSessionsFromDescriptionEl(ss)
+    })
+
+    pastSessionsButton.addEventListener('click', function(ev){
+      ev.srcElement.style['text-decoration'] = 'underline';
+      upcomingSessionsButton.style['text-decoration'] = 'none'
+      const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
+      showSessionsFromDescriptionEl(cc)
+      const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
+      hideSessionsFromDescriptionEl(ss)
+    })
     changePage("upcoming-sessions");
     $(".menu-link").click(function(){
       //changePage($(this).data("page"));
@@ -136,6 +201,22 @@
      return (number < 10 ? '0' : '') + number
 
     }
+
+    function hideSessionsFromDescriptionEl(arr){
+      for(let i = 0; i < arr.length; i++){
+        const el = arr[i].parentElement.parentElement.parentElement.parentElement.parentElement;
+        el.classList.add('is-hidden');
+      }
+    }
+
+    function showSessionsFromDescriptionEl(arr){
+      for(let i = 0; i < arr.length; i++){
+        const el = arr[i].parentElement.parentElement.parentElement.parentElement.parentElement;
+        el.classList.remove('is-hidden');
+      }
+    }
+
+
 
     function initializeDates() {
       const dates = document.getElementsByClassName('session-date');

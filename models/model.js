@@ -108,6 +108,10 @@ const Session = new Schema({
   dateCompletedAt: {
     type: Date,
   },
+  cancelled: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const Document = new Schema({

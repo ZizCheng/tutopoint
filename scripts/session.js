@@ -82,7 +82,7 @@ function confirmSession(session) {
         if (error) {
           console.log(error);
         } else {
-          console.log('Email sent1');
+          session.save();
         }
       });
     });
@@ -91,10 +91,14 @@ function confirmSession(session) {
 
 // session (confirmed or not) is cancelled
 function cancelSession(session) {
-  const t = session.date;
-  Guides.findById(session.createdBy, function(err, guide) {
-    const email = guide.email;
-    const name = guide.name;
+
+  return new Promise((resolve, reject) => {
+    if (session.cancelled) {
+      resolve();
+    }
+    const t = session.date;
+    const email = session.createdBy.email;
+    const name = session.createdBy.name;
     const mailOptions = {
       from: 'tutopointauth@gmail.com',
       to: email,
@@ -107,16 +111,13 @@ function cancelSession(session) {
       if (error) {
         console.log(error);
       } else {
-        console.log('Email sent1');
+        session.cancelled = true;
+        session.save()
+            .then((session) => resolve(session))
+            .catch((err) => reject(err));
       }
     });
   });
-  session
-      .populate('createdBy')
-      .populate('clients')
-      .exec(function(err, session) {
-      // remove user and guide from session, remove session from user and guide
-      });
 }
 
 function rescheduleSession(oldSession, date) {

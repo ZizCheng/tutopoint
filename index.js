@@ -122,7 +122,33 @@ function chargeUser(io, socket, sessionid, user, count) {
               },
               function(err, transfer) {
                 // asynchronously called
-                if (err) console.log(err);
+                if (err) {
+                  stripe.topups.create(
+                      {
+                        amount: calculated * 2,
+                        currency: 'usd',
+                        description: `Top up for ${sessionid}`,
+                        statement_descriptor: 'Top-up',
+                      },
+                      function(err, topup) {
+                        // asynchronously called
+                        stripe.transfers.create(
+                            {
+                              amount: calculatedCost,
+                              currency: 'usd',
+                              destination: session.createdBy.stripeAccountId,
+                            },
+                            function(err, transfer) {
+                              // asynchronously called
+                              if (err) {
+                                console.log(err);
+                              };
+                              console.log('transfer complete');
+                            },
+                        );
+                      },
+                  );
+                };
                 console.log('transfer complete');
               },
           );
@@ -146,14 +172,18 @@ function chargeUser(io, socket, sessionid, user, count) {
                               }
                               setTimeout(() => {
                                 chargeUser(io, socket, sessionid, user, count+1);
-                              }, 20000);
+                              }, 900000);
                             },
                         );
                       } else {
+
                         setTimeout(() => {
-                          chargeUser(io, socket, sessionid, user, count);
-                        }, 20000);
-                        endCall(io, socket);
+                          setTimeout(() => {
+                            chargeUser(io, socket, sessionid, user, count);
+                          }, 20000);
+                          endCall(io, socket);
+                        }, 120000)
+
                         return;
                       }
                     },
@@ -257,7 +287,7 @@ io.on('connection', function(socket, req, res) {
             // Charge 5 minutes later.
             setTimeout(() => {
               chargeUser(io, socket, sessionid, socket.request.session.passport.user, 0);
-            }, 10000);
+            }, 300000);
           }
         })
         .catch((err) => console.log('Could not find session'));

@@ -27,27 +27,37 @@
     <div class="content-container" id="upcoming-sessions">
       <h1 class="title">Your sessions</h1>
       {{#each sessions}}
-      <div class="session card">
-        <div class="card-content">
-          <div class="content">
-            <div class="columns">
-              <div class="column is-5">
-                <p class="description session-date is-size-5" data-date="{{this.date}}"></p>
-              </div>
-              <div class="column is-3" style="margin-top: auto;">
-                <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
-                <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth" disabled="">Join</button>
-              </div>
-              <div class="column is-2 is-offset-1" style="margin-top: auto;">
-                <buttons>
-                  <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Confirm</button>
-                </buttons>
+        {{#unless this.completed}}
+          {{#unless this.cancelled}}
+          <div class="session card">
+            <div class="card-content">
+              <div class="content">
+                <div class="columns">
+                  <div class="column is-5">
+                    <p class="description session-date is-size-5" data-date="{{this.date}}"></p>
+                  </div>
+                  <div class="column is-3" style="margin-top: auto;">
+                    <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
+                    <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth">Join</button>
+                  </div>
+                  <div class="column is-2 is-offset-1" style="margin-top: auto;">
+                    <buttons>
+                      {{#if this.completed}}
+                        <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Confirm</button>
+                      {{/if}}
+                      {{#unless this.completed}}
+                        <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;" disabled>Confirm</button>
+                      {{/unless}}
 
+                    </buttons>
+
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
-          </div>
-          </div>
-        </div>
+          {{/unless}}
+        {{/unless}}
       {{/each}}
       </div>
     <div class="content-container" id="my-documents">
@@ -115,9 +125,11 @@
         }
       }
       if(diff < 300000 || diff < 0){
-        timer.textContent = "You're late."
-        const joinButton = timer.parentElement.children[1];
-        joinButton.removeAttribute('disabled')
+        if(diff < 0){
+          timer.textContent = "You're late."
+        }
+        // const joinButton = timer.parentElement.children[1];
+        // joinButton.removeAttribute('disabled')
       }
 
     }
@@ -139,10 +151,10 @@
           const hours = pad2(Math.floor((((diff / 1000) / 60) / 60)) % 60);
           timer.textContent = `Starts in: ${hours}:${minutes}:${seconds}`
         }
-        if(diff < 300000 || diff < 0){
-          const joinButton = timer.parentElement.children[1];
-          joinButton.removeAttribute('disabled')
-        }
+        // if(diff < 300000 || diff < 0){
+        //   const joinButton = timer.parentElement.children[1];
+        //   joinButton.removeAttribute('disabled')
+        // }
       }
     }
   </script>
