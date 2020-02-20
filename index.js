@@ -125,7 +125,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                 if (err) {
                   stripe.topups.create(
                       {
-                        amount: calculated * 2,
+                        amount: calculatedCost * 2,
                         currency: 'usd',
                         description: `Top up for ${sessionid}`,
                         statement_descriptor: 'Top-up',
