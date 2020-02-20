@@ -26,22 +26,30 @@ body
   padding: 8px 8px 8px 16px;
 }
 
-.grid-card-container
-{
-  display: flex;
-  flex-direction: row;
-}
-.grid-card
-{
-  background-color: white;
-  width: 30%;
-  margin: 2rem auto 0 auto;
-  padding: 1.5rem;
-  border-radius: 3px;
-  border: 1px solid #dadce0;
+.session {
+  border-radius: 10px;
 }
 
 .payment-form
 {
   width: 50%;
+}
+
+.profilepicture {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+.profilepicture img {
+  border-radius: 10px;
+}
+
+.description {
+  margin-bottom: 0px !important;
+}
+
+.card {
+  max-width: 100% !important;
+}
+.session {
+  margin-top: 2em;
 }

@@ -10,7 +10,7 @@ body {
 }
 
 .top-nav {
-    padding: 15px 0px;
+    padding: 5px 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -23,7 +23,7 @@ body {
 
 
 .logo {
-    width: 60px;    
+    width: 60px;
 }
 
 .left-nav h2 {
@@ -37,6 +37,8 @@ body {
 
 .right-nav li {
     padding-left: 40px;
+    font-family: Lato, sans-serif;
+    font-weight: 300;
 }
 
 .right-nav li a {
@@ -156,26 +158,63 @@ body {
     box-shadow: 8px 11px 6px rgba(0, 0, 0, 0.16);
 }
 
-h1 {
+.timeslot-card h1 {
     font-family: Lato, sans-serif;
     font-weight: 700;
     text-align: center;
 }
-.review-card {
-    width: 500px;
+
+.total-rating-bar {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-rating-bar h2 {
+    font-family: Lato, sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.total-rating-icon {
+    height: 30px;
+}
+
+.reviews-box {
+    margin-top: 40px;
+    height: 750px;
     background-color: #F8F8F8;
-    padding-bottom: 50px;
-    margin: 50px 0;
-}
-.totalrating {
-    margin-top: 50px;
+    overflow-y: scroll; 
 }
 
-.rating-name {
-    margin-left: 10px;
-    margin-top: 10px;
+.review-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    margin-top: 25px;
 }
 
-.review-text {
-    margin-left: 10px;
+.review-title h3 {
+    margin-left: 20px;
+    font-family: Lato, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.review-title img {
+    margin-right: 20px;
+    height: 20px;
+}
+
+.review-content {
+    margin: 25px 20px;
+}
+
+.selected {
+  background-color: lightgreen !important;
+}
+
+#confirmButton {
+
 }

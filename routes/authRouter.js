@@ -50,6 +50,7 @@ router.get('/dashboard', auth.loggedIn, auth.userIsVerified, function(req, res) 
     stripe.customers.retrieve(
         req.user.stripeCustomerId,
         function(err, customer) {
+          console.log(JSON.parse(JSON.stringify(req.user.sessions)));
           res.render('dashboard-user', {
             sessions: JSON.parse(JSON.stringify(req.user.sessions)),
             documents: JSON.parse(JSON.stringify(req.user.documents)),
