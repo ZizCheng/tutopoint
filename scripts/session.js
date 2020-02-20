@@ -21,7 +21,7 @@ function requestSession(client, guide, date) {
   return new Promise((resolve, reject) => {
     const clients = [];
     clients.push(client);
-    console.log(guide)
+    console.log(guide);
     const newSession = new Sessions({
       title: `Session with ${guide.name}`,
       createdBy: guide,
@@ -68,6 +68,7 @@ function confirmSession(session) {
     Users.findById(session.clients[0], function(err, client) {
       const email = client.email;
       const name = guide.name;
+      const date = session.date;
       const mailOptions = {
         from: 'tutopointauth@gmail.com',
         to: email,

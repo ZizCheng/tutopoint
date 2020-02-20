@@ -26,15 +26,30 @@
     </aside>
     <div class="content-container" id="upcoming-sessions">
       <h1 class="title">Your sessions</h1>
-      <div class="grid-card-container">
-        {{#each sessions}}
-          <div class="grid-card">
-            <a href="/session/{{this._id}}">{{this.title}}</a>
-            <p class="session-date" data-date="{{this.date}}"></p>
+      {{#each sessions}}
+      <div class="session card">
+        <div class="card-content">
+          <div class="content">
+            <div class="columns">
+              <div class="column is-5">
+                <p class="description session-date is-size-5" data-date="{{this.date}}"></p>
+              </div>
+              <div class="column is-3" style="margin-top: auto;">
+                <p class="is-size-3 timer" data-date="{{this.date}}">Starts in: </p>
+                <button onclick="location.href='/session/{{this._id}}';" class="button is-success is-large is-fullwidth" disabled="">Join</button>
+              </div>
+              <div class="column is-2 is-offset-1" style="margin-top: auto;">
+                <buttons>
+                  <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Confirm</button>
+                </buttons>
+
+              </div>
+            </div>
           </div>
-        {{/each}}
+          </div>
+        </div>
+      {{/each}}
       </div>
-    </div>
     <div class="content-container" id="my-documents">
       <h1 class="title">Your notes</h1>
       <div class="grid-card-container">
@@ -52,22 +67,83 @@
     </div>
   </div>
   <script>
+  initializeTimer()
+  initializeDates()
+  changePage("upcoming-sessions");
+  $(".menu-link").click(function(){
+    //changePage($(this).data("page"));
 
-    changePage("upcoming-sessions");
-    $(".menu-link").click(function(){
-      changePage($(this).data("page"));
-    });
-    function changePage(pageId)
-    {
-      $(".content-container").hide();
-      $("#" + pageId).show();
+  });
+  function changePage(pageId)
+  {
+    $(".content-container").hide();
+    $("#" + pageId).show();
+  }
+
+  function pad2(number) {
+
+   return (number < 10 ? '0' : '') + number
+
+  }
+
+  function initializeDates() {
+    const dates = document.getElementsByClassName('session-date');
+    for(let i = 0; i < dates.length; i++){
+      const dateEl = dates[i]
+      const dateAttribute = new Date(dateEl.getAttribute('data-date'));
+      console.log(dateAttribute)
+      dateEl.textContent = dateAttribute.toLocaleString({ weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(/:\d{2}\s/,' ');
     }
+  }
 
-    $(".session-date").html(formatDate(new Date($(".session-date").data("date"))))
+  function initializeTimer(){
+    const timers = document.getElementsByClassName('timer');
+    for(let i = 0; i < timers.length; i++){
+      const timer = timers[i];
+      const timerDate = new Date(timer.getAttribute('data-date'));
+      const diff = timerDate - Date.now();
+      if(!(diff < 0)){
+        if( Math.floor((((diff / 1000) / 60) / 60) / 24) >= 2){
+          const days = Math.floor((((diff / 1000) / 60) / 60) / 24);
+          timer.textContent = `Starts in ${days} days`
+        }
+        else {
+          setInterval(() => {
+            updateTimer(i)
+          }, 1000)
 
-    function formatDate(date)
-    {
-      return `${date.getMonth()}/${date.getDay()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+        }
+      }
+      if(diff < 300000 || diff < 0){
+        timer.textContent = "You're late."
+        const joinButton = timer.parentElement.children[1];
+        joinButton.removeAttribute('disabled')
+      }
+
+    }
+  }
+  function updateTimer(index) {
+      let timers = document.getElementsByClassName('timer');
+      let timer = timers[index];
+      let timerDate = new Date(timer.getAttribute('data-date'));
+      let diff = timerDate - Date.now();
+      console.log("Date updated")
+      if(!(diff < 0)){
+        if( Math.floor((((diff / 1000) / 60) / 60) / 24) >= 2){
+          const days = Math.floor((((diff / 1000) / 60) / 60) / 24);
+          timer.textContent = `Starts in ${days} days`
+        }
+        else {
+          const seconds = pad2(Math.floor(diff / 1000) % 60);
+          const minutes = pad2(Math.floor((diff / 1000) / 60 % 60));
+          const hours = pad2(Math.floor((((diff / 1000) / 60) / 60)) % 60);
+          timer.textContent = `Starts in: ${hours}:${minutes}:${seconds}`
+        }
+        if(diff < 300000 || diff < 0){
+          const joinButton = timer.parentElement.children[1];
+          joinButton.removeAttribute('disabled')
+        }
+      }
     }
   </script>
   </body>

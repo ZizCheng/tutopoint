@@ -24,6 +24,26 @@ router.post('/request', auth.loggedIn, auth.ensureUserIsClient, function(req, re
         });
   });
 });
+router.get('/confirm/:id', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
+  console.log(req.params.id);
+  Sessions.findById(req.params.id, function(err, session) {
+    if (err) {
+      console.log(err);
+    }
+    Session.confirmSession(session);
+    res.redirect('/dashboard');
+  });
+});
+router.get('/cancel/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
+  console.log(req.params.id);
+  Sessions.findById(req.params.id, function(err, session) {
+    if (err) {
+      console.log(err);
+    }
+    Session.cancelSession(session);
+    res.redirect('/dashboard');
+  });
+});
 router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
   const sessionId = req.body.sessionId;
 
