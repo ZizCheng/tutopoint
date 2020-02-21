@@ -8119,14 +8119,22 @@ socket.on('forceDisconnect', function() {
   client.peer.destroy();
   endCall();
 });
-socket.once('guideConnected', function() {
+socket.on('guideConnected', function() {
   pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
   socket.emit('replyGuideConnected');
   enableCall();
 });
-socket.once('clientConnected', function() {
+socket.on('clientConnected', function() {
   pushNotification('Good news', 'Client has connected!', 'is-success', 30000);
   socket.emit('replyClientConnected');
+  enableCall();
+});
+socket.on('notifyClientHasConnected', function() {
+  pushNotification('Good news', 'Client has connected!', 'is-success', 30000);
+  enableCall();
+});
+socket.on('notifyGuideHasConnected', function() {
+  pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
   enableCall();
 });
 navigator.mediaDevices.getUserMedia({video: true, audio: {

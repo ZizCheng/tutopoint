@@ -223,12 +223,12 @@ io.on('connection', function(socket, req, res) {
   socket.join(socket.request._query['session']);
 
   handleUserType(socket);
-  socket.once('replyGuideConnected', function() {
-    socket.to(socket.request._query['session']).emit('clientConnected');
+  socket.on('replyGuideConnected', function() {
+    socket.to(socket.request._query['session']).broadcast.emit('notifyClientHasConnected');
   });
 
-  socket.once('replyClientConnected', function() {
-    socket.to(socket.request._query['session']).emit('guideConnected');
+  socket.on('replyClientConnected', function() {
+    socket.to(socket.request._query['session']).broadcast.emit('notifyGuideHasConnected');
   });
 
   socket.on('call', function() {
