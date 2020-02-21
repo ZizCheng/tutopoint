@@ -76,8 +76,7 @@ function confirmSession(session) {
           to: email,
           subject: '[TutoPoint] Session Confirmed!',
           text: 'Hello, ' + name + ' has confirmed your upcoming session at ' +
-          date.getMonth() + '/' + date.getDate() + ' at ' + date.getHours() +
-      '.\nYou may cancel this session up to 24 hours prior, we will charge a $15' +
+          (date.getMonth() + 1) + '/' + date.getDate() + ' at ' + '.\nYou may cancel this session up to 24 hours prior, we will charge a $15' +
        ' fine from your account if you fail to show up.' + '\n\nThank you for your business!\nTutoPoint LLC',
         };
         transporter.sendMail(mailOptions, function(error, info) {
