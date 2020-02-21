@@ -49,6 +49,12 @@ const Guide = new Schema({
   profilePic: {
     type: String,
   },
+  backdrop: {
+    type: String,
+  },
+  logo: {
+    type: String,
+  },
   language: {
     type: String,
     default: 'en',
@@ -110,7 +116,7 @@ const Session = new Schema({
   },
   cancelled: {
     type: Boolean,
-    default: false
+    default: false,
   },
 });
 

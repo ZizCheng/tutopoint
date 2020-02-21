@@ -30,7 +30,7 @@ const upload = multer({
   }),
 });
 
-const everything = upload.fields([{name: 'profilePic', maxCount: 1}]);
+const everything = upload.fields([{name: 'profilePic', maxCount: 1}, {name: 'backdrop', maxCount: 1}, {name: 'logo', maxCount: 1}]);
 
 const ensureAdmin = function(req, res, next) {
   if (req.session.admin == passcode) {
@@ -79,6 +79,8 @@ router.post('/guide/register', ensureAdmin, everything, function(req, res, next)
       language: req.body.language,
       bio: req.body.bio,
       profilePic: req.files['profilePic'][0].location,
+      backdrop: req.files['backdrop'][0].location,
+      logo: req.files['logo'][0].location,
     };
 
     user = new Guides(userInfo);

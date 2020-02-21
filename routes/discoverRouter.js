@@ -19,7 +19,7 @@ const chunk = (arr, size) =>
 discover.get('/', function(req, res) {
   Guides
       .find({})
-      .select('_id name university major grade university profilePic')
+      .select('_id name university major grade university profilePic backdrop')
       .then((listOfGuides) => res.render('discover', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
       .catch((err) => next(err));
 });
@@ -30,7 +30,7 @@ discover.get('/:id', function(req, res) {
       function(err, customer) {
         Guides
             .findOne({_id: req.params.id})
-            .select('_id name university major grade university profilePic schedule')
+            .select('_id name university major grade university profilePic schedule logo')
             .slice('schedule', [0, 10])
             .then((guide) => res.render('discoverUser', {
               guide: JSON.parse(JSON.stringify(guide)),
