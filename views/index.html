@@ -8,45 +8,150 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/navbar.css">
+    <style>
+
+          #discoverSection {
+          margin-top: 1.5em;
+      }
+      .profilePicture {
+          position: absolute !important;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+      }
+
+      .backdrop {
+          filter: blur(.5px) brightness(80%);
+      }
+
+      .rating {
+          position: absolute !important;
+          bottom: 0%;
+          left: 50%;
+          transform: translate(-50%,0%);
+      }
+
+      .no-margin-bottom {
+          margin-bottom: .5em !important;
+      }
+          </style>
   </head>
 
-  <!-- nav bar -->
-  <header>
-    <div class="nav-shadow">
-      <div class="mcontainer">
-        <nav class="top-nav">
-            <div class="left-nav">
-              <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="logo" class="logo">
-              <h2>TUTOPOINT</h2>
-            </div>
-
-            <ul class="right-nav">
-              <li><a href="/login">Our Guides</a></li>
-              <li><a href="/dashboard">About Us</a></li>
-              <li><a href="/dashboard">Mission</a></li>
-              <li><a href="/dashboard">Log in</a></li>
-            </ul>
-        </nav>
+  <body style="padding-bottom: 0.5em;">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <figure class="icon is-1by1">
+            <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT" width="330px" height="330px">
+          </figure>
+        TUTOPOINT
+        </a>
       </div>
-    </div>
-  </header>
+      <div class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item" href="/login">Our Guides</a>
+          <a class="navbar-item" href="#about">About Us</a>
+          <a class="navbar-item" href="#mission">Mission</a>
+          <a class="navbar-item" href="/signup">Sign up</a>
+          <a class="navbar-item" href="/login">Log in</a>
+        </div>
+      </div>
+    </nav>
 
-  <body>
+    <section class="hero is-large">
+      <div id="heroBody" class="hero-body" style="align-items: normal;">
+        <div class="container is-fluid">
+          <div class="columns">
+            <div class="column is-8">
 
+            </div>
+            <div class="column">
+              <div class="container" id="tutopointDescription">
+                <p class="is-size-1 has-text-white">Tutopoint</p>
+                <p class="is-size-4 has-text-white">College counseling from authentic college students</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<div class="main-display">
-  <div class="columns">
-    <div class="column is-four-fiths">
+<section>
+  <div class="container ">
+    <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker" style="margin-top: 1em; margin-bottom: 1em;"> Meet Our Guides </h1>
+    <div class="columns">
+      <div class="column is-4">
+        <div class="card">
+          <div class="card-image">
+            <figure class="backdrop image is-2by1">
+              <img src="/images/berkeley.jpg">
+            </figure>
+            <figure class="profilePicture image is-128x128">
+              <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/zizcheng.jpg">
+            </figure>
+          </div>
+          <div class="card-content">
+            <div class="media-content">
+              <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
+              <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
+              <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <a href="/signup" class="card-footer-item">Schedule</a>
 
-    </div>
-    <div class="column">
-      <div class="container">
-        <p>???</p>
+          </footer>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="card">
+          <div class="card-image">
+            <figure class="backdrop image is-2by1">
+              <img src="/images/harvard.jpg">
+            </figure>
+            <figure class="profilePicture image is-128x128">
+              <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/JenniferHong.png">
+            </figure>
+          </div>
+          <div class="card-content">
+            <div class="media-content">
+              <p class="title is-4 has-text-centered no-margin-bottom">Jennifer Hong</p>
+              <p class="title is-5 has-text-centered no-margin-bottom">Harvard University</p>
+              <p class="title is-6 has-text-centered no-margin-bottom">Chemical & Physical Biology</p>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <a href="/signup" class="card-footer-item">Schedule</a>
+
+          </footer>
+        </div>
+      </div>
+      <div class="column is-4">
+        <div class="card">
+          <div class="card-image">
+            <figure class="backdrop image is-2by1">
+              <img src="/images/princeton.png">
+            </figure>
+            <figure class="profilePicture image is-128x128">
+              <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/CheyenneZhang.jpg">
+            </figure>
+          </div>
+          <div class="card-content">
+            <div class="media-content">
+              <p class="title is-4 has-text-centered no-margin-bottom">Cheyenne Zhang</p>
+              <p class="title is-5 has-text-centered no-margin-bottom">Princeton University</p>
+              <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <a href="/signup" class="card-footer-item">Schedule</a>
+
+          </footer>
+        </div>
       </div>
     </div>
   </div>
-  
-</div>
+</section>
 
 <section class="why-section">
   <div class="divider"></div>
@@ -61,7 +166,7 @@
               <i class="fas fa-yen-sign"></i>
             </span>
           </div>
-          <div class="why-card-description card-content">
+          <div class="why-card-description card-content ">
             Tutopoint provides the cheapest plans you will find anywhere, starting at $15 per session.
           </div>
         </div>
@@ -97,5 +202,40 @@
   </div>
 </section>
 
+<section>
+  <div class="container ">
+    <h1 id="mission" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker" style="margin-top: 1em; margin-bottom: 1em;"> Our mission </h1>
+    <p class="has-text-justified is-size-5"> TutoPoint’s mission is to bridge the gap between college and high school students. What actually happens inside the classrooms, the dorms, and the cafeteria of top American universities remains largely unknown to prospective students. That is why our guides are 100% current, real time college students. Sessions with our guides help open the once closed doors of prestigious American universities and allows clients to peak into what life is like as a college student. In fact, most of the sessions scheduled with our guides take place in between their classes!
+<br> Our guides span all top American Universities (Harvard, Yale, Princeton, etc) and study a wide range of currently popular majors (Computer Science, Biology, Chemistry, Economics, etc). Beyond college consulting and questions about applying to these prestigious universities, our sessions offer a warm, welcoming and completely stress-free environment to engage in conversation about all aspects of college life.
+<br> At TutoPoint, you will feel at home at your dream university before you even arrive. </p>
+  </div>
+</section>
+
+<section>
+  <div class="container ">
+    <h1 id="howitworks" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker" style="margin-top: 1em; margin-bottom: 1em;"> How it works </h1>
+    <p class="has-text-justified is-size-5"> TutoPoint sessions are focused on being as stress free as possible. When you register, you can choose from our wide team of guides and pick any that you want to talk to. When you schedule a time, the guide has 24 hours to confirm your session. Once our guide confirms the session, you may cancel it or reschedule anytime until 24 hours before the session begins.
+<br> Since a big problem with traditional college consulting is paying for more than you need, here at TutoPoint, you pay as you go. You only schedule a start time, how long you talk for is all up to you and the guide from there. The first 5 minutes with any guide is free, so you can have some breathing room and make sure you like the college student. From there, every 15 minutes we will charge $15 from your balance to pay our guides providing this service.
+<br> Fill up your balance any time instantly and schedule right away, our guides await you!</p>
+  </div>
+</section>
+
+<section>
+  <div class="container ">
+    <h1 id="about" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker" style="margin-top: 1em; margin-bottom: 1em;"> About us </h1>
+    <p class="has-text-justified is-size-5"> TutoPoint was started by two brothers, Ziz and Jason Cheng. Ziz is a freshman at UC Berkeley studying computer science while Jason is a freshman in high school in Seattle Washington. Jason was lucky to have an older brother guide him through the complexity of figuring out what best to do in high school to maximize his chances of getting into a good university, but both Ziz and Jason felt that this guidance should be available to more high school students.
+<br> So together, with some of Ziz’s good friends in high school, they started TutoPoint LLC, the first direct communications platform between college and high school students. We want to break the existing barriers of high school students not understanding college life, and so we asked our friends and a lot of people wanted to participate! Read more about our guides on <span> <a href="#mission"> our mission statement. </a> </span> </p>
+  </div>
+</section>
+
   </body>
+  <footer class="footer" style="padding-bottom: 1em !important;">
+  <div class="content has-text-centered">
+    <p>
+      Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint" target="_top">zizcheng@berkeley.edu</a> </span>
+    </p>
+    <p> Made with love by Jason, Titor, and Ziz. </p>
+  </div>
+
+</footer>
 </html>
