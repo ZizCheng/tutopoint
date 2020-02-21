@@ -42,11 +42,11 @@
                   </div>
                   <div class="column is-2 is-offset-1" style="margin-top: auto;">
                     <buttons>
-                      {{#if this.completed}}
-                        <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Confirm</button>
-                      {{/if}}
-                      {{#unless this.completed}}
+                      {{#if this.confirmed}}
                         <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;" disabled>Confirm</button>
+                      {{/if}}
+                      {{#unless this.confirmed}}
+                        <button onclick="location.href='/session/confirm/{{this._id}}';" class="button is-primary is-medium is-fullwidth" style="display:block; margin-bottom: 2em;">Confirm</button>
                       {{/unless}}
 
                     </buttons>

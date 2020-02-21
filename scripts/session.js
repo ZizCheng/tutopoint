@@ -63,27 +63,32 @@ function requestSession(client, guide, date) {
 
 // guide confirms client's session request
 function confirmSession(session) {
-  session.confirmed = true;
-  Guides.findById(session.createdBy, function(err, guide) {
-    Users.findById(session.clients[0], function(err, client) {
-      const email = client.email;
-      const name = guide.name;
-      const date = session.date;
-      const mailOptions = {
-        from: 'tutopointauth@gmail.com',
-        to: email,
-        subject: '[TutoPoint] Session Confirmed!',
-        text: 'Hello, ' + name + ' has confirmed your upcoming session at ' +
-        date.getMonth() + '/' + date.getDate() + ' at ' + date.getHours() +
-    '.\nYou may cancel this session up to 24 hours prior, we will charge a $15' +
-     ' fine from your account if you fail to show up.' + '\n\nThank you for your business!\nTutoPoint LLC',
-      };
-      transporter.sendMail(mailOptions, function(error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          session.save();
-        }
+  return new Promise((resolve, reject) => {
+    session.confirmed = true;
+    Guides.findById(session.createdBy, function(err, guide) {
+      if (err) reject(err);
+      Users.findById(session.clients[0], function(err, client) {
+        const email = client.email;
+        const name = guide.name;
+        const date = session.date;
+        const mailOptions = {
+          from: 'tutopointauth@gmail.com',
+          to: email,
+          subject: '[TutoPoint] Session Confirmed!',
+          text: 'Hello, ' + name + ' has confirmed your upcoming session at ' +
+          date.getMonth() + '/' + date.getDate() + ' at ' + date.getHours() +
+      '.\nYou may cancel this session up to 24 hours prior, we will charge a $15' +
+       ' fine from your account if you fail to show up.' + '\n\nThank you for your business!\nTutoPoint LLC',
+        };
+        transporter.sendMail(mailOptions, function(error, info) {
+          if (error) {
+            reject(err);
+          } else {
+            session.save()
+                .then(() => resolve())
+                .catch((err) => reject(err));
+          }
+        });
       });
     });
   });
@@ -91,7 +96,6 @@ function confirmSession(session) {
 
 // session (confirmed or not) is cancelled
 function cancelSession(session) {
-
   return new Promise((resolve, reject) => {
     if (session.cancelled) {
       resolve();
