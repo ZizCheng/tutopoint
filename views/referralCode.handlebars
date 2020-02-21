@@ -12,9 +12,13 @@
   <body>
 
     <div class="wrapper">
+      {{#if code}}
+      <p class="is-size-4"> This referral code has referred: {{referredLength}} </p>
       Copy this code and share with everyone.
       <input type="text" value="https://tutopoint.com/signup?referral={{code}}">
       <div id="QRDisplay"></div>
+      {{/if}}
+      <p class="is-size-1 is-danger"> {{error}} </p>
     </div>
     <script>
       new QRCode(document.getElementById("QRDisplay"), 'https://tutopoint.com/signup?referral={{code}}');

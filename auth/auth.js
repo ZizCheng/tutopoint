@@ -96,8 +96,11 @@ function handleReferral(client, referralCode) {
       resolve(client);
       return;
     }
-    Referrals.find({code: referralCode})
+    Referrals.findOne({code: referralCode})
         .then((ref) => {
+          if (ref == null) {
+            reject(client); return;
+          }
           ref.referred.push(client.id);
           ref.save()
               .then((ref) => {
@@ -113,29 +116,32 @@ function handleReferral(client, referralCode) {
 }
 
 function mailToken(user) {
-  const token = new VerifyToken({for: user._id, token: crypto.randomBytes(16).toString('hex')});
-  token.save(function(err) {
-    if (err) {
-      return;
-    }
-
-    // Send the email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: mailAuth,
-    });
-    const mailOptions = {
-      from: 'tutopointauth@gmail.com',
-      to: user.email.toString(),
-      subject: 'NO REPLY Confirm TutoPoint Email Address',
-      text: `Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n`,
-    };
-    transporter.sendMail(mailOptions, function(err) {
+  return new Promise((resolve, reject) =>{
+    const token = new VerifyToken({for: user._id, token: crypto.randomBytes(16).toString('hex')});
+    token.save(function(err) {
       if (err) {
-        console.log(err);
-      } else {
-        console.log('yippy');
+        reject(err);
       }
+
+      // Send the email
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: mailAuth,
+      });
+      const mailOptions = {
+        from: 'tutopointauth@gmail.com',
+        to: user.email.toString(),
+        subject: 'NO REPLY Confirm TutoPoint Email Address',
+        text: `Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n`,
+      };
+      transporter.sendMail(mailOptions, function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          console.log('yippy');
+          resolve(user);
+        }
+      });
     });
   });
 }
@@ -170,10 +176,10 @@ exports.newUser = function(req, res, next) {
               user.stripeCustomerId = customer.id;
               user.save()
                   .then((user) => handleReferral(user, req.body.referralCode))
+                  .then(() => mailToken(user))
                   .then(() => req.login(user, function() {
                     next();
                   }))
-                  .then(() => mailToken(user))
                   .catch((err) => {
                     if (err.message == 'Cannot find referer') {
                       res.render('signup', {layout: false, error: 'Referer Code invalid'});

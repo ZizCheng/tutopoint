@@ -82,13 +82,50 @@ router.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-router.get('/referral/create/:name', auth.loggedIn, function(req, res) {
-  const referralCode = req.params.name;
+router.post('/referral/create', auth.loggedIn, function(req, res) {
+  const referralCode = req.body.code;
 
   const ref = new Referrals({referrer: req.user.id, code: referralCode});
   ref.save()
-      .then(() => res.render('referralCode', {layout: false, code: referralCode}))
-      .catch((err) => res.status(500).send('Internal Server Error'));
+      .then(() => res.render('referralCode', {layout: false, code: referralCode, referredLength: 0}))
+      .catch((err) => {
+        if (err.code == 11000) {
+          res.render('createCode', {layout: false, duplicateError: 'That code already exists! Try again.'});
+        } else {
+          res.send('Internal Server Error');
+        }
+      });
+});
+
+router.get('/referral/create', auth.loggedIn, function(req, res) {
+  Referrals.count({referrer: req.user.id})
+      .then((count) => {
+        if (count > 0) {
+          res.render('createCode', {layout: false, cannotCreateError: 'Cannot create more than one referral code'});
+        } else {
+          res.render('createCode', {layout: false});
+        }
+      })
+      .catch((err) => res.send('Internal Server Error.'));
+});
+
+router.get('/referral', auth.loggedIn, function(req, res) {
+  Referrals.findOne({referrer: req.user.id})
+      .then((ref) => {
+        if (ref == null) {
+          res.render('createCode', {layout: false});
+        } else {
+          res.render('referralCode', {layout: false, code: ref.code, referredLength: ref.referred.length});
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.DocumentNotFoundError) {
+          res.render('createCode', {layout: false});
+        } else {
+          res.send('Internal Server Error.');
+        }
+      });
 });
 
 
