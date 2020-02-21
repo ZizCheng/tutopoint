@@ -220,7 +220,7 @@ exports.loggedIn = function(req, res, next) {
   }
 };
 
-const authOptions = {failureRedirect: '/error'};
+const authOptions = {failureRedirect: '/login'};
 exports.authenticateUser = passport.authenticate('local', authOptions);
 
 // sets req.doc to the doc in user.documents, NOT doc in Documents
