@@ -30,8 +30,13 @@ router.get('/confirm/:id', auth.loggedIn, auth.ensureUserIsGuide, function(req, 
     if (err) {
       console.log(err);
     }
-    Session.confirmSession(session);
-    res.redirect('/dashboard');
+    Session.confirmSession(session)
+        .then(() => {
+          res.redirect('/dashboard');
+        })
+        .catch(() => {
+          res.send('Internal Server Error');
+        });
   });
 });
 router.get('/cancel/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
