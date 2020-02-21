@@ -3,6 +3,8 @@ const discover = new express.Router();
 const auth = require('../auth/auth.js');
 const Guides = require('../models/model.js').Guides;
 const Schedule = require('../scripts/schedule.js');
+const secret = require('../secret.js').stripe;
+const stripe = require('stripe')(secret.sk_key);
 
 discover.use(auth.loggedIn);
 discover.use(auth.ensureUserIsClient);
@@ -23,13 +25,22 @@ discover.get('/', function(req, res) {
 });
 
 discover.get('/:id', function(req, res) {
-  Guides
-      .findOne({_id: req.params.id})
-      .select('_id name university major grade university profilePic schedule')
-      .slice('schedule', [0, 10])
-      .then((guide) => res.render('discoverUser', {guide: JSON.parse(JSON.stringify(guide)), schedule: JSON.parse(JSON.stringify(guide.schedule)), layout: false}))
-      .catch((err) => {
-        console.log(err); res.send('Internal Server Error.');
+  stripe.customers.retrieve(
+      req.user.stripeCustomerId,
+      function(err, customer) {
+        Guides
+            .findOne({_id: req.params.id})
+            .select('_id name university major grade university profilePic schedule')
+            .slice('schedule', [0, 10])
+            .then((guide) => res.render('discoverUser', {
+              guide: JSON.parse(JSON.stringify(guide)),
+              schedule: JSON.parse(JSON.stringify(guide.schedule)),
+              customerBalance: (customer.balance / 100) * -1,
+              layout: false,
+            }))
+            .catch((err) => {
+              console.log(err); res.send('Internal Server Error.');
+            });
       });
 });
 discover.get('/:id/rating', function(req, res) {
