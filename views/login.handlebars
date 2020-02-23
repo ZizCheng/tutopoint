@@ -1,39 +1,62 @@
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="/css/bulma.css">
-    <link rel="stylesheet" href="/css/login.css">
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="form-content">
-        <h3 class="title login-title">Log in</h3>
-        <form method="post" action="/login">
-          <div class="field">
-            <label class="label">Email</label>
-            <div class="control">
-              <input class="input" name="email" type="email">
-              <p class="help is-success">{{error}}</p>
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Password</label>
-            <div class="control">
-              <input class="input" name="password" type="password">
-              <p class="help is-success">{{error}}</p>
-            </div>
-          </div>
-          <div class="control">
-            <button class="button is-primary">Submit</button>
-          </div>
-        </form>
-        <div class="has-text-centered">
-          <a class="has-text-centered is-size-6" href="/signup"> Don't have an account? Sign up. </a>
-        </div>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<header>
+
+  <nav class="navbar shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <figure class="icon is-1by1">
+          <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT" width="330px"
+            height="330px">
+        </figure>
+        TUTOPOINT
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="/signup">Sign up</a>
+        <a class="navbar-item" href="/login">Log in</a>
       </div>
     </div>
-  </body>
+  </nav>
+</header>
+
+<body>
+  <div class="wrapper">
+    <div class="form-content card">
+      <h3 class="title login-title">Log in</h3>
+      <form method="post" action="/login">
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input class="input" name="email" type="email">
+            <p class="help is-success">{{error}}</p>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" name="password" type="password">
+            <p class="help is-success">{{error}}</p>
+          </div>
+        </div>
+        <div class="control">
+          <button class="button is-primary" style="margin-top: 10px;">Submit</button>
+        </div>
+      </form>
+      <div class="has-text-centered">
+        <a class="has-text-centered is-size-6" href="/signup"> Don't have an account? Sign up. </a>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>
