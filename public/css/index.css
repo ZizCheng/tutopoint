@@ -1,5 +1,16 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
 
+
+.slick-prev:before, .slick-next:before { 
+  color: lightgray !important;
+}
+
+.slick-slide {
+  margin: 0px 25px;
+}
+.card {
+  margin-bottom: 20px;
+}
 body {
   font-family: 'Lato', 'sans-serif';
 }
@@ -56,6 +67,10 @@ body {
   background-image: url(/images/background.jpg);
   height: 750px;
   background-color: antiquewhite;
+}
+
+.start-now {
+  margin-top: 30px;
 }
 
 .why-section

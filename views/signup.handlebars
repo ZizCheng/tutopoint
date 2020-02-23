@@ -1,74 +1,98 @@
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="/css/bulma.css">
-    <link rel="stylesheet" href="/css/signup.css">
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="form-content">
-        <h3 class="title login-title">Register</h3>
-        <form method="post" action="/signup">
-          <div class="field">
-            <label class="label">Email</label>
-            <div class="control">
-              <input class="input" name="email" type="email">
-            </div>
-          </div>
-          <p class="has-text-danger"> {{emailError}} </p>
-          <div class="field">
-            <label class="label">Name</label>
-            <div class="control">
-              <input class="input" name="name" type="text">
-            </div>
-          </div>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/signup.css">
+</head>
 
-          <div class="field">
-            <label class="label">Password</label>
-            <div class="control">
-              <input class="input" name="password" type="password">
-            </div>
-          </div>
+<header>
 
-          <div class="field">
-            <label class="label">Referral code</label>
-            <div class="control">
-              <input class="referralCode-input input" name="referralCode" type="text" value="{{referralCode}}">
-            </div>
-            <p class="help">(Optional)</p>
-          </div>
-          <p class="has-text-danger"> {{error}} </p>
-          <input class="input" type="hidden" name="userType" value="client">
-          <div class="control">
-            <button class="button is-primary">Submit</button>
-          </div>
-        </form>
-        <div class="has-text-centered">
-          <a class="has-text-centered is-size-6" href="/login"> Have an account already? Log in. </a>
-        </div>
+  <nav class="navbar shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <figure class="icon is-1by1">
+          <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT" width="330px"
+            height="330px">
+        </figure>
+        TUTOPOINT
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="/signup">Sign up</a>
+        <a class="navbar-item" href="/login">Log in</a>
       </div>
     </div>
-    <script>
-      var referralCode = getUrlParameter("referralCode");
-      if(referralCode) $(".referralCode-input").val(referralCode);
+  </nav>
+</header>
 
-      function getUrlParameter(Param) {
-        var PageURL = window.location.search.substring(1)
-        var URLVariables = PageURL.split('&')
-        var ParameterName
+<body>
+  <div class="wrapper">
+    <div class="form-content card">
+      <h3 class="title login-title">Register</h3>
+      <form method="post" action="/signup">
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input class="input" name="email" type="email">
+          </div>
+        </div>
+        <p class="has-text-danger"> {{emailError}} </p>
+        <div class="field">
+          <label class="label">Name</label>
+          <div class="control">
+            <input class="input" name="name" type="text">
+          </div>
+        </div>
 
-        for (var i = 0; i < URLVariables.length; i++) {
-          ParameterName = URLVariables[i].split('=');
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" name="password" type="password">
+          </div>
+        </div>
 
-          if (ParameterName[0] === Param) {
-              return decodeURIComponent(ParameterName[1]);
-          }
+        <div class="field">
+          <label class="label">Referral code</label>
+          <div class="control">
+            <input class="referralCode-input input" name="referralCode" type="text" value="{{referralCode}}">
+          </div>
+          <p class="help">(Optional)</p>
+        </div>
+        <p class="has-text-danger"> {{error}} </p>
+        <input class="input" type="hidden" name="userType" value="client">
+        <div class="control">
+          <button class="button is-primary">Submit</button>
+        </div>
+      </form>
+      <div class="has-text-centered">
+        <a class="has-text-centered is-size-6" href="/login"> Have an account already? Log in. </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    var referralCode = getUrlParameter("referralCode");
+    if (referralCode) $(".referralCode-input").val(referralCode);
+
+    function getUrlParameter(Param) {
+      var PageURL = window.location.search.substring(1)
+      var URLVariables = PageURL.split('&')
+      var ParameterName
+
+      for (var i = 0; i < URLVariables.length; i++) {
+        ParameterName = URLVariables[i].split('=');
+
+        if (ParameterName[0] === Param) {
+          return decodeURIComponent(ParameterName[1]);
         }
-        return false;
-      };
-    </script>
-  </body>
+      }
+      return false;
+    };
+  </script>
+</body>
+
 </html>

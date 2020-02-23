@@ -1,7 +1,17 @@
+@media only screen and (max-width: 600px) {
+  .shadow {
+    display: none;
+  }
+}
+
 
 body {
   height: 100vh;
-  background-color: #ffffc9;
+  background-color: #fff;
+}
+
+.shadow {
+  box-shadow: 7px 2px 6px rgba(0, 0, 0, 0.16);
 }
 
 .wrapper {
@@ -15,7 +25,6 @@ body {
 
 .form-content {
   border-radius: 10px 10px 10px 10px;
-  border: 1px solid #dadce0;
   background: #fff;
   padding: 48px 48px 96px 48px;
   width: 90%;
