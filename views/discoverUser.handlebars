@@ -178,10 +178,13 @@
   </div>
   </div>
   <script>
-    initializeTimeSlotCards();
+
+
     let currentSelectedDate = null;
     let guideId = "{{guide._id}}"
+    let invalidTimeslots = []
 
+    initializeTimeSlotCards();
 
     function initializeTimeSlotCards() {
       const timeslotCards = document.getElementsByClassName('timeslot-card');
@@ -189,6 +192,10 @@
         const timeslotCard = timeslotCards[i];
         const startDate = new Date(timeslotCard.getAttribute('start-date'));
         const endDate = new Date(timeslotCard.getAttribute('end-date'));
+
+        if(Date.now() >= endDate.getTime()){
+          invalidTimeslots.push(timeslotCard);
+        }
 
         const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
         const localeDay = startDate.toLocaleDateString("en-us", optionsFullDisplay)
@@ -200,6 +207,7 @@
         const dataText = `<h1>${localeDay} <br>${startDay}</br></h1>`
         timeslotCard.setAttribute('data-text', dataText)
         timeslotCard.innerHTML = dataText
+
 
         timeslotCard.addEventListener('click', function () {
           if (timeslotCard.classList.contains("selected")) {
@@ -227,6 +235,10 @@
 
         })
       }
+
+      invalidTimeslots.forEach((slot) => {
+        slot.parentElement.remove();
+      })
 
 
     }
