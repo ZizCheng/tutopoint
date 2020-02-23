@@ -19,10 +19,6 @@ const User = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'sessions',
   }],
-  ratedSessions: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'sessions',
-  }],
   documents: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'documents',
@@ -67,6 +63,9 @@ const Guide = new Schema({
   ratings: [{
     type: Number,
   }],
+  comments: [{
+    type: String,
+  }],
   stripeAccountId: {
     type: String,
   },
@@ -79,6 +78,14 @@ const Client = new Schema({
   stripeCustomerId: {
     type: String,
   },
+  ratedSessions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'sessions',
+  }],
+  commentedSessions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'sessions',
+  }],
 });
 
 const Session = new Schema({
