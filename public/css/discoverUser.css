@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
 
+.html {
+    min-height: 100%;
+}
+
 body {
-    color: #000;
-  }
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF;
+}
 
 .mcontainer {
     width: 70%;
@@ -51,6 +58,8 @@ body {
     padding-top: 40px;
     margin-left: 20px;
     box-shadow: 7px 2px 11px rgba(0, 0, 0, 0.16);
+    height: 105%;
+    
 }
 
 .guideinfo {
@@ -112,6 +121,7 @@ body {
     box-shadow: 7px 2px 11px rgba(0, 0, 0, 0.16);
     height: 50px;
     margin-right: 12px;
+    width: 100%;
     
 }
 
@@ -229,4 +239,8 @@ body {
 
 #confirmButton {
 
+}
+
+.table {
+    margin-top: 20px;
 }

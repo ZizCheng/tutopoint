@@ -156,59 +156,81 @@
             <input class="input is-small" type="text" placeholder="End Date">
 
           </div>
-
+          
           <div class="filter-right">
             <a href="#">Refresh Times</a>
           </div>
         </div>
-        <div class="cards">
-          <!-- repeat this thing -->
-          {{#each schedule}}
-          <div class="group">
-            <div class="timeslot-card" start-date="{{this.[0]}}" end-date="{{this.[1]}}"> </div>
 
-          </div>
-
-          {{/each}}
-
-
-        </div>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th><abbr title="Detected Time" >Detected Time</abbr></th>
+              <th><abbr title="Pacific Time"></abbr>PT</th>
+              <th><abbr title="Eastern Standard Time"></abbr>EST</th>
+              <th><abbr title="CST Time"></abbr>CST</th>
+              <th><abbr title="Booked">booked</abbr></th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            {{#each schedule}}
+            <tr>
+              <th class="local-time" date-global="{{this.[0]}}"></th>
+              <th class="pt-time" date-global="{{this.[0]}}"></th>
+              <th class="est-time" date-global="{{this.[0]}}"></th>
+              <th class="cst-time" date-global="{{this.[0]}}"></th>
+              <th><button class="button">Schedule</button></th>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
   </div>
+
+  <script type="text/javascript" src="/js/moment.min.js"></script>
+  <script type="text/javascript" src="/js/moment-timezone-with-data-10-year-range.min.js"></script>
+
   <script>
+
     initializeTimeSlotCards();
     let currentSelectedDate = null;
     let guideId = "{{guide._id}}"
 
 
     function initializeTimeSlotCards() {
-      const timeslotCards = document.getElementsByClassName('timeslot-card');
-      for (let i = 0; i < timeslotCards.length; i++) {
-        const timeslotCard = timeslotCards[i];
-        const startDate = new Date(timeslotCard.getAttribute('start-date'));
-        const endDate = new Date(timeslotCard.getAttribute('end-date'));
+      let dateFormat = "ddd MM/DD HH:mm";
 
+      const localTimes = document.getElementsByClassName('local-time');
+      const ptTimes = document.getElementsByClassName('pt-time');
+      const estTimes = document.getElementsByClassName('est-time');
+      const cstTimes = document.getElementsByClassName('cst-time');
+      const buttons = document.getElementsByClassName('button');
+
+      for (let i = 0; i < localTimes.length; i++) {
+        const localTime = localTimes[i];
+        const ptTime = ptTimes[i];
+        const estTime = estTimes[i];
+        const cstTime = cstTimes[i];
         const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
-        const localeDay = startDate.toLocaleDateString("en-us", optionsFullDisplay)
+        const globalTime = new Date(localTime.getAttribute('date-global'));
+        const localTimeData = globalTime.toLocaleDateString("en-US", optionsFullDisplay) + " " + globalTime.toLocaleTimeString();
+        localTime.innerHTML = moment(globalTime).tz(moment.tz.guess()).format(dateFormat);
 
-        const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
-        const startDay = startDate.toLocaleTimeString('en-US', timeOptions)
-        const endDay = endDate.toLocaleTimeString('en-US', timeOptions)
+        ptTime.innerHTML = moment(globalTime).tz("America/Los_Angeles").format(dateFormat);
+        estTime.innerHTML = moment(globalTime).tz("America/New_York").format(dateFormat);
+        cstTime.innerHTML = moment(globalTime).tz("Asia/Shanghai").format(dateFormat);
 
-        const dataText = `<h1>${localeDay} <br>${startDay}</br></h1>`
-        timeslotCard.setAttribute('data-text', dataText)
-        timeslotCard.innerHTML = dataText
-
-        timeslotCard.addEventListener('click', function () {
-          if (timeslotCard.classList.contains("selected")) {
+        buttons[i].addEventListener('click', function () {
+          if (buttons[i].classList.contains("selected")) {
             // Insert the token ID into the form so it gets submitted to the server
             var form = document.getElementById('requestSessionForm');
             var hiddenInput = document.createElement('input');
             hiddenInput.setAttribute('type', 'hidden');
             hiddenInput.setAttribute('name', 'date');
-            hiddenInput.setAttribute('value', timeslotCard.getAttribute('start-date'));
+            hiddenInput.setAttribute('value', localTimes[i].getAttribute('date-global'));
 
             var hiddenGuideInput = document.createElement('input');
             hiddenGuideInput.setAttribute('type', 'hidden');
@@ -221,30 +243,19 @@
             // Submit the form
             form.submit();
           }
-          else {
-            scheduleConfirm(i)
-          }
 
+          else {
+            for (let j = 0; j < buttons.length; j++) {
+              buttons[j].classList.remove("selected");
+              buttons[j].textContent = "Schedule";
+            }
+            buttons[i].classList.add("selected");
+            buttons[i].textContent = "Confirm";
+          }
         })
       }
-
-
     }
 
-    function scheduleConfirm(index) {
-      let currentSelectedDate = index;
-      const timeslotCards = document.getElementsByClassName('timeslot-card');
-      for (let i = 0; i < timeslotCards.length; i++) {
-        if (index == i) {
-          timeslotCards[i].classList.add('selected')
-          timeslotCards[i].textContent = "Confirm";
-        }
-        else {
-          timeslotCards[i].classList.remove('selected')
-          timeslotCards[i].innerHTML = timeslotCards[i].getAttribute('data-text')
-        }
-      }
-    }
   </script>
 </body>
 

@@ -5,6 +5,7 @@ const Guides = require('../models/model.js').Guides;
 const Schedule = require('../scripts/schedule.js');
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
+const moment = require('moment');
 
 discover.use(auth.loggedIn);
 discover.use(auth.ensureUserIsClient);
@@ -36,7 +37,7 @@ discover.get('/:id', function(req, res) {
               guide: JSON.parse(JSON.stringify(guide)),
               schedule: JSON.parse(JSON.stringify(guide.schedule)),
               customerBalance: (customer.balance / 100) * -1,
-              layout: false,
+              layout: false
             }))
             .catch((err) => {
               console.log(err); res.send('Internal Server Error.');
@@ -58,7 +59,7 @@ discover.post('/date', function(req, res) {
       .exec(function(err, guides) {
       // get all guides with date available
         const ret = [];
-        for (let i = 0; i<guides.length; i++) {
+        for (let i = 0; i < guides.length; i++) {
           const guide = guides[i];
           if (Schedule.dateAvailable(date, guide.schedule)) {
           // push the guides name, university, major, and grade
