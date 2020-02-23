@@ -87,6 +87,34 @@ router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) 
     }
   }
 });
+router.post("/comment", auth.loggedIn, auth.ensureUserIsClient, function(req,res) {
+  const sessionId = req.body.sessionId;
+
+  //basically req.user.sessions.includes
+  const sessionInsideSessions = req.user.sessions.some(function(session) {
+    return session._id == sessionId;
+  });
+  const sessionInsideCommentedSessions = req.user.commentedSessions.some(function(session) {
+    return session._id == sessionId;
+  });
+
+  if(sessionInsideSessions && !sessionInsideCommentedSessions)
+  {
+    const comment = req.body.comment; //make sure rating is int
+    Sessions.findById(sessionId, function(err, session) {
+      Guides.findById(session.createdBy, function(err, guide) {
+        console.log(guide);
+        guide.comments.push(comment);
+        guide.markModified("comments");
+        guide.save();
+        req.user.commentedSessions.push(session);
+        req.user.markModified("commentedSessions");
+        req.user.save();
+        res.send("success");
+      });
+    });
+  }
+});
 
 
 module.exports = router;

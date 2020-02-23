@@ -175,7 +175,7 @@
           
           <tbody>
             {{#each schedule}}
-            <tr>
+            <tr class="entries">
               <th class="local-time" date-global="{{this.[0]}}"></th>
               <th class="pt-time" date-global="{{this.[0]}}"></th>
               <th class="est-time" date-global="{{this.[0]}}"></th>
@@ -195,14 +195,15 @@
 
   <script>
 
-    initializeTimeSlotCards();
     let currentSelectedDate = null;
     let guideId = "{{guide._id}}"
 
+    initializeTimeSlotCards();
 
     function initializeTimeSlotCards() {
       let dateFormat = "ddd MM/DD HH:mm";
 
+      const entries = document.getElementsByClassName('entries');
       const localTimes = document.getElementsByClassName('local-time');
       const ptTimes = document.getElementsByClassName('pt-time');
       const estTimes = document.getElementsByClassName('est-time');
@@ -216,6 +217,9 @@
         const cstTime = cstTimes[i];
         const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
         const globalTime = new Date(localTime.getAttribute('date-global'));
+        if (globalTime < Date.now()) {
+          entries[i].style.display = "none";
+        }
         const localTimeData = globalTime.toLocaleDateString("en-US", optionsFullDisplay) + " " + globalTime.toLocaleTimeString();
         localTime.innerHTML = moment(globalTime).tz(moment.tz.guess()).format(dateFormat);
 

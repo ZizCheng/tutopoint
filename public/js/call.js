@@ -46,6 +46,7 @@ navigator.mediaDevices.getUserMedia({video: true, audio: {
           initiator: (type == 'init') ? true : false,
           stream: stream,
           trickle: false,
+          config: {iceServers: [{urls: 'stun:stun.l.google.com:19302'}, {urls: 'stun:global.stun.twilio.com:3478?transport=udp'}, {urls: 'turn:numb.viagenie.ca', username: 'tutopointauth@gmail.com', credential: 'tutopoint'}]},
         };
         const peer = new Peer(initConfig);
         peer.on('stream', function(stream) {
