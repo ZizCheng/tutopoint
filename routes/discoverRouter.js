@@ -5,7 +5,6 @@ const Guides = require('../models/model.js').Guides;
 const Schedule = require('../scripts/schedule.js');
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
-const moment = require('moment');
 
 discover.use(auth.loggedIn);
 discover.use(auth.ensureUserIsClient);
@@ -31,13 +30,13 @@ discover.get('/:id', function(req, res) {
       function(err, customer) {
         Guides
             .findOne({_id: req.params.id})
-            .select('_id name university major grade university profilePic schedule logo')
+            .select('_id name university major grade university profilePic schedule logo bio')
             .slice('schedule', [0, 10])
             .then((guide) => res.render('discoverUser', {
               guide: JSON.parse(JSON.stringify(guide)),
               schedule: JSON.parse(JSON.stringify(guide.schedule)),
               customerBalance: (customer.balance / 100) * -1,
-              layout: false
+              layout: false,
             }))
             .catch((err) => {
               console.log(err); res.send('Internal Server Error.');
