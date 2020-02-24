@@ -2,6 +2,7 @@ const Peer = require('simple-peer');
 const socket = io(window.location.origin, {query: `session=${sessionid}`});
 const video = document.querySelector('#localVideo');
 const client = {};
+let callStarted = false;
 // get stream
 
 socket.on('connect', () => {
@@ -41,74 +42,119 @@ navigator.mediaDevices.getUserMedia({video: true, audio: {
       video.srcObject = stream;
       video.muted = true;
       video.play();
-      // used to initialize a peer
-      function initPeer(type) {
-        const initConfig = {
-          initiator: (type == 'init') ? true : false,
-          stream: stream,
-          trickle: false,
-          config: {iceServers: [{urls: 'stun:stun.l.google.com:19302'}, {urls: 'stun:global.stun.twilio.com:3478?transport=udp'}, {urls: 'turn:numb.viagenie.ca', username: 'tutopointauth@gmail.com', credential: 'tutopoint'}]},
-        };
-        const peer = new Peer(initConfig);
-        peer.on('stream', function(stream) {
-          createVideo(stream);
-        });
-        return peer;
-      }
-
-      function createVideo(stream) {
-        const vid = document.querySelector('#remoteVideo');
-        vid.srcObject = stream;
-        vid.muted = false;
-        vid.play();
-      }
-
-      function MakePeer(data) {
-        console.log('Request received');
-        client.gotAnswer = false;
-        const peer = initPeer('init');
-        peer.on('signal', function(offer) {
-          if (!client.gotAnswer) {
-            socket.emit('offer', {
-              to: data.from,
-              offer: offer,
-            });
-          }
-        });
-        client.peer = peer;
-      }
-
-      function FrontAnswer(data) {
-        console.log('Offer received');
-        const peer = initPeer('notInit');
-        peer.on('signal', (offer) => {
-          socket.emit('answer', {
-            to: data.from,
-            offer: offer,
-          });
-        });
-        peer.signal(data.offer);
-        client.peer = peer;
-        callStart();
-      }
-
-      function SignalAnswer(answer) {
-        console.log('got answer');
-        client.gotAnswer = true;
-        const peer = client.peer;
-        peer.signal(answer);
-        callStart();
-      }
-
-      socket.on('backAnswer', SignalAnswer);
-      socket.on('makeOffer', MakePeer);
-      socket.on('frontAnswer', FrontAnswer);
     })
     .catch((err) => console.log(err));
+
+// used to initialize a peer
+function initPeer(type, stream) {
+  const initConfig = {
+    initiator: (type == 'init') ? true : false,
+    stream: stream,
+    trickle: false,
+    config: {iceServers: [{urls: 'stun:stun.l.google.com:19302'}, {urls: 'stun:global.stun.twilio.com:3478?transport=udp'}, {urls: 'turn:numb.viagenie.ca', username: 'tutopointauth@gmail.com', credential: 'tutopoint'}]},
+  };
+  const peer = new Peer(initConfig);
+  peer.on('stream', function(stream) {
+    createVideo(stream);
+  });
+  peer.on('connect', function() {
+    callStart();
+  });
+  return peer;
+}
+
+function createVideo(stream) {
+  const vid = document.querySelector('#remoteVideo');
+  vid.srcObject = stream;
+  vid.muted = false;
+  vid.play();
+}
+
+function MakePeer(data, stream) {
+  console.log('Request received');
+  client.gotAnswer = false;
+  const peer = initPeer('init', stream);
+  peer.on('signal', function(offer) {
+    if (!client.gotAnswer) {
+      socket.emit('offer', {
+        to: data.from,
+        offer: offer,
+      });
+    }
+  });
+  client.peer = peer;
+}
+
+function FrontAnswer(data, stream) {
+  console.log('Offer received');
+  const peer = initPeer('notInit', stream);
+  peer.on('signal', (offer) => {
+    socket.emit('answer', {
+      to: data.from,
+      offer: offer,
+    });
+  });
+  peer.signal(data.offer);
+  client.peer = peer;
+}
+
+function SignalAnswer(answer) {
+  console.log('got answer');
+  client.gotAnswer = true;
+  const peer = client.peer;
+  peer.signal(answer);
+}
+
+socket.on('backAnswer', SignalAnswer);
+socket.on('makeOffer', function(data) {
+  MakePeer(data, video.srcObject);
+});
+socket.on('frontAnswer', function(data) {
+  FrontAnswer(data, video.srcObject);
+});
+
 
 $('#startButton').click(function() {
   console.log('call logged.');
   socket.emit('call');
+});
+
+$('#reconnectButton').click(function() {
+  reconnect();
+});
+
+$('#hideButton').click(function() {
+  video.srcObject.getVideoTracks()
+      .forEach((track) => track.enabled = !track.enabled);
+});
+
+$('#muteButton').click(function() {
+  video.srcObject.getAudioTracks()
+      .forEach((track) => track.enabled = !track.enabled);
+});
+
+$('#streamDisplayButton').click(function() {
+  navigator.mediaDevices.getDisplayMedia()
+      .then((stream) => {
+        const prevSrc = video.srcObject;
+        video.srcObject = stream;
+        reconnect();
+        video.play();
+        prevSrc.getTracks()
+            .forEach((track) => track.stop());
+      });
+});
+
+$('#videoButton').click(function() {
+  navigator.mediaDevices.getUserMedia({video: true, audio: true})
+      .then((stream) => {
+        const prevSrc = video.srcObject;
+        video.srcObject = stream;
+        reconnect();
+        video.play();
+        prevSrc.getTracks()
+            .forEach((track) => track.stop());
+      });
 });
 
 
@@ -151,7 +197,14 @@ function init() {
   });
 }
 
+function reconnect() {
+  socket.emit('call');
+}
+
 function callStart() {
+  if (callStarted) {
+    return;
+  }
   whenCallStarted = new Date(Date.now());
   endButton.style['display'] = '';
   startButton.setAttribute('disabled', '');
@@ -160,6 +213,7 @@ function callStart() {
   intervalProcess = setInterval(() => {
     displayTimer();
   }, 1000);
+  callStarted = true;
 }
 
 function endCall() {

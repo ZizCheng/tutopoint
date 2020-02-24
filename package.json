@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "watch": "browserify public/js/call -o public/js/bundle.js",
+    "watch": "browserify public/js/call -o public/js/bundle.js --debug",
     "app": "nodemon index.js"
   },
   "author": "tutopoint, llc.",

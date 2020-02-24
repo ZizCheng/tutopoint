@@ -31,7 +31,7 @@ discover.get('/:id', function(req, res) {
       function(err, customer) {
         Guides
             .findOne({_id: req.params.id})
-            .select('_id name university major grade university profilePic schedule logo')
+            .select('_id name university major grade university profilePic schedule logo bio')
             .slice('schedule', [0, 10])
             .then((guide) => res.render('discoverUser', {
               guide: JSON.parse(JSON.stringify(guide)),
