@@ -12,6 +12,7 @@ socket.on('forceDisconnect', function() {
   socket.disconnect();
   client.peer.destroy();
   endCall();
+  window.location = '/session/postcall';
 });
 socket.on('guideConnected', function() {
   pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
