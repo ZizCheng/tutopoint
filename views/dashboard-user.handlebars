@@ -29,20 +29,31 @@
       </aside>
     </div>
     <div class="content-container" id="upcoming-sessions">
-      <nav class="level">
-        <!-- Left side -->
-        <div class="level-left">
-          <div class="level-item">
-            <p class="subtitle is-5">
-              <h1 id="upcomingSessionsButton" class="is-size-3 has-text-weight-normal"
-                style="text-decoration: underline;"> Upcoming sessions </h1>
-            </p>
+      <div class="tabs">
+        <ul>
+          <li class="is-active"><a>
+              <h1 id="upcomingSessionsButton" class="link is-size-4 has-text-weight-normal">Upcoming sessions </h1>
+            </a></li>
+          <li><a>
+              <h1 id="pastSessionsButton" class="is-size-4 link"> Past sessions </h1>
+            </a></li>
+        </ul>
+      </div>
+      <!--
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <p class="subtitle is-5">
+                <h1 id="upcomingSessionsButton" class="is-size-3 has-text-weight-normal"
+                  style="text-decoration: underline;"> Upcoming sessions </h1>
+              </p>
+            </div>
+            <div class="level-item">
+              <h1 id="pastSessionsButton" class="is-size-3"> Past sessions </h1>
+            </div>
           </div>
-          <div class="level-item">
-            <h1 id="pastSessionsButton" class="is-size-3"> Past sessions </h1>
-          </div>
-        </div>
-      </nav>
+        </nav>
+        -->
       {{#each sessions}}
       <div class="session card">
         <div class="card-content">
@@ -173,16 +184,14 @@
 
 
     function initializeUpComingSessions() {
-      upcomingSessionsButton.style['text-decoration'] = 'underline';
-      pastSessionsButton.style['text-decoration'] = 'none'
       const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
       hideSessionsFromDescriptionEl(cc)
       const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
       showSessionsFromDescriptionEl(ss)
     }
     upcomingSessionsButton.addEventListener('click', function (ev) {
-      ev.srcElement.style['text-decoration'] = 'underline';
-      pastSessionsButton.style['text-decoration'] = 'none'
+      ev.srcElement.parentElement.parentElement.classList.add("is-active");
+      pastSessionsButton.parentElement.parentElement.classList.remove("is-active");
       const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
       hideSessionsFromDescriptionEl(cc)
       const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
@@ -190,8 +199,8 @@
     })
 
     pastSessionsButton.addEventListener('click', function (ev) {
-      ev.srcElement.style['text-decoration'] = 'underline';
-      upcomingSessionsButton.style['text-decoration'] = 'none'
+      ev.srcElement.parentElement.parentElement.classList.add("is-active");
+      upcomingSessionsButton.parentElement.parentElement.classList.remove("is-active");
       const cc = document.querySelectorAll('.session p[status=cancelled], .session p[status=completed]')
       showSessionsFromDescriptionEl(cc)
       const ss = document.querySelectorAll('.session p[status=pending], .session p[status=confirmed]')
