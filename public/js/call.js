@@ -33,17 +33,7 @@ socket.on('notifyGuideHasConnected', function() {
   pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);
   enableCall();
 });
-navigator.mediaDevices.getUserMedia({video: true, audio: {
-  sampleRate: 48000,
-  channelCount: 2,
-  volume: 1.0,
-}})
-    .then((stream) => {
-      video.srcObject = stream;
-      video.muted = true;
-      video.play();
-    })
-    .catch((err) => console.log(err));
+
 
 // used to initialize a peer
 function initPeer(type, stream) {
@@ -55,10 +45,19 @@ function initPeer(type, stream) {
   };
   const peer = new Peer(initConfig);
   peer.on('stream', function(stream) {
+    console.log(stream);
     createVideo(stream);
   });
+
   peer.on('connect', function() {
+    console.log('call has started.');
+    peer.on('track', function(track, stream) {
+      createVideo(stream);
+    });
     callStart();
+  });
+  peer.on('error', (err) => {
+    console.log(err);
   });
   return peer;
 }
@@ -66,15 +65,27 @@ function initPeer(type, stream) {
 function createVideo(stream) {
   const vid = document.querySelector('#remoteVideo');
   vid.srcObject = stream;
+  vid.load();
   vid.muted = false;
   vid.play();
 }
 
 function MakePeer(data, stream) {
   console.log('Request received');
+  if (callStarted) {
+    // Extra measure. Client is not able to create a new peer when it already has created a new peer.
+    return;
+  }
   client.gotAnswer = false;
   const peer = initPeer('init', stream);
   peer.on('signal', function(offer) {
+    if (callStarted) {
+      socket.emit('offer', {
+        to: client.id,
+        offer: offer,
+      });
+      return;
+    }
     if (!client.gotAnswer) {
       socket.emit('offer', {
         to: data.from,
@@ -82,13 +93,26 @@ function MakePeer(data, stream) {
       });
     }
   });
+
   client.peer = peer;
 }
 
 function FrontAnswer(data, stream) {
   console.log('Offer received');
+  // Client already exist, do not creat a new one.
+  if (callStarted) {
+    client.peer.signal(data.offer);
+    return;
+  }
   const peer = initPeer('notInit', stream);
   peer.on('signal', (offer) => {
+    if (callStarted) {
+      socket.emit('answer', {
+        to: client.id,
+        offer: offer,
+      });
+      return;
+    }
     socket.emit('answer', {
       to: data.from,
       offer: offer,
@@ -100,6 +124,11 @@ function FrontAnswer(data, stream) {
 
 function SignalAnswer(answer) {
   console.log('got answer');
+  // Client already exist, do not creat a new one.
+  if (callStarted) {
+    client.peer.signal(answer);
+    return;
+  }
   client.gotAnswer = true;
   const peer = client.peer;
   peer.signal(answer);
@@ -107,9 +136,11 @@ function SignalAnswer(answer) {
 
 socket.on('backAnswer', SignalAnswer);
 socket.on('makeOffer', function(data) {
+  client.id = data.from;
   MakePeer(data, video.srcObject);
 });
 socket.on('frontAnswer', function(data) {
+  client.id = data.from;
   FrontAnswer(data, video.srcObject);
 });
 
@@ -126,37 +157,71 @@ $('#reconnectButton').click(function() {
 $('#hideButton').click(function() {
   video.srcObject.getVideoTracks()
       .forEach((track) => track.enabled = !track.enabled);
+      video.classList.contains('is-hidden') ? video.classList.remove('is-hidden') : video.classList.add('is-hidden');
 });
 
-$('#muteButton').click(function() {
+$('#muteButton').click(function(ev) {
+  
   video.srcObject.getAudioTracks()
-      .forEach((track) => track.enabled = !track.enabled);
+      .forEach((track) => track.enabled = !(muteButton.children[1].innerHTML == '&nbsp;&nbsp;Mute'));
+
+  if (muteButton.children[1].innerHTML == '&nbsp;&nbsp;Mute') {
+    muteButton.children[1].innerHTML = '&nbsp;&nbsp;Unmute';
+  } else {
+    muteButton.children[1].innerHTML = '&nbsp;&nbsp;Mute';
+  }
+});
+
+$('#deafenButton').click(function(ev) {
+  remoteVideo.srcObject.getAudioTracks()
+      .forEach((track) => track.enabled = !(deafenButton.children[1].innerHTML == '&nbsp;&nbsp;Deafen'));
+
+  if (deafenButton.children[1].innerHTML == '&nbsp;&nbsp;Deafen') {
+    deafenButton.children[1].innerHTML = '&nbsp;&nbsp;Undeafen';
+  } else {
+    deafenButton.children[1].innerHTML = '&nbsp;&nbsp;Deafen';
+  }
 });
 
 $('#streamDisplayButton').click(function() {
-  navigator.mediaDevices.getDisplayMedia()
-      .then((stream) => {
-        const prevSrc = video.srcObject;
-        video.srcObject = stream;
-        reconnect();
-        video.play();
-        prevSrc.getTracks()
-            .forEach((track) => track.stop());
-      });
+  if (streamDisplayButton.children[1].innerHTML == '&nbsp;&nbsp;Share camera') {
+    streamDisplayButton.children[1].innerHTML = '&nbsp;&nbsp;Share screen';
+    navigator.mediaDevices.getUserMedia(getMediaConfig())
+        .then((stream) => {
+          const prevSrc = video.srcObject;
+          prevSrc.getTracks()
+              .forEach((track) => track.stop());
+          video.srcObject = stream;
+          video.classList.remove('is-hidden');
+          video.play();
+          client.peer.removeStream(prevSrc);
+          client.peer.addStream(stream);
+        });
+  } else {
+    streamDisplayButton.children[1].innerHTML = '&nbsp;&nbsp;Share camera';
+    gdmOptions = {
+      video: {
+        cursor: 'always',
+      },
+      audio: false,
+    };
+    navigator.mediaDevices.getDisplayMedia(gdmOptions)
+        .then((stream) => {
+          navigator.mediaDevices.getUserMedia({video: false, audio: getMediaConfig().audio})
+              .then((streamAudio) => {
+                const prevSrc = video.srcObject;
+                prevSrc.getTracks()
+                    .forEach((track) => track.stop());
+                video.srcObject = stream;
+                video.classList.remove('is-hidden');
+                video.play();
+                client.peer.removeStream(prevSrc);
+                client.peer.addStream(stream);
+                client.peer.addTrack(streamAudio.getAudioTracks()[0], stream);
+              });
+        });
+  }
 });
-
-$('#videoButton').click(function() {
-  navigator.mediaDevices.getUserMedia({video: true, audio: true})
-      .then((stream) => {
-        const prevSrc = video.srcObject;
-        video.srcObject = stream;
-        reconnect();
-        video.play();
-        prevSrc.getTracks()
-            .forEach((track) => track.stop());
-      });
-});
-
 
 const quill = new Quill('#editor', {
   theme: 'snow',
@@ -187,14 +252,97 @@ socket.on('notification', function(msg) {
 // Start
 let whenCallStarted;
 let intervalProcess;
-init();
+$( document ).ready(function() {
+  init();
+});
 function init() {
+  initSettings();
   endButton.style['display'] = 'none';
   startButton.setAttribute('disabled', '');
 
   endButton.addEventListener('click', function() {
     endCall();
   });
+}
+
+function initSettings() {
+  settingsButton.addEventListener('click', function() {
+    settingsOverlay.classList.remove('is-hidden');
+  });
+
+  closeSettingButton.addEventListener('click', function() {
+    settingsOverlay.classList.add('is-hidden');
+  });
+
+
+  navigator.mediaDevices.enumerateDevices()
+      .then((devices) => {
+        if (devices.length == 0) {
+          alert('You do not have a camera or audio');
+        }
+        devices.forEach((device) => {
+          if (device.kind == 'videoinput') {
+            const cameraOption = document.createElement('option');
+            cameraOption.text = device.label;
+            cameraOption.value = device.deviceId;
+            cameraOptions.appendChild(cameraOption);
+          } else if (device.kind == 'audioinput') {
+            const audioOption = document.createElement('option');
+            audioOption.text = device.label;
+            audioOption.value = device.deviceId;
+            audioOptions.appendChild(audioOption);
+          }
+        });
+        cameraOptions.selectedIndex = 0;
+        audioOptions.selectedIndex = 0;
+
+        navigator.mediaDevices.getUserMedia(getMediaConfig())
+            .then((stream) => {
+              video.srcObject = stream;
+              video.muted = true;
+              video.play();
+            })
+            .catch((err) => console.log(err));
+      });
+
+
+  saveSettings.addEventListener('click', function() {
+    navigator.mediaDevices.getUserMedia(getMediaConfig())
+        .then((stream) => {
+          const prevSrc = video.srcObject;
+          video.srcObject = stream;
+          video.muted = true;
+          video.play();
+          if (callStarted) {
+            client.peer.removeStream(prevSrc);
+            client.peer.addStream(stream);
+          }
+          settingsOverlay.classList.add('is-hidden');
+        })
+        .catch((err) => console.log(err));
+  });
+}
+
+function getMediaConfig() {
+  let camera = false;
+  let audio = false;
+
+  if (cameraOptions.selectedOptions[cameraOptions.selectedIndex]) {
+    camera = {deviceId: cameraOptions.selectedOptions[cameraOptions.selectedIndex].value};
+  }
+  if (audioOptions.selectedOptions[audioOptions.selectedIndex]) {
+    audio = {
+      deviceId: audioOptions.selectedOptions[audioOptions.selectedIndex].value,
+      sampleRate: 48000,
+      channelCount: 1,
+      volume: 1.0,
+    };
+  }
+
+  return {
+    video: camera,
+    audio: audio,
+  };
 }
 
 function reconnect() {
@@ -210,6 +358,14 @@ function callStart() {
   startButton.setAttribute('disabled', '');
   startButton.style['display'] = 'none';
   socket.emit('callStart');
+
+  if (video.srcObject == '') {
+    callStart = false;
+    client.gotAnswer = false;
+
+    reconnect();
+  }
+
   intervalProcess = setInterval(() => {
     displayTimer();
   }, 1000);

@@ -109,6 +109,10 @@ function handleUserType(socket) {
 
 
 function chargeUser(io, socket, sessionid, user, count) {
+  if (count == 0) {
+    // Less than 5 minutes do not charge.
+    return;
+  }
   Sessions.findById(sessionid)
       .populate('createdBy')
       .then((session) => {
@@ -176,13 +180,12 @@ function chargeUser(io, socket, sessionid, user, count) {
                             },
                         );
                       } else {
-
                         setTimeout(() => {
                           setTimeout(() => {
                             chargeUser(io, socket, sessionid, user, count);
                           }, 20000);
                           endCall(io, socket);
-                        }, 120000)
+                        }, 120000);
 
                         return;
                       }
@@ -282,7 +285,7 @@ io.on('connection', function(socket, req, res) {
           io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Alert', message: 'You will be charged in 5 minutes.', style: 'is-warning'});
           if (session.date > Date.now()) {
             // Do not charge
-            // Setup timout till it's that date.
+            // Setup timeout till it's that date.
           } else {
             // Charge 5 minutes later.
             setTimeout(() => {

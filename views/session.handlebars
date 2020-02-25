@@ -15,9 +15,58 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   </head>
   <body>
+    <div id="stats" style="position: absolute;z-index: 100;top: 95vh;left: 2em;">
+
+    </div>
+    <div id="settingsOverlay" class="is-hidden" style="height: 100%;width: 100%;position: fixed;background-color: rgba(0,0,0,0.5);top: 0;left: 0;right: 0;bottom: 0;z-index: 35;">
+<div class="card" style="margin-top: 25%;width: 20vw;margin-left: auto;margin-right: auto;margin-bottom: auto;">
+                  <header class="card-header">
+                  <p class="card-header-title">
+                    Settings
+                  </p>
+                  <a href="#" class="card-header-icon" aria-label="more options">
+                    <span class="icon">
+                      <i id="closeSettingButton" class="fas fa-times" aria-hidden="true"></i>
+                    </span>
+                  </a>
+                </header>
+            <div class="card-content">
+              
+              <div class="control">
+                <label class="label">Camera</label>
+          <div class="select is-fullwidth">
+            <select id="cameraOptions">
+
+            </select>
+          </div>
+        </div>
+              <div class="control">
+                <label class="label">Audio</label>
+          <div class="select is-fullwidth">
+            <select id="audioOptions">
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-top: .5em;">
+            <div class="control">
+          <button id="saveSettings" class="button is-primary">Save</button>
+        </div>
+              
+        </div>
+        
+          </div>
+          
+          
+          </div>                
+
+
+</div>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-start">
-              <!-- navbar items -->
+            <div class="navbar-start" style="margin-top: .5em; margin-left: 5px;">
+              <p class="control has-icons-left">
+                          <a id="settingsButton" class="button is-success">
+                            Settings
+                          </a>
             </div>
 
             <div class="navbar-end " style="margin-top: .5em; margin-right: 5px;">
@@ -34,13 +83,14 @@
                             <span class="icon is-small is-left"><i class="fas fa-plug"></i></span> <span>&nbsp;&nbsp;Reconnect</span>
                           </a>
                         <p class="control has-icons-left">
-                          <a id="videoButton" class="button is-success">
-                            <span class="icon is-small is-left"><i class="fas fa-tv"></i></span> <span>&nbsp;&nbsp;Audio Video call</span>
-                        </a>
+                          <a id="streamDisplayButton" class="button is-success">
+                            <span class="icon is-small is-left"><i class="fas fa-tv"></i></span> <span>&nbsp;&nbsp;Share screen</span>
+                          </a>
+
                         </p>
                         <p class="control has-icons-left">
-                          <a id="streamDisplayButton" class="button is-success">
-                            <span class="icon is-small is-left"><i class="fas fa-tv"></i></span> <span>&nbsp;&nbsp;Screen share</span>
+                          <a id="deafenButton" class="button is-success">
+                            <span class="icon is-small is-left"><i class="fas fa-microphone-slash"></i></span> <span>&nbsp;&nbsp;Deafen</span>
                           </a>
 
                         </p>
