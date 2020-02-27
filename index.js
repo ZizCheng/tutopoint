@@ -8,12 +8,16 @@ const auth = require('./auth/auth.js');
 const handlebars = require('express-handlebars');
 const expressSession = require('express-session');
 const io = require('socket.io')(http);
+const redisAdapter = require('socket.io-redis');
 
 const secret = require('./secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
 
+const databaseCredentials = require('./secret.js').databaseCredentials;
+
 const Users = require('./models/model.js').Users;
 const Sessions = require('./models/model.js').Sessions;
+const FailedPayments = require('./models/model.js').failedPayments;
 
 const authRouter = require('./routes/authRouter.js');
 const scheduleRouter = require('./routes/scheduleRouter.js');
@@ -33,7 +37,7 @@ const session = expressSession({
 });
 
 
-mongoose.connect('mongodb://localhost:27017/TutoPoint');
+mongoose.connect(databaseCredentials.url, {useNewUrlParser: true});
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
@@ -89,6 +93,10 @@ app.get('/test', function(req, res) {
   res.send(req.user);
 });
 
+if (process.env.NODE_ENV == 'production') {
+  io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
+}
+
 
 io.use(function(socket, next) {
   // Wrap the express middleware
@@ -110,14 +118,13 @@ function handleUserType(socket) {
 
 
 function chargeUser(io, socket, sessionid, user, count) {
-  if (count == 0) {
-    // Less than 5 minutes do not charge.
-    return;
-  }
   Sessions.findById(sessionid)
       .populate('createdBy')
       .then((session) => {
         if (session.completed) {
+          if (count == 0) {
+            return;
+          }
           const calculatedCost = parseInt(count * 900);
           stripe.transfers.create(
               {
@@ -136,6 +143,19 @@ function chargeUser(io, socket, sessionid, user, count) {
                         statement_descriptor: 'Top-up',
                       },
                       function(err, topup) {
+                        if (err) {
+                          // Both payments failed, we will manually pay them out okay.
+                          const failedPayment = new FailedPayments({
+                            guideId: session.createdBy,
+                            sessionId: session._id,
+                            count: count,
+
+                          });
+                          failedPayment.save()
+                              .then(() => {
+                                console.log(`Transfer payment for ${session.createdBy} has failed.`);
+                              });
+                        };
                         // asynchronously called
                         stripe.transfers.create(
                             {
@@ -146,7 +166,17 @@ function chargeUser(io, socket, sessionid, user, count) {
                             function(err, transfer) {
                               // asynchronously called
                               if (err) {
-                                console.log(err);
+                                // Both payments failed, we will manually pay them out okay.
+                                const failedPayment = new FailedPayments({
+                                  guideId: session.createdBy,
+                                  sessionId: session._id,
+                                  count: count,
+
+                                });
+                                failedPayment.save()
+                                    .then(() => {
+                                      console.log(`Transfer payment for ${session.createdBy} has failed.`);
+                                    });
                               };
                               console.log('transfer complete');
                             },
@@ -284,10 +314,12 @@ io.on('connection', function(socket, req, res) {
             return;
           }
           io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Alert', message: 'You will be charged in 5 minutes.', style: 'is-warning'});
-          if (session.date > Date.now()) {
+          if (session.date > (Date.now() + 300000)) {
             // Do not charge
-            // Setup timeout till it's that date.
+            // Setup timeout till it's that date.\
+            console.log('Will not charge since it\'s before 5 minutes session starts');
           } else {
+            console.log('Session has started');
             // Charge 5 minutes later.
             setTimeout(() => {
               chargeUser(io, socket, sessionid, socket.request.session.passport.user, 0);

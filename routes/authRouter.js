@@ -60,10 +60,15 @@ router.get('/dashboard', auth.loggedIn, auth.userIsVerified, function(req, res) 
         },
     );
   } else if (req.user.__t == 'guides') {
-    res.render('dashboard-guide', {
-      sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-      documents: JSON.parse(JSON.stringify(req.user.documents)),
-      layout: false,
+    stripe.balance.retrieve({
+      stripe_account: req.user.stripeAccountId,
+    }, function(err, balance) {
+      res.render('dashboard-guide', {
+        sessions: JSON.parse(JSON.stringify(req.user.sessions)),
+        documents: JSON.parse(JSON.stringify(req.user.documents)),
+        balance: (balance.available[0].amount / 100),
+        layout: false,
+      });
     });
   }
 });
