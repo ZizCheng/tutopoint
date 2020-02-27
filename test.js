@@ -5,13 +5,15 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/TutoPoint');
 
-var schedule = [
-  [time(4,0), time(5,0)],
-  [time(7,30), time(8,30)]
-];
 
-Schedule.queryByDate([time(4,30),time(4,45)],Guides,function(res){
-  console.log(res)
+
+console.log("qwer");
+
+Guides.findById("5e46305c5e66bf4d18db4858", function(err, guide) {
+  console.log(guide);
+  Schedule.makeScheduleHourly(guide.schedule);
+  guide.markModified("schedule");
+  guide.save();
 });
 
 

@@ -48,6 +48,7 @@
         </table>
       </div>
       <button class="save-button button is-primary" onclick="saveSchedule()">Save</button>
+      <p class="has-text-grey-light">*Automatically saves every 3 seconds</p>
       <div class="insert-type-wrapper control">
         <p>Add available times:</p>
         <label class="radio">
@@ -65,20 +66,24 @@
       </div>
     </div>
     <div class="right-container">
-      <div class="day-container">
-        <div class="time-labels">
+      <div class="timetable-wrapper">
+        <table class="table timetable-table is-bordered">
+          <thead>
+            <tr>
+              <th></th>
+              <th><div class="timetable-day-label">Sunday</div></th>
+              <th><div class="timetable-day-label">Monday</div></th>
+              <th><div class="timetable-day-label">Tuesday</div></th>
+              <th><div class="timetable-day-label">Wednesday</div></th>
+              <th><div class="timetable-day-label">Thursday</div></th>
+              <th><div class="timetable-day-label">Friday</div></th>
+              <th><div class="timetable-day-label">Saturday</div></th>
+            </tr>
+          </thead>
+          <tbody class="timetable-content">
 
-        </div>
-        <div class="day-wrapper">
-          <div class="day">
-
-          </div>
-          <div class="cursor">
-            <div class="cursor-text">
-
-            </div>
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -94,64 +99,21 @@
       }
     </script>
     <script>
-      var config = {
-        hourChunks: 4 //number of chunks an hour is split into
-      }
 
       var today = new Date();
-      var month = today.getMonth();
       var year = today.getFullYear();
+      var month = today.getMonth();
       var day = today.getDate();
-
-      $(".day-container").hide();
-      $(".day-container").css({
-        "height": $(window).height() - $(".navbar").height()
-      });
+      var startOfweek = getStartOfWeekFromDate(today);
 
       newCalendar(new Date(year, month));
 
-      //day one-time
-      for(let i = 0;i<24;i++) {
-        var hourDate = new Date(year, month, day, i);
-        var timeLabel = newTimeLabel(hourDate);
-        var timeLabelLine = newTimeLabelLine(hourDate);
-        $(".time-labels").append(timeLabel);
-        $(".day-wrapper").append(timeLabelLine);
-      }
-      var firstDate = null;
-      var secondDate = null;
-      $(".day").click(function(event){
-        var top = event.pageY - $(".day").offset().top;
-        var date = getDateFromTopPos(top);
-        var roundedDate = roundDate(date);
+      createTimetable();
+      updateTimetable();
 
-        if(!firstDate)
-        {
-          firstDate = roundedDate;
-        }
-        else
-        {
-          secondDate = roundedDate;
-          //vars must be ordered, distinct dates
-          if(firstDate.getTime() != secondDate.getTime())
-          {
-            //make sure times are ordered
-            if(firstDate.getTime() > secondDate.getTime()) {
-              var temp = firstDate;
-              firstDate = secondDate;
-              secondDate = temp;
-            }
-            //insert type
-            var insertType = $(".insert-type-wrapper input[type='radio']:checked").val();
-            insertIntervalWithType([firstDate,secondDate],insertType);
-            newDay(this); //update day to show change
-            firstDate = null;
-            secondDate = null;
-          }
-        }
-      });
-
-
+      var autosaveInterval = setInterval(function() {
+        saveSchedule();
+      }, 3000);
 
       $(".left-calendar-arrow").click(function(){
         day = 1;
@@ -162,7 +124,7 @@
           year--;
         }
       });
-      $(".left-calendar-arrow").click(function(){
+      $(".right-calendar-arrow").click(function(){
         day = 1;
         month++;
         if(month == 12)

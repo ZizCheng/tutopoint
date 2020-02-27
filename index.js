@@ -38,6 +38,7 @@ mongoose.connect('mongodb://localhost:27017/TutoPoint');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
+
 app.use(function(req, res, next) {
   res.locals.stripePK = secret.pk_key;
   next();

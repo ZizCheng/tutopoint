@@ -8,140 +8,142 @@ function newCalendar(date) {
   const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
   const lastDay = new Date(date.getFullYear(), date.getMonth()+1, 0);
 
-  let rowCounter = 0;
-  let row = document.createElement('tr');
-  $(row).addClass('calendar-row');
+  var eleInRow = 7;
+  var row;
 
-  for (let i = 1-firstDay.getDay(); i<=lastDay.getDate(); i++) {
-    if (i>0)
+  for (let i = 1-firstDay.getDay(); i<=lastDay.getDate()+(6-lastDay.getDay()); i++) {
+    //create new row, using "row" variable
+    if (eleInRow == 7) {
+      row = createRow(new Date(year, month, i));
+      eleInRow = 0;
+    }
+
+    //create date (or empty, placeholder date if i <= 0)
+    if (i>0 && i<=lastDay.getDate())
     {
       var dateEle = createDate(i);
       $(row).append(dateEle);
-      if(i == day) dateClicked(dateEle);
+      if(i == day) rowClicked($(dateEle).parent());
     }
     else $(row).append(createDate(0));
 
-    rowCounter++;
-    if (rowCounter == 7) {
+    eleInRow++;
+    if(eleInRow == 7) {
       $('.calendar-body').append(row);
-      row = document.createElement('tr');
-      $(row).addClass('calendar-row');
-      rowCounter = 0;
     }
   }
-  if (row != 0) $('.calendar-body').append(row);
 }
+//firstDate: JS Date
+function createRow(firstDate) {
+  const newRow = document.createElement('tr');
+  $(newRow)
+      .addClass('calendar-row')
+      .data('firstDate', firstDate)
+      .click(function() {
+        rowClicked(this);
+      });
+  return newRow;
+}
+//date: date in month, 1-31
 function createDate(date) {
   const newDate = document.createElement('td');
   $(newDate).addClass('calendar-date');
   if (date>0) {
     $(newDate)
         .addClass('calendar-real-date')
-        .html(date)
-        .data('date', date)
-        .click(function() {
-          dateClicked(this);
-        });
+        .html(date);
   }
   return newDate;
 }
-function dateClicked(dateEle)
+function rowClicked(rowEle)
 {
-  $(".calendar-selected-date").removeClass("calendar-selected-date");
-  $(dateEle).addClass("calendar-selected-date");
-  day = $(dateEle).data('date');
-  newDay($(".day")[0]);
+  var firstDate = new Date($(rowEle).data('firstDate'));
+  startOfWeek = firstDate;
+  $(".calendar-selected-row").removeClass("calendar-selected-row");
+  $(rowEle).addClass("calendar-selected-row");
+  updateTimetable();
 }
 
-
-// DAY
-function newDay(dayEle) {
-  $('.day-container').show();
-  $(dayEle).html('');
-  const dayStart = new Date(year, month, day);
-  const dayEnd = new Date(year, month, day+1);
-  for (let i = 0; i<schedule.length; i++) {
-    if (dateBetween(schedule[i][0], dayStart, dayEnd) || dateBetween(schedule[i][1], dayStart, dayEnd)) {
-      $(dayEle).append(newInterval(schedule[i]));
+// TIMETABLE UPDATING
+function updateTimetable() {
+  $(".timetable-square-available").removeClass("timetable-square-available");
+  var hourlyStartTimes = listHourlyStartTimes(schedule);
+  var lower = startOfWeek;
+  var upper = addDaysToDate(lower, 7);
+  for(var i = 0;i<hourlyStartTimes.length;i++) {
+    var date = hourlyStartTimes[i];
+    if(dateBetween(date,lower,upper)) {
+      //date is inside week
+      var row = date.getHours();
+      var col = date.getDay();
+      $(".timetable-square-" + row + "-" + col).addClass("timetable-square-available");
     }
   }
-
-  $(dayEle).mousemove(function(event){
-    var top = event.pageY - $(".day").offset().top;
-    var date = getDateFromTopPos(top);
-    moveCursor(date);
-  });
-}
-//create the yellow block
-function newInterval(interval) {
-  const start = interval[0];
-  const end = interval[1];
-  const top = getTopPosFromDate(start);
-  const bottom = getBottomPosFromDate(end);
-  const intervalDiv = document.createElement('div');
-  $(intervalDiv)
-      .addClass('interval')
-      .css({"top": top, "bottom": bottom})
-      .data('start', start)
-      .data('end', end)
-      .mouseenter(function() {
-        $(this).children('.remove-interval').show();
-      })
-      .mouseleave(function() {
-        $(this).children('.remove-interval').hide();
-      });
-  const removeButton = document.createElement('button');
-  $(removeButton)
-      .addClass('remove-interval button')
-      .html('Remove')
-      .hide()
-      .click(function(event) {
-        event.stopPropagation();
-        $(this).parent().remove();
-      });
-
-  const label = document.createElement("div");
-  $(label)
-      .addClass('interval-label')
-      .html(formatHHMMPP(start) + " &ndash; " + formatHHMMPP(end));
-
-  $(intervalDiv).append(label).append(removeButton);
-  return intervalDiv;
-}
-//create a time label
-function newTimeLabel(date) {
-  const labelSpacer = document.createElement('div');
-  $(labelSpacer)
-    .addClass('time-label-spacer')
-    .css({"height": getHeightPerHour()});
-  const labelText = document.createElement('span');
-  $(labelText)
-    .addClass("time-label-text")
-    .html(formatHHPP(date));
-  $(labelSpacer).append(labelText);
-  return labelSpacer;
-}
-function newTimeLabelLine(date) {
-  const labelLine = document.createElement('div');
-  $(labelLine)
-    .addClass('time-label-line')
-    .css({"top": getTopPosFromDate(date)});
-  return labelLine;
 }
 
+// TIMETABLE CREATION
+function createTimetable() {
+  for(var i = 0; i<24;i++) {
+    var rowEle = document.createElement("tr");
+    $(rowEle).append(newTimeLabel(i));
+    for(var j = 0;j<7;j++) {
+      $(rowEle).append(newSquare(i,j));
+    }
+    $(".timetable-content").append(rowEle);
+  }
+}
+function newTimeLabel(hour)
+{
+  //get label text
+  var period = "AM";
+  if(hour >= 12)
+  {
+    period = "PM";
+    hour -= 12;
+  }
+  if(hour == 0) hour = 12;
+  var labelText = hour + ' ' + period;
+  //create HTML
+  var labelEle = document.createElement("td");
+  $(labelEle).addClass("timetable-cell timetable-time-label").html(labelText);
+  return labelEle;
+}
+function newSquare(row, col)
+{
+  var squareEle = document.createElement("td");
+  $(squareEle)
+    .addClass("timetable-cell timetable-square timetable-square-" + row + "-" + col)
+    .data("row", row)
+    .data("col", col)
+    .click(function(){
+      var row = $(this).data("row");
+      var col = $(this).data("col");
+      //get date of square
+      //add [col] days to start of week, then set hours to row
+      var startOfDay = addDaysToDate(startOfWeek, col);
+      var start = new Date(startOfDay);
+      start.setHours(row);
+      var end = new Date(startOfDay);
+      end.setHours(row+1);
 
+      var interval = [start, end];
 
+      var insertType = $(".insert-type-wrapper input[type='radio']:checked").val();
+      if($(this).hasClass("timetable-square-available"))
+      {
+        removeIntervalWithType(interval, insertType);
+      }
+      else {
+        insertIntervalWithType(interval, insertType);
+      }
 
-
-function moveCursor(date) {
-  var roundedDate = roundDate(date);
-  var cursorTop = getTopPosFromDate(roundedDate);
-  $(".cursor").css({"top": cursorTop});
-  $(".cursor-text").html(formatHHMM(roundedDate))
+      updateTimetable();
+    });
+  return squareEle;
 }
 
 
-//CALCULATIONS
+//OPERATIONS
 //oneTime, daily, weekly
 function insertIntervalWithType(interval, insertType)
 {
@@ -161,6 +163,30 @@ function insertIntervalWeekly(interval) {
     insertInterval(addDaysToInterval(interval,i*7),schedule);
   }
 }
+
+//oneTime, daily, weekly
+function removeIntervalWithType(interval, removeType)
+{
+  if(removeType == "oneTime") removeInterval(interval, schedule);
+  if(removeType == "daily") removeIntervalDaily(interval);
+  if(removeType == "weekly") removeIntervalWeekly(interval);
+}
+//remove interval for the next 28 days
+function removeIntervalDaily(interval) {
+  for(var i = 0;i<28;i++) {
+    removeInterval(addDaysToInterval(interval,i),schedule);
+  }
+}
+//remove interval per day of week for next 4 weeks, starting on current day
+function removeIntervalWeekly(interval) {
+  for(var i = 0;i<4;i++) {
+    removeInterval(addDaysToInterval(interval,i*7),schedule);
+  }
+}
+
+
+
+//CALCULATIONS
 function addDaysToInterval(interval, days) {
   var newInterval = [];
   newInterval.push(addDaysToDate(interval[0],days));
@@ -177,38 +203,27 @@ function roundDate(date) {
   const chunkMs = 1000*60*60/config.hourChunks;
   return new Date(Math.round(dateMs/chunkMs) * chunkMs);
 }
+function getStartOfWeekFromDate(date) {
+  //clone date
+  var newDate = new Date(date);
+  var day = newDate.getDay();
+  var diff = newDate.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+  newDate.setDate(diff);
+  //round down to nearest day
+  var newDateMs = newDate.getTime();
+  newDate.setTime(newDateMs - newDateMs % (24 * 60 * 60 * 1000));
+  return newDate;
+}
 
 
 //SERVER COMMUNICATION
 function saveSchedule() {
   $.post('/schedule', {
-    schedule: schedule,
+    schedule: JSON.stringify(schedule),
   });
 }
 
-
-// UI HELPER
-function getDateFromTopPos(offset) {
-  const percentDiff = offset/$('.day').height();
-  const dayStart = new Date(year, month, day);
-  const ret = dayStart.getTime() + 1000*60*60*24*percentDiff;
-  return new Date(ret);
-}
-function getTopPosFromDate(date) {
-  const dayStart = new Date(year, month, day);
-  const dateDiff = date.getTime() - dayStart.getTime();
-  const datePercentDiff = dateDiff/(1000*60*60*24);
-  return $('.day').height() * datePercentDiff;
-}
-function getBottomPosFromDate(date) {
-  const dayStart = new Date(year, month, day);
-  const dateDiff = date.getTime() - dayStart.getTime();
-  const datePercentDiff = dateDiff/(1000*60*60*24);
-  return $('.day').height() * (1-datePercentDiff);
-}
-function getHeightPerHour() {
-  return $('.day').height()/24;
-}
+//FORMATTING
 //HH:MM
 function formatHHMM(date) {
   var minutes = date.getMinutes();
@@ -247,37 +262,48 @@ function formatHHMMPP(date) {
 }
 
 
+//COPIED FROM BACK END
+
+/*
+functions that you guys might need:
+  dateAvailable(date, schedule)
+  listHourlyStartTimes(schedule)
+  makeScheduleHourly(schedule)
 
 
+date: JS Date Object
+interval: array of 2 dates. start date is stricly less than end date
+schedule: array of intervals. the start dates of each interval are ordered, and the intervals are disjoint
 
+hourly date: date is an exact hour, i.e., minutes, seconds, ms, etc. are all 0
+hourly interval: start and end dates are hourly. NOT NECESSARILY 1 HOUR IN LENGTH
+*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-// SAME AS BACK END
 
 // CORE FUNCTIONS
+/*
+returns whether date is available in schedule
+*/
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
   console.log(temp);
   if (temp == -1) return false;
   return dateBetween(date, schedule[temp][0], schedule[temp][1]);
 }
+
+/*
+returns whether interval is available in schedule
+*/
 function intervalAvailable(interval, schedule) {
   const temp = largestIndex(interval[0], schedule);
   if (temp == -1) return false;
   return dateBetween(interval[0], schedule[temp][0], schedule[temp][1]) && dateBetween(interval[1], schedule[temp][0], schedule[temp][1]);
 }
-// takes 1 second for 1 million calls
+
+/*
+inserts interval into schedule, returning nothing
+the result is guaranteed to be a valid schedule that contains the new interval and all old intervals
+*/
 function insertInterval(interval, schedule) {
   // loop through schedule and change interval and remove old intervals
   for (let i = 0; i<schedule.length; i++) {
@@ -309,6 +335,12 @@ function insertInterval(interval, schedule) {
   // add interval in front of largest index
   schedule.splice(largestIndex(interval[0], schedule) + 1, 0, interval);
 }
+
+/*
+removes interval from schedule, returning nothing
+the result is garunteed to be a valid schedule that does not contain interval
+  and contains the old schedule otherwise
+*/
 function removeInterval(interval, schedule) {
   for (let i = 0; i<schedule.length; i++) {
     // criss crossed
@@ -336,8 +368,34 @@ function removeInterval(interval, schedule) {
   }
 }
 
+/*
+returns a list of all hours within a schedule (inclusive left, exclusive right)
+*/
+function listHourlyStartTimes(schedule)
+{
+  const msInHour = 60 * 60 * 1000;
+  var retList = [];
+  for(var i = 0;i<schedule.length;i++)
+  {
+    var interval = schedule[i];
+    var incrementingDate = ceilDate(interval[0]);
+    while(interval[0].getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval[1].getTime()) {
+      //clone incrementingDate and add to return array
+      retList.push(new Date(incrementingDate));
+      incrementingDate.setTime(incrementingDate.getTime() + msInHour);
+    }
+  }
+  return retList;
+}
 
-// check if schedule is disjoint and ordered
+//Makes all intervals in schedule hourly. returns nothing
+function makeScheduleHourly(schedule) {
+  for(var i = 0;i<schedule.length;i++) {
+    schedule[i] = getIntervalInHours(schedule[i]);
+  }
+}
+
+// returns if schedule is disjoint and ordered
 function verify(schedule) {
   if (schedule.length == 0) return true;
   let prevDate = new Date(1970, 0, 1);
@@ -351,7 +409,36 @@ function verify(schedule) {
 
 
 // HELPER FUNCTIONS
-// largest index such that schedule[index][0] <= date
+/*
+returns an interval that is hourly by rounding the start date up and end date down
+does NOT change original interval
+*/
+function getIntervalInHours(interval)
+{
+  return [ceilDate(interval[0]),floorDate(interval[1])];
+}
+// rounds date down to nearest hour
+function floorDate(date)
+{
+  const msInHour = 60 * 60 * 1000;
+  const ms = date.getTime();
+  return new Date(Math.floor(date.getTime() / msInHour ) * msInHour);
+}
+//rounds date up to nearest hour
+function ceilDate(date)
+{
+  const msInHour = 60 * 60 * 1000;
+  const ms = date.getTime();
+  return new Date(Math.ceil(date.getTime() / msInHour ) * msInHour);
+}
+//returns whether interval is valid
+function intervalIsValid(interval)
+{
+  return interval[0] < interval[1];
+}
+
+
+// returns largest index such that schedule[index][0] <= date
 function largestIndex(date, schedule) {
   let largestIndex = -1;
   for (let i = 0; i<schedule.length; i++) {
@@ -361,11 +448,11 @@ function largestIndex(date, schedule) {
   }
   return largestIndex;
 }
-// inclusive
+// checks if date is between 2 bounds, inclusive
 function dateBetween(date, lower, upper) {
   return (lower.getTime() <= date.getTime() && date.getTime() <= upper.getTime());
 }
-// exclusive
+// checks if date is between 2 bounds, exclusive
 function dateWithin(date, lower, upper) {
   return (lower.getTime() < date.getTime() && date.getTime() < upper.getTime());
 }

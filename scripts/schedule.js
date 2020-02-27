@@ -1,17 +1,43 @@
+/*
+functions that you guys might need:
+  dateAvailable(date, schedule)
+  listHourlyStartTimes(schedule)
+  makeScheduleHourly(schedule)
+
+
+date: JS Date Object
+interval: array of 2 dates. start date is stricly less than end date
+schedule: array of intervals. the start dates of each interval are ordered, and the intervals are disjoint
+
+hourly date: date is an exact hour, i.e., minutes, seconds, ms, etc. are all 0
+hourly interval: start and end dates are hourly. NOT NECESSARILY 1 HOUR IN LENGTH
+*/
+
 
 // CORE FUNCTIONS
+/*
+returns whether date is available in schedule
+*/
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
   console.log(temp);
   if (temp == -1) return false;
   return dateBetween(date, schedule[temp][0], schedule[temp][1]);
 }
+
+/*
+returns whether interval is available in schedule
+*/
 function intervalAvailable(interval, schedule) {
   const temp = largestIndex(interval[0], schedule);
   if (temp == -1) return false;
   return dateBetween(interval[0], schedule[temp][0], schedule[temp][1]) && dateBetween(interval[1], schedule[temp][0], schedule[temp][1]);
 }
-// takes 1 second for 1 million calls
+
+/*
+inserts interval into schedule, returning nothing
+the result is guaranteed to be a valid schedule that contains the new interval and all old intervals
+*/
 function insertInterval(interval, schedule) {
   // loop through schedule and change interval and remove old intervals
   for (let i = 0; i<schedule.length; i++) {
@@ -43,6 +69,12 @@ function insertInterval(interval, schedule) {
   // add interval in front of largest index
   schedule.splice(largestIndex(interval[0], schedule) + 1, 0, interval);
 }
+
+/*
+removes interval from schedule, returning nothing
+the result is garunteed to be a valid schedule that does not contain interval
+  and contains the old schedule otherwise
+*/
 function removeInterval(interval, schedule) {
   for (let i = 0; i<schedule.length; i++) {
     // criss crossed
@@ -70,8 +102,34 @@ function removeInterval(interval, schedule) {
   }
 }
 
+/*
+returns a list of all hours within a schedule (inclusive left, exclusive right)
+*/
+function listHourlyStartTimes(schedule)
+{
+  const msInHour = 60 * 60 * 1000;
+  var retList = [];
+  for(var i = 0;i<schedule.length;i++)
+  {
+    var interval = schedule[i];
+    var incrementingDate = ceilDate(interval[0]);
+    while(interval[0].getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval[1].getTime()) {
+      //clone incrementingDate and add to return array
+      retList.push(new Date(incrementingDate));
+      incrementingDate.setTime(incrementingDate.getTime() + msInHour);
+    }
+  }
+  return retList;
+}
 
-// check if schedule is disjoint and ordered
+//Makes all intervals in schedule hourly. returns nothing
+function makeScheduleHourly(schedule) {
+  for(var i = 0;i<schedule.length;i++) {
+    schedule[i] = getIntervalInHours(schedule[i]);
+  }
+}
+
+// returns if schedule is disjoint and ordered
 function verify(schedule) {
   if (schedule.length == 0) return true;
   let prevDate = new Date(1970, 0, 1);
@@ -85,7 +143,36 @@ function verify(schedule) {
 
 
 // HELPER FUNCTIONS
-// largest index such that schedule[index][0] <= date
+/*
+returns an interval that is hourly by rounding the start date up and end date down
+does NOT change original interval
+*/
+function getIntervalInHours(interval)
+{
+  return [ceilDate(interval[0]),floorDate(interval[1])];
+}
+// rounds date down to nearest hour
+function floorDate(date)
+{
+  const msInHour = 60 * 60 * 1000;
+  const ms = date.getTime();
+  return new Date(Math.floor(date.getTime() / msInHour ) * msInHour);
+}
+//rounds date up to nearest hour
+function ceilDate(date)
+{
+  const msInHour = 60 * 60 * 1000;
+  const ms = date.getTime();
+  return new Date(Math.ceil(date.getTime() / msInHour ) * msInHour);
+}
+//returns whether interval is valid
+function intervalIsValid(interval)
+{
+  return interval[0] < interval[1];
+}
+
+
+// returns largest index such that schedule[index][0] <= date
 function largestIndex(date, schedule) {
   let largestIndex = -1;
   for (let i = 0; i<schedule.length; i++) {
@@ -95,11 +182,11 @@ function largestIndex(date, schedule) {
   }
   return largestIndex;
 }
-// inclusive
+// checks if date is between 2 bounds, inclusive
 function dateBetween(date, lower, upper) {
   return (lower.getTime() <= date.getTime() && date.getTime() <= upper.getTime());
 }
-// exclusive
+// checks if date is between 2 bounds, exclusive
 function dateWithin(date, lower, upper) {
   return (lower.getTime() < date.getTime() && date.getTime() < upper.getTime());
 }
@@ -110,5 +197,7 @@ module.exports = {
   intervalAvailable: intervalAvailable,
   insertInterval: insertInterval,
   removeInterval: removeInterval,
+  listHourlyStartTimes: listHourlyStartTimes,
+  makeScheduleHourly: makeScheduleHourly,
   verify: verify,
 };

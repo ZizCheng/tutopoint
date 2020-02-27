@@ -4,7 +4,6 @@ const auth = require('../auth/auth.js');
 
 const Schedule = require('../scripts/schedule.js');
 
-
 router.get('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   const renderOptions =
   {
@@ -15,6 +14,7 @@ router.get('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
 });
 
 router.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
+  req.body.schedule = JSON.parse(req.body.schedule);
   for (let i = 0; i < req.body.schedule.length; i++) {
     for (let j = 0; j < req.body.schedule[i].length; j++) {
       req.body.schedule[i][j] = new Date(req.body.schedule[i][j]);
@@ -26,6 +26,7 @@ router.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
     res.send('success');
   } else res.send('fail');
 });
+
 router.get('/:id', function(req, res) {
   Users.findById(req.params.id).exec(function(user) {
     if (!user) res.send('user doesn\'t exist');
@@ -33,5 +34,6 @@ router.get('/:id', function(req, res) {
     else res.send(user.schedule);
   });
 });
+
 
 module.exports = router;
