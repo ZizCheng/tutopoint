@@ -29,8 +29,11 @@
     <div class="left-container">
       <div class="calendar-container">
         <div class="calendar-arrow-container">
-          <div class="calendar-arrow calendar-right-arrow">&#8249;</div>
-          <div class="calendar-arrow calendar-left-arrow">&#8250;</div>
+          <div class="calendar-arrow calendar-right-arrow"><i class="fas fa-chevron-left"></i></div>
+          <div class="calendar-month-name-container">
+            <p class="calendar-month-name"></p>
+          </div>
+          <div class="calendar-arrow calendar-left-arrow"><i class="fas fa-chevron-right"></i></div>
         </div>
         <table>
           <thead>
@@ -100,6 +103,11 @@
     </script>
     <script>
 
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
       var today = new Date();
       var year = today.getFullYear();
       var month = today.getMonth();
@@ -115,7 +123,7 @@
         saveSchedule();
       }, 3000);
 
-      $(".left-calendar-arrow").click(function(){
+      $(".calendar-right-arrow").click(function(){
         day = 1;
         month--;
         if(month == -1)
@@ -123,8 +131,11 @@
           month = 11;
           year--;
         }
+        var firstDayInMonth = new Date(year, month, day);
+        var startOfweek = getStartOfWeekFromDate(firstDayInMonth);
+        newCalendar(firstDayInMonth);
       });
-      $(".right-calendar-arrow").click(function(){
+      $(".calendar-left-arrow").click(function(){
         day = 1;
         month++;
         if(month == 12)
@@ -132,6 +143,9 @@
           month = 0;
           year++;
         }
+        var firstDayInMonth = new Date(year, month, day);
+        var startOfweek = getStartOfWeekFromDate(firstDayInMonth);
+        newCalendar(firstDayInMonth);
       });
 
     </script>

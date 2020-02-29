@@ -34,11 +34,26 @@
 {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
+  padding: 0 2rem;
 }
 .calendar-arrow
 {
-  font-size: 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+.calendar-month-name-container
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-month-name
+{
+  font-size: 1.25rem;
 }
 .calendar-day-label
 {
