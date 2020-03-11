@@ -44,6 +44,7 @@
 
 
   <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
         <figure class="icon is-1by1">
@@ -55,33 +56,35 @@
     </div>
     <div class="navbar-menu">
       <div class="navbar-end">
-        <a class="navbar-item" href="#guides-section">Our Guides</a>
-        <a class="navbar-item" href="#about">About Us</a>
-        <a class="navbar-item" href="#mission">Mission</a>
-        <a class="navbar-item" href="/signup">Sign up</a>
-        <a class="navbar-item" href="/login">Log in</a>
+        <a class="navbar-item" href="#guides-section" style="margin-right: 6%; font-size: 20px;">Our Guides</a>
+        <a class="navbar-item" href="#about" style="margin-right: 6%; font-size: 20px;">About Us</a>
+        <a class="navbar-item" href="#mission" style="margin-right: 6%; font-size: 20px;">Mission</a>
+        <button class="button is-danger is-rounded top-button" href="/signup" style="margin: 12px 8px 12px 8px;">Sign up</button>
+        <button class="button is-danger is-rounded top-button" href="/login" style="margin: 12px 20% 12px 8px;">Log in</button>
       </div>
     </div>
+  </div>
   </nav>
 
-  <section class="hero is-large">
-    <div id="heroBody" class="hero-body" style="align-items: normal;">
-      <div class="container is-fluid">
-        <div class="columns">
-          <div class="column is-8">
-
-          </div>
-          <div class="column">
-            <div class="container" id="tutopointDescription">
-              <p class="is-size-1 has-text-white">Tutopoint</p>
-              <p class="is-size-4 has-text-white">College counseling from authentic college students</p>
-              <button onclick="window.location.href = '/signup';" class="button is-white start-now">Start Now</button>
-            </div>
+  <div class="landing">
+    <div class="short-description">
+      Get college consulting from authentic college students
+    </div>
+    <div class="form-content card">
+      <h3 class="title has-text-centered" style="font: Bold 25px/30px Lato; letter-spacing: 0; color: #646464;">Let's get started.</h3>
+      <form method="post" action="/login">
+        <div class="field">
+          <div class="control">
+            <input class="input is-rounded" name="email" type="email" placeholder="Email" style="margin-bottom: 15px;">
+            <input class="input is-rounded" name="email" type="email" placeholder="Name" style="margin-bottom: 5px;">
           </div>
         </div>
-      </div>
+        <div class="control">
+          <button class="button is-danger is-rounded" style="width: 100%;">Register</button>
+        </div>
+      </form>
     </div>
-  </section>
+  </div>
 
 
 
@@ -89,7 +92,7 @@
     <div class="container">
       <h1 id="guides-section" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker"
         style="margin-top: 1em; margin-bottom: 1em;"> Meet Our Guides </h1>
-      
+
   <div class="carousel container">
 
     <div class="card">

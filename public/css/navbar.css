@@ -1,5 +1,9 @@
 .navbar
 {
   background-color: white;
-  
+
+}
+.top-button {
+  vertical-align: middle;
+  color: #FFFFFF;
 }
