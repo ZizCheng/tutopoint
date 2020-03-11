@@ -81,6 +81,15 @@ passport.deserializeUser(auth.deserializeUser);
 app.get('/', function(req, res) {
   res.sendFile('views/index.html', {root: __dirname});
 });
+app.get('/about', function(req, res) {
+  res.sendFile('views/aboutUs.html', {root: __dirname});
+});
+app.get('/guides', function(req, res) {
+  res.sendFile('views/ourGuides.html', {root: __dirname});
+});
+app.get('/mission', function(req, res) {
+  res.sendFile('views/mission.html', {root: __dirname});
+});
 
 app.get('/session/:id', auth.loggedIn, function(req, res) {
   if (!req.params.id) res.redirect('/dashboard');
