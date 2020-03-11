@@ -29,6 +29,8 @@ const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
 const adminRouter = require('./routes/adminRouter.js');
 
+const profileAPI = require('./api/profile.js');
+const discoverAPI = require('./api/discover.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -53,6 +55,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
+// Depcrated.
 app.use(authRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/document', documentRouter);
@@ -63,6 +66,10 @@ app.use('/session', sessionRouter);
 app.use('/bank', bankRouter);
 app.use('/admin', adminRouter);
 app.use('/onboard', auth.guideHasOnboarded);
+
+// API
+app.use('/api/profile', profileAPI);
+app.use('/api/discover', discoverAPI);
 
 
 app.engine('handlebars', handlebars());
@@ -80,6 +87,14 @@ passport.deserializeUser(auth.deserializeUser);
 
 app.get('/', function(req, res) {
   res.sendFile('views/index.html', {root: __dirname});
+});
+
+app.use(express.static('dist'));
+app.get('/dashboard', auth.loggedIn, function(req, res) {
+  res.sendFile('dist/index.html', {root: __dirname});
+});
+app.get('*', auth.loggedIn, function(req, res) {
+  res.sendFile('dist/index.html', {root: __dirname});
 });
 
 app.get('/session/:id', auth.loggedIn, function(req, res) {

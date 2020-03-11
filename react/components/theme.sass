@@ -1,0 +1,46 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+$gray: #f9f9f9;
+$white: #FFFFFF;
+$dark-gray: #00000029;
+$orange: #F56363;
+$light-gray: #646464;
+$black: #000000;
+// Update Bulma's global variables
+$family-sans-serif: "Lato", sans-serif;
+
+// Update some of Bulma' component variables
+$body-background-color: $gray;
+$navbar-background-color: rgba($gray, 100%);
+$menu-item-hover-color: $orange;
+$menu-item-active-color: $orange;
+$menu-label-font-size: 1.25em;
+$menu-list-line-height: 2;
+$menu-item-active-background-color: rgba($gray, 100%);
+
+
+// Link edit
+$link: $light-gray;
+$link-hover: $orange;
+$link-active: $orange;
+
+.highlight
+    color: $orange
+
+// Import only what you need from Bulma
+@import "../node_modules/bulma/sass/utilities/_all.sass";
+@import "../node_modules/bulma/sass/base/_all.sass";
+@import "../node_modules/bulma/sass/elements/button.sass";
+@import "../node_modules/bulma/sass/elements/container.sass";
+@import "../node_modules/bulma/sass/elements/title.sass";
+@import "../node_modules/bulma/sass/elements/image.sass";
+@import "../node_modules/bulma/sass/form/_all.sass";
+@import "../node_modules/bulma/sass/components/navbar.sass";
+@import "../node_modules/bulma/sass/layout/hero.sass";
+@import "../node_modules/bulma/sass/layout/section.sass";
+@import "../node_modules/bulma/sass/components/menu.sass";
+@import "../node_modules/bulma/sass/components/card.sass";
+@import "../node_modules/bulma/sass/grid/_all.sass";

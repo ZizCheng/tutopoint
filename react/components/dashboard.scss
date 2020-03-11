@@ -1,0 +1,37 @@
+#dashboard__discoverGuide {
+  border-radius: 25px;
+}
+
+.card-header {
+  box-shadow: none !important;
+}
+
+.dashboard__discoverGuideCarousel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-around;
+}
+
+.dashboard__discoverGuide_Item {
+  flex-basis: 27rem;
+
+  & .media {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+#dashboard__bottomPreview {
+    padding-top: 2em;
+}
+
+#dashboard__bottomPreview .card {
+    border-radius: 25px;
+    min-height: 25rem;
+}
+
+#dashboard__previewAppointments .card-header-icon {
+    padding-left: 0px !important;
+}
