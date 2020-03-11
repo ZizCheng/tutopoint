@@ -26,7 +26,7 @@ const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdro
       <div className="card-content">
         <div className="media">
           <div className="media-left">
-            <figure className="image is-96x96">
+            <figure className="image">
               <img
                 className="is-rounded"
                 src={profilePic ? profilePic : "https://bulma.io/images/placeholders/96x96.png"}
@@ -89,15 +89,15 @@ class Dashboard extends React.Component {
             <div className="column is-half">
               <div id="dashboard__previewAppointments" className="card">
                 <header className="card-header">
-                  <p className="is-size-3 card-header-title">
+                  <p className="is-size-3 card-header-title is-size-6-touch">
                     Your Appointments
                   </p>
 
                   <p className="card-header-icon has-text-black">
-                    <NavLink activeClassName="highlight" to="/dashboard/upcoming">Upcoming</NavLink>
+                    <NavLink className="is-size-6-touch" activeClassName="highlight" to="/dashboard/upcoming">Upcoming</NavLink>
                   </p>
                   <p className="card-header-icon has-text-black">
-                    <NavLink activeClassName="highlight" to="/dashboard/past">Past</NavLink>
+                    <NavLink className="is-size-6-touch" activeClassName="highlight" to="/dashboard/past">Past</NavLink>
                   </p>
                 </header>
                 <div className="card-content">

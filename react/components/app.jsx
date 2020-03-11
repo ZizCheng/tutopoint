@@ -7,6 +7,7 @@ import {
   NavLink,
   Redirect
 } from "react-router-dom";
+import SVG from "react-inlinesvg";
 
 import profileAPI from "../api/profile.js";
 
@@ -15,11 +16,20 @@ import Dashboard from "./dashboard.jsx";
 import "./theme.sass";
 import "./app.scss";
 import emptyProfileIcon from "../data/images/emptyProfilePic.png";
+import tutologo from "../data/images/tutologo.png";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: null };
+    this.state = { profile: null, hidden: false };
+
+    this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
+  }
+
+  toggleSideBarMobile() {
+    this.setState({
+      hidden: !this.state.hidden
+    });
   }
 
   componentDidMount() {
@@ -40,16 +50,18 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
+              
               <a className="navbar-item is-size-4" href="https://tutopoint.com">
+              <span className="icon is-large">
+                <img src={tutologo}/>
+              </span>
                 TUTOPOINT
               </a>
 
               <a
+                onClick={this.toggleSideBarMobile}
                 role="button"
                 className="navbar-burger burger"
-                aria-label="menu"
-                aria-expanded="false"
-                data-target="navbarBasicExample"
               >
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -57,19 +69,23 @@ class App extends React.Component {
               </a>
             </div>
 
-            <div id="navbarBasicExample" className="navbar-menu">
+            <div className="navbar-menu">
               <div className="navbar-end">
                 <div className="navbar-item is-size-4">
                   <div className="buttons">
-                  <NavLink className="button is-light" activeClassName="is-active" to="/logout">
-                        Log Out
-                      </NavLink>
+                    <NavLink
+                      className="button is-light"
+                      activeClassName="is-active"
+                      to="/logout"
+                    >
+                      Log Out
+                    </NavLink>
                   </div>
                 </div>
-                <div className="navbar-brand">
+                <div id="profilePicture" className="navbar-brand">
                   <figure className="image is-48x48">
                     <img
-                      className="profilePicture is-rounded"
+                      className="is-rounded"
                       src={
                         this.state.profile?.profilePic
                           ? this.state.profile.profilePic
@@ -82,7 +98,11 @@ class App extends React.Component {
             </div>
           </nav>
           <div className="columns">
-            <div className="column is-one-fifth">
+            <div
+              className={`column is-1 ${
+                this.state.hidden ? "scale-up-ver-top" : "is-hidden-mobile"
+              }`}
+            >
               <aside className="menu">
                 <ul className="menu-list">
                   <li>
