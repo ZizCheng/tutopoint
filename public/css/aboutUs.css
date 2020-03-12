@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
+
+.slick-prev:before, .slick-next:before {
+  color: lightgray !important;
+}
+
+.slick-slide {
+  margin: 0px 25px;
+}
+.card {
+  margin-bottom: 20px;
+}
+body {
+  font-family: 'Lato', 'sans-serif';
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.form-content {
+  border-radius: 30px 30px 30px 30px;
+  background: #fff;
+  padding: 30px 30px 30px 30px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+}
+
+.mcontainer {
+  width: 80%;
+  margin: auto;
+}
+
+.top-nav {
+  padding: 5px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.nav-shadow {
+  box-shadow: 7px 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+
+.logo {
+  width: 60px;
+}
+.landing {
+  height: 700px;
+  background-color: antiquewhite;
+  background-image: url('/images/background-landing.png');
+  background-repeat: no-repeat;
+  background-size: 100%;
+  padding: 9% 10% 0px 65%;
+}
+.short-description {
+  text-align: center;
+  letter-spacing: 0;
+  font-family: 'Lato';
+  font-weight: 300;
+  font-size: 26px;
+  color: #FFFFFF;
+  text-shadow: 0px 3px 6px #00000029;
+  opacity: 1;
+  padding: 0% 3% 15% 3%;
+}
+.about-text {
+  width: 65%;
+  margin: auto;
+  text-align: center;
+  line-height: 200%;
+}
+.big-banner {
+  background-color: #F56363;
+  padding: 5% 0% 5% 0%;
+}
+.main-panel {
+  margin: 5% 0% 5% 0%;
+  padding: 5% 5% 5% 5%;
+  width: 100%;
+  background-color: #FEC3A6;
+  overflow: auto;
+}
+.left-image {
+  margin: 0 60% 0 0;
+  float: left;
+}
+.right-text {
+  padding: 5% 5% 5% 60%;
+  float: left;
+}
+
+
+.left-nav h2 {
+  font-size: 30px;
+}
+
+.right-nav {
+  display: flex;
+  align-items: center;
+}
+
+.right-nav li {
+  padding-left: 40px;
+  font-family: Lato, sans-serif;
+  font-weight: 300;
+}
+
+.right-nav li a {
+  text-decoration: none;
+  color: black;
+  font-size: 22px;
+}
+
+.left-nav {
+  display: flex;
+  align-items: center;
+}
+
+.main-display{
+  background-image: url(/images/background.jpg);
+  height: 100%;
+  background-color: antiquewhite;
+}
+
+.start-now {
+  margin-top: 30px;
+}
+
+.why-section
+{
+  margin: 100px;
+}
+.why-container
+{
+  text-align: center;
+}
+.why-title
+{
+  font-size: 3rem;
+  margin-top: 3rem;
+}
+.why-wrapper
+{
+  margin: 80px 0;
+  justify-content: space-between;
+}
+.why-column
+{
+  padding: 1.5rem;
+}
+.why-card
+{
+  padding: 1rem;
+}
+.why-card .why-card-description
+{
+  padding: 1rem 3rem 3rem 3rem;
+}
+.why-icon
+{
+  width: 4rem;
+  height: 4rem;
+}
+.why-icon i
+{
+  font-size: 4rem;
+}
