@@ -12,6 +12,8 @@ import {
 
 import discoverAPI from '../api/discover.js';
 
+import Appointments from './appointments.jsx'
+
 const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop }) => {
   return (
     <div className="card dashboard__discoverGuide_Item">
@@ -63,7 +65,6 @@ class Dashboard extends React.Component {
   }
 
   render() {
-
     const guides = this.state.topGuides?.slice(0, 4).map((guide, i) => {
         return <DiscoverGuideItem key={i} major={guide.major} name={guide.name} university={guide.university} grade={guide.grade} profilePic={guide.profilePic} backdrop={guide.backdrop}></DiscoverGuideItem>
     })
@@ -87,30 +88,7 @@ class Dashboard extends React.Component {
         <Redirect to="/dashboard/upcoming"/> 
           <div id="dashboard__bottomPreview" className="columns">
             <div className="column is-half">
-              <div id="dashboard__previewAppointments" className="card">
-                <header className="card-header">
-                  <p className="is-size-3 card-header-title is-size-6-touch">
-                    Your Appointments
-                  </p>
-
-                  <p className="card-header-icon has-text-black">
-                    <NavLink className="is-size-6-touch" activeClassName="highlight" to="/dashboard/upcoming">Upcoming</NavLink>
-                  </p>
-                  <p className="card-header-icon has-text-black">
-                    <NavLink className="is-size-6-touch" activeClassName="highlight" to="/dashboard/past">Past</NavLink>
-                  </p>
-                </header>
-                <div className="card-content">
-                  <Switch>
-                    <Route path="/dashboard/upcoming">
-                      <h1>Upcoming</h1>
-                    </Route>
-                    <Route path="/dashboard/past">
-                      <h3>Past</h3>
-                    </Route>
-                  </Switch>
-                </div>
-              </div>
+              <Appointments/>
             </div>
             <div className="column is-half">
               <div id="dashboard__previewAppointments" className="card">

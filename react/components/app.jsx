@@ -12,6 +12,9 @@ import SVG from "react-inlinesvg";
 import profileAPI from "../api/profile.js";
 
 import Dashboard from "./dashboard.jsx";
+import Appointments from './appointments.jsx'
+
+import profileStore from '../store/profileStore.js';
 
 import "./theme.sass";
 import "./app.scss";
@@ -35,8 +38,12 @@ class App extends React.Component {
   componentDidMount() {
     profileAPI.getProfile().then(profile => {
       console.log(profile);
-      this.setState({ profile: profile });
+      profileStore.dispatch({type: 'Initialize', data: profile});
     });
+
+    profileStore.subscribe(() => {
+      this.setState({profile: profileStore.getState()})
+    })
   }
 
   render() {
@@ -144,7 +151,7 @@ class App extends React.Component {
                   <Dashboard />
                 </Route>
                 <Route path="/Appointments">
-                  <Users />
+                  <Appointments/>
                 </Route>
                 <Route path="/Documents">
                   <Home />

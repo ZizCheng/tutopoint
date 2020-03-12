@@ -32,6 +32,7 @@
     min-height: 25rem;
 }
 
-#dashboard__previewAppointments .card-header-icon {
-    padding-left: 0px !important;
+#dashboard__bottomPreview #appointments .card-content {
+  overflow-y: auto;
+  max-height: 30rem;
 }
