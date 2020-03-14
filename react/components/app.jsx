@@ -13,6 +13,7 @@ import profileAPI from "../api/profile.js";
 
 import Dashboard from "./dashboard.jsx";
 import Appointments from './appointments.jsx'
+import Balance from './balance.jsx';
 
 import profileStore from '../store/profileStore.js';
 
@@ -49,7 +50,6 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <Redirect to="/dashboard" />
         <div className="container is-fluid">
           <nav
             className="navbar is-transparent"
@@ -107,7 +107,7 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-1 ${
-                this.state.hidden ? "scale-up-ver-top" : "is-hidden-mobile"
+                this.state.hidden ? "scale-up-ver-top" : "is-hidden-touch"
               }`}
             >
               <aside className="menu">
@@ -134,7 +134,7 @@ class App extends React.Component {
                   </li>
                   <li>
                     <NavLink activeClassName="is-active" to="/balance">
-                      Balance
+                      Balance {this.state.profile ? `- $${this.state.profile.stripe.balance}` : ''}
                     </NavLink>
                   </li>
                   <li>
@@ -160,7 +160,7 @@ class App extends React.Component {
                   <Home />
                 </Route>
                 <Route path="/Balance">
-                  <Home />
+                  <Balance/>
                 </Route>
                 <Route path="/Logout">
                   <Logout />
