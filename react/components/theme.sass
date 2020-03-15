@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 // Import a Google Font
-@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400&display=swap');
 
 $gray: #f9f9f9;
 $white: #FFFFFF;
@@ -39,7 +39,6 @@ $steps-active-color: $orange;
 $steps-divider-size: 3px;
 
 $primary: $orange;
-$grey-lighter: $edgy-gray;
 $grey-light: $light-gray;
 
 .highlight
@@ -54,6 +53,18 @@ $grey-light: $light-gray;
     background-color: $gray;
     & p
         color: $black;
+
+.overlay
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0,0,0.1);
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow: hidden;
+
+
 
 // Import only what you need from Bulma
 @import "../../node_modules/bulma/sass/utilities/_all.sass";
@@ -73,3 +84,8 @@ $grey-light: $light-gray;
 @import "../../node_modules/bulma/sass/components/card.sass";
 @import "../../node_modules/bulma/sass/grid/_all.sass";
 @import "../../node_modules/bulma-o-steps/bulma-steps.sass";
+
++touch
+    .container.is-fluid
+        padding-left: 5px;
+        padding-right: 5px;

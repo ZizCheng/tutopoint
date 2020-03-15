@@ -6,6 +6,9 @@ const profileReducer = (state, action) => {
     return data;
   } else if (type == 'Update') {
     return data;
+  } else if (type == 'Update Balance') {
+    state.stripe.balance = data.balance;
+    return state;
   } else {
     return state;
   }

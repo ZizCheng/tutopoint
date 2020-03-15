@@ -1,8 +1,11 @@
 import React, { useEffect, setState, useState } from "react";
 import ReactDOM from "react-dom";
+import { withRouter } from "react-router-dom";
 import "./balance.scss";
 import profileStore from "../store/profileStore.js";
+import balanceAPI from "../api/balance.js";
 import { loadStripe } from "@stripe/stripe-js";
+import QRCode from 'qrcode.react';
 import {
   CardElement,
   Elements,
@@ -30,19 +33,13 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
     else if (count == 1) {
       if(paymentMethod == "NewCard"){
         stripe
-        .createPaymentMethod({
-          type: "card",
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name: document.querySelector('input[name="name"]').value
-          }
-        })
+        .createToken(elements.getElement(CardElement))
         .then(function(result) {
-          setStripeCardInfo(result.paymentMethod);
+          setStripeCardInfo(result);
           if(result.error){
             setCount(1);
           } else {
-            onFormCompleted({type: "NewCard", card: result.paymentMethod, amount: amount.value});
+            onFormCompleted({type: "NewCard", card: result, amount: amount.value});
             count >= 2 ? "" : setCount(count + 1);
           }
         });
@@ -97,11 +94,11 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
         <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
           <div className="field has-addons">
             <p className="control has-text-grey-light is-hidden-touch">Select Payment Method</p>
-            <div className="select is-rounded">
-              <select id='paymentMethod' onChange={handleChangePaymentMethod}>
+            <div className="select is-rounded is-light">
+              <select defaultValue={"NewCard"} id='paymentMethod' className="has-text-gray" onChange={handleChangePaymentMethod}>
                 {getPaymentOptions()}
                 <option value="WeChat">WeChat</option>
-                <option value="NewCard" selected={paymentMethod == "NewCard" ? true : ''}>New Card</option>
+                <option value="NewCard">New Card</option>
                 </select>
             </div>
           </div>
@@ -125,13 +122,13 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
           </div>
         </div>
         <div id="Balance__Form" className={count != 2 ? "is-hidden" : ""}>
-          <div className="field has-addons">
+          <div className="field has-addons Balance__FormConfirmation">
             <p className="control has-text-grey-light">Payment Method</p>
             <a onClick={() => {setCount(1); onFormCompleted(null);}}className="control is-primary highlight has-text-weight-light">change</a>
           </div>
-          <div className="field has-addons">
+          <div className="field has-addons Balance__FormConfirmation">
             <p className="control has-text-grey-light has-text-weight-light">
-              {paymentMethod != "WeChat" ? (`Debit ending in ${stripeCardInfo?.card?.last4}`) : (`WeChat`)}
+              {paymentMethod != "WeChat" ? (`Debit ending in ${stripeCardInfo?.card?.last4 || stripeCardInfo?.token?.card?.last4}`) : (`WeChat`)}
             </p>
           </div>
         </div>
@@ -168,10 +165,11 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
 class Balance extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { step: 0, profile: profileStore.getState(), summary: null};
+    this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false};
     this.formRef = React.createRef();
 
     this.formComplete = this.formComplete.bind(this);
+    this.confirmPay = this.confirmPay.bind(this);
   }
 
   formComplete(result) {
@@ -190,9 +188,89 @@ class Balance extends React.Component {
     this.setState({ step: desiredStep });
   }
 
+  handlePaymentSource(src, that){
+    balanceAPI.pay(src.id, this.state.summary.amount)
+      .then((data) => {
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        that.props.history.push('/success');
+      });
+  }
+
+  pollSource(src, that, timeout = 300000, interval = 500, start = null){
+    const endStates = ['pending', 'canceled', 'failed', 'consumed'];
+    start = start ? start : Date.now()
+    stripePromise
+      .then(stripe => {
+        stripe
+      .retrieveSource({
+        id: src.id,
+        client_secret: src.client_secret,
+      })
+      .then(function(result) {
+        if (endStates.includes(result.source.status) && Date.now() < start + timeout) {
+          // Not done yet. Let's wait and check again.
+           setTimeout(function(){
+             that.pollSource(src, that, timeout, interval, start)
+            }, 3000);
+        } else {
+
+          if (endStates.includes(result.source.status)) {
+            // Status has not changed yet. Let's time out.
+            console.log(result.source.status)
+            console.warn(new Error('Polling timed out.'));
+          } else {
+            that.handlePaymentSource(result.source, that);
+          }
+        }
+      });
+      }) 
+  }
+
+  confirmPay(){
+    const that = this;
+    if(this.state.summary.type == "WeChat"){
+      stripePromise
+      .then(stripe => {
+        stripe.createSource({
+          type: 'wechat',
+          amount: this.state.summary.amount*100,
+          currency: 'usd',
+        })
+        .then(function(result) {
+          that.setState({wechat: true, wechat_qrcode: result.source.wechat["qr_code_url"]})
+          that.pollSource(result.source, that)
+        });
+      })
+    }
+    else if(this.state.summary.type == "SavedCard"){
+      balanceAPI.pay(this.state.summary.card.id, this.state.summary.amount, true)
+      .then((data) => {
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        that.props.history.push('/success');
+      });
+    }
+    else if(this.state.summary.type == "NewCard"){
+      balanceAPI.pay(this.state.summary.card.token.id, this.state.summary.amount)
+      .then((data) => {
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        that.props.history.push('/success');
+      });
+    }
+    
+    
+  }
+
   render() {
     return (
       <div id="Balance" className="container is-fluid">
+        {this.state.wechat && (<div className="overlay"><div className="overlay-center">
+          <div className="card">
+            <div className="card-content">
+            <QRCode value={this.state.wechat_qrcode} />
+            </div>
+          </div>
+          </div>
+          </div>)}
         <div className="columns">
           <div className={`column is-three-quarters ${!this.state.summary ? '' : 'is-hidden-touch'}`}>
             <div id="Balance__PaymentFormCard" className="card">
@@ -221,7 +299,7 @@ class Balance extends React.Component {
                   <p>${this.state.summary?.amount} of Tuto Credit</p>
                   <p>Total: ${this.state.summary?.amount}</p>
               </div>)}
-              {this.state.summary?.amount && (<a className="button is-primary has-text-centered is-hidden-touch"><span>Place Order</span></a>)}
+              {this.state.summary?.amount && (<a onClick={this.confirmPay} className="button is-primary has-text-centered is-hidden-touch"><span>Place Order</span></a>)}
               {this.state.summary?.amount && 
               (<div className="field is-grouped is-grouped-centered is-hidden-desktop">
               <p className="control">
@@ -234,7 +312,7 @@ class Balance extends React.Component {
                 </a>
               </p>
               <p className="control">
-                <a className="button is-primary">
+                <a onClick={this.confirmPay} className="button is-primary">
                   Place Order
                 </a>
               </p>
@@ -271,4 +349,4 @@ const BalanceSteps = ({ step }) => {
   );
 };
 
-export default Balance;
+export default withRouter(Balance);

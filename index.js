@@ -31,6 +31,7 @@ const adminRouter = require('./routes/adminRouter.js');
 
 const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
+const balanceAPI = require('./api/balance.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -41,7 +42,8 @@ const session = expressSession({
 
 mongoose.connect(databaseCredentials.url, {useNewUrlParser: true});
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 
 
@@ -70,6 +72,7 @@ app.use('/onboard', auth.guideHasOnboarded);
 // API
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
+app.use('/api/balance', balanceAPI);
 
 
 app.engine('handlebars', handlebars());

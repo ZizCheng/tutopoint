@@ -5,6 +5,7 @@ import {
   Switch,
   Route,
   NavLink,
+  Link,
   Redirect
 } from "react-router-dom";
 import SVG from "react-inlinesvg";
@@ -12,10 +13,10 @@ import SVG from "react-inlinesvg";
 import profileAPI from "../api/profile.js";
 
 import Dashboard from "./dashboard.jsx";
-import Appointments from './appointments.jsx'
-import Balance from './balance.jsx';
+import Appointments from "./appointments.jsx";
+import Balance from "./balance.jsx";
 
-import profileStore from '../store/profileStore.js';
+import profileStore from "../store/profileStore.js";
 
 import "./theme.sass";
 import "./app.scss";
@@ -39,12 +40,12 @@ class App extends React.Component {
   componentDidMount() {
     profileAPI.getProfile().then(profile => {
       console.log(profile);
-      profileStore.dispatch({type: 'Initialize', data: profile});
+      profileStore.dispatch({ type: "Initialize", data: profile });
     });
 
     profileStore.subscribe(() => {
-      this.setState({profile: profileStore.getState()})
-    })
+      this.setState({ profile: profileStore.getState() });
+    });
   }
 
   render() {
@@ -57,11 +58,10 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              
               <a className="navbar-item is-size-4" href="https://tutopoint.com">
-              <span className="icon is-large">
-                <img src={tutologo}/>
-              </span>
+                <span className="icon is-large">
+                  <img src={tutologo} />
+                </span>
                 TUTOPOINT
               </a>
 
@@ -106,7 +106,7 @@ class App extends React.Component {
           </nav>
           <div className="columns">
             <div
-              className={`column is-1 ${
+              className={`column is-2 ${
                 this.state.hidden ? "scale-up-ver-top" : "is-hidden-touch"
               }`}
             >
@@ -134,7 +134,10 @@ class App extends React.Component {
                   </li>
                   <li>
                     <NavLink activeClassName="is-active" to="/balance">
-                      Balance {this.state.profile ? `- $${this.state.profile.stripe.balance}` : ''}
+                      Balance{" "}
+                      {this.state.profile
+                        ? `- $${(this.state.profile.stripe.balance / 100) * -1}`
+                        : ""}
                     </NavLink>
                   </li>
                   <li>
@@ -151,7 +154,7 @@ class App extends React.Component {
                   <Dashboard />
                 </Route>
                 <Route path="/Appointments">
-                  <Appointments/>
+                  <Appointments />
                 </Route>
                 <Route path="/Documents">
                   <Home />
@@ -160,10 +163,13 @@ class App extends React.Component {
                   <Home />
                 </Route>
                 <Route path="/Balance">
-                  <Balance/>
+                  <Balance />
                 </Route>
                 <Route path="/Logout">
                   <Logout />
+                </Route>
+                <Route path="/success">
+                  <PaymentSuccess />
                 </Route>
               </Switch>
             </div>
@@ -189,5 +195,31 @@ function Users() {
 function Logout() {
   window.location.href = "/logout";
 }
+
+const PaymentSuccess = () => {
+  const profile = profileStore.getState();
+
+  return (
+    <div id="paymentSuccess">
+      <h1 className="has-font-weight-bold is-size-1 has-text-centered">
+        Your payment has been processed
+      </h1>
+      <p className="has-font-weight-light is-size-5 has-text-centered">
+        Your new balance is{" "}
+        {profile ? `$${(profile.stripe.balance / 100) * -1}` : ""}
+      </p>
+      <p className="has-font-weight-light is-size-5 has-text-centered">
+        A confirmation email has been sent to your inbox.
+      </p>
+      <Link
+        className="button has-text-centered is-primary"
+        style={{ marginLeft: "auto", marginRight: "auto" }}
+        to="/dashboard"
+      >
+        Back to Dashboard
+      </Link>
+    </div>
+  );
+};
 
 export default App;
