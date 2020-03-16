@@ -80,21 +80,18 @@ body {
 .big-banner {
   background-color: #F56363;
   padding: 5% 0% 5% 0%;
+  background-image: url("/images/aboutUsBanner.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-y: -150px;
+  height: 100%;
 }
 .main-panel {
   margin: 5% 0% 5% 0%;
   padding: 5% 5% 5% 5%;
   width: 100%;
-  background-color: #FEC3A6;
+  background-color: #F2F2F2;
   overflow: auto;
-}
-.left-image {
-  margin: 0 60% 0 0;
-  float: left;
-}
-.right-text {
-  padding: 5% 5% 5% 60%;
-  float: left;
 }
 
 
