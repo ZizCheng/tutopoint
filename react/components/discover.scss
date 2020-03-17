@@ -1,0 +1,5 @@
+
+.discover__guideWrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(27em, 1fr) );
+}

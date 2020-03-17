@@ -1,5 +1,3 @@
-
-
 // CALENDAR
 // pass in any time within month
 function newCalendar(date) {

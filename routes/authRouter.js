@@ -45,33 +45,6 @@ router.post('/login', auth.authenticateUser, auth.userIsVerified, function(req, 
   res.redirect('/dashboard');
 });
 
-router.get('/dashboard', auth.loggedIn, auth.userIsVerified, function(req, res) {
-  if (req.user.__t == 'clients') {
-    stripe.customers.retrieve(
-        req.user.stripeCustomerId,
-        function(err, customer) {
-          console.log(JSON.parse(JSON.stringify(req.user.sessions)));
-          res.render('dashboard-user', {
-            sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-            documents: JSON.parse(JSON.stringify(req.user.documents)),
-            customerBalance: (customer.balance / 100) * -1,
-            layout: false,
-          });
-        },
-    );
-  } else if (req.user.__t == 'guides') {
-    stripe.balance.retrieve({
-      stripe_account: req.user.stripeAccountId,
-    }, function(err, balance) {
-      res.render('dashboard-guide', {
-        sessions: JSON.parse(JSON.stringify(req.user.sessions)),
-        documents: JSON.parse(JSON.stringify(req.user.documents)),
-        balance: (balance.available[0].amount / 100),
-        layout: false,
-      });
-    });
-  }
-});
 router.get('/signup', (req, res) => {
   const referralCode = req.query.referral;
   res.render('signup', {
