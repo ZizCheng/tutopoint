@@ -15,6 +15,8 @@ import profileAPI from "../api/profile.js";
 import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
+import Discover from "./discover.jsx";
+import Session from "./session.jsx";
 
 import profileStore from "../store/profileStore.js";
 
@@ -22,6 +24,7 @@ import "./theme.sass";
 import "./app.scss";
 import emptyProfileIcon from "../data/images/emptyProfilePic.png";
 import tutologo from "../data/images/tutologo.png";
+import checkmark from "../data/images/checkmark.png";
 
 class App extends React.Component {
   constructor(props) {
@@ -51,7 +54,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <div className="container is-fluid">
+        <div id="main" className="container is-fluid">
           <nav
             className="navbar is-transparent"
             role="navigation"
@@ -68,7 +71,7 @@ class App extends React.Component {
               <a
                 onClick={this.toggleSideBarMobile}
                 role="button"
-                className="navbar-burger burger"
+                className="navbar-burger burger is-hidden-tablet"
               >
                 <span aria-hidden="true"></span>
                 <span aria-hidden="true"></span>
@@ -107,7 +110,7 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-2 ${
-                this.state.hidden ? "scale-up-ver-top" : "is-hidden-touch"
+                this.state.hidden ? "scale-up-ver-top" : "is-hidden-mobile"
               }`}
             >
               <aside className="menu">
@@ -141,6 +144,11 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
+                    <NavLink activeClassName="is-active" to="/session">
+                      Session
+                    </NavLink>
+                  </li>
+                  <li>
                     <NavLink activeClassName="is-active" to="/logout">
                       Log Out
                     </NavLink>
@@ -160,7 +168,7 @@ class App extends React.Component {
                   <Home />
                 </Route>
                 <Route path="/Discover">
-                  <Home />
+                  <Discover/>
                 </Route>
                 <Route path="/Balance">
                   <Balance />
@@ -170,6 +178,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/success">
                   <PaymentSuccess />
+                </Route>
+                <Route path="/session">
+                  <Session />
                 </Route>
               </Switch>
             </div>
@@ -200,7 +211,9 @@ const PaymentSuccess = () => {
   const profile = profileStore.getState();
 
   return (
-    <div id="paymentSuccess">
+    <div id="paymentSuccess" style={{marginTop: "15vh"}}>
+      <img style={{marginLeft: "auto", marginRight: "auto", display: "block"}} className="image" width="171" height="161" src={checkmark}/>
+      
       <h1 className="has-font-weight-bold is-size-1 has-text-centered">
         Your payment has been processed
       </h1>

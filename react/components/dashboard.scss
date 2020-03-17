@@ -7,15 +7,14 @@
 }
 
 .dashboard__discoverGuideCarousel {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(27em, 1fr) );
 }
 
 .dashboard__discoverGuide_Item {
   flex-basis: 27rem;
+  margin-top: 12px;
+  margin-left: 12px;
 
   & .media {
     display: flex;
