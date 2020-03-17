@@ -1,0 +1,191 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script src="pay_files/jquery.js"></script>
+  <script src="pay_files/popper.js"></script>
+  <script src="pay_files/bootstrap.js"></script>
+
+  <link rel="stylesheet" href="pay_files/bulma.css">
+  <link rel="stylesheet" href="pay_files/login.css">
+  <link rel="stylesheet" href="pay_files/userPay.css">
+  <script src="pay_files/a.js"></script>
+  <script src="pay_files/qrcode.js"></script>
+
+</head>
+
+<body>
+
+  <div id="wechatModal" class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="card rounded">
+        <div class="card-content wechat-display">
+          <img class="wechat-logo" src="pay_files/wechat-pay-logo.png">
+          <div id="QRDisplay" title="https://stripe.com/sources/test_source?source=src_1GGsYPKQ4yHxTRO4vK7PXbBU&amp;client_secret=src_client_secret_XycumtOY2dTw4YpUPIPpJXaQ"><canvas width="256" height="256" style="display: none;"></canvas><img style="display: block;" src="data:image/png;base64,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"></div>
+          <h2 id="amountDue">Amount Due: $1.00</h2>
+        </div>
+      </div>
+    </div>
+    <button id="close-modal" class="modal-close is-large" aria-label="close"></button>
+  </div>
+
+  <div class="page-content">
+    <div class="side-nav">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+          <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+          <li><a href="http://localhost:3000/discover">Discover</a></li>
+        </ul>
+        <p class="menu-label">Account</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="balance" href="http://localhost:3000/pay">Balance: $</a></li>
+          <li><a href="http://localhost:3000/logout">Log out</a></li>
+        </ul>
+        <div></div>
+      </aside>
+    </div>
+    <div class="payment">
+      <h1>Add Money</h1>
+
+      <div class="card">
+        <div class="card-content">
+          <form action="/pay" method="post" id="paymentForm">
+            <div class="field">
+              <label class="label">Choose a Payment Method</label>
+              <div class="control">
+                <div class="select">
+                  <select id="paymentMethod" name="source">
+                    <option value="wechat" id="wechatOption" selected="selected">WeChat Pay</option>
+                    <option value="addpayment">Add Payment Method</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Enter Amount ($15 per session)</label>
+              <div class="control">
+                <input id="CreditAmount" class="input" type="text" name="CreditAmount" placeholder="Amount in USD" value="1">
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button id="formSubmitButton" class="button is-link" disabled="disabled">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="wrapper">
+  <div class="form-content">
+    <form action="/pay" method="post" id="paymentForm">
+      <div class="form-row">
+        <label for="paymentMethod">Choose a payment method:</label>
+
+        <select id="paymentMethod" name="source">
+          <option value="wechat" id="wechatOption"> WeChat </option>
+          <option value="addpayment"> Add payment method </option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="card-element">
+          Confirm payment for $15 session or some
+        </label>
+        <div class="row">
+          <label for="CreditAmount">Credit</label>
+          <input id="CreditAmount" type="text" placeholder="15" required="" name="CreditAmount">
+        </div>
+      </div>
+      <div id="QRDisplay"></div>
+      <button id="formSubmitButton">Submit Payment</button>
+    </form>
+
+  </div>
+  </div>
+  -->
+  <script>
+    var stripe = Stripe('pk_test_7lBG8gut6VvygbnBDxJHYiK300GhqhqUOC');
+
+    paymentMethod.addEventListener('change', function () {
+      const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+      alert(currentSelectedValue);
+      if (currentSelectedValue == "addpayment") {
+        window.location.href = "/pay/addpaymentmethod";
+      }
+    });
+
+    paymentForm.addEventListener('submit', function (e) {
+      document.getElementById("wechatModal").classList.add("is-active")
+      document.getElementById("amountDue").innerHTML = "Amount Due: $" + parseFloat(CreditAmount.value).toFixed(2);
+      e.preventDefault();
+
+      const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+      if (currentSelectedValue == "wechat") {
+
+        formSubmitButton.disabled = true;
+        stripe.createSource({
+          type: 'wechat',
+          amount: CreditAmount.value * 100,
+          currency: 'usd',
+        }).then(function (result) {
+          // handle result.error or result.source
+          if (result.error) return;
+          pollSource(result.source)
+          new QRCode(document.getElementById("QRDisplay"), result.source.wechat["qr_code_url"]);
+
+        });
+      }
+      else {
+        paymentForm.submit();
+      }
+
+    })
+
+    WeChatButton.addEventListener('click', function () {
+
+    })
+
+
+    function pollSource(src, timeout = 300000, interval = 500, start = null) {
+      const endStates = ['pending', 'canceled', 'failed', 'consumed'];
+      start = start ? start : Date.now()
+      stripe
+        .retrieveSource({
+          id: src.id,
+          client_secret: src.client_secret,
+        })
+        .then(function (result) {
+          if (endStates.includes(result.source.status) && Date.now() < start + timeout) {
+            // Not done yet. Let's wait and check again.
+            setTimeout(function () {
+              pollSource(src, timeout, interval, start)
+            }, 3000);
+          } else {
+
+            if (endStates.includes(result.source.status)) {
+              // Status has not changed yet. Let's time out.
+              console.warn(new Error('Polling timed out.'));
+            } else {
+              handlePaymentSource(result.source);
+            }
+          }
+        });
+    }
+
+    function handlePaymentSource(src) {
+      var form = document.getElementById('paymentForm');
+      var hiddenInput = document.createElement('input');
+      wechatOption.value = src.id
+      form.appendChild(hiddenInput);
+
+      // Submit the form
+      form.submit();
+    }
+
+
+  </script><iframe allowtransparency="true" scrolling="no" name="__privateStripeController1" allowpaymentrequest="true" src="pay_files/controller-eb4fc0685c9021bb93dcad54d55eabec.html" aria-hidden="true" tabindex="-1" style="border: medium none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;" frameborder="0"></iframe>
+
+
+<iframe allowtransparency="true" scrolling="no" name="__privateStripeMetricsController0" allowpaymentrequest="true" src="pay_files/outer.html" aria-hidden="true" tabindex="-1" style="border: medium none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;" frameborder="0"></iframe></body></html>

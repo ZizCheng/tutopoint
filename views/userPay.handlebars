@@ -1,120 +1,171 @@
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="./css/bulma.css">
-    <link rel="stylesheet" href="./css/login.css">
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="/js/qrcode.min.js"></script>
-  </head>
-  <body>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/js/animate.css">
+  <link rel="stylesheet" href="./css/bulma.css">
+  <link rel="stylesheet" href="./css/login.css">
+  <link rel="stylesheet" href="/css/userPay.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="/js/qrcode.min.js"></script>
 
-    <div class="wrapper">
-      <div class="form-content">
-        <form action="/pay" method="post" id="paymentForm">
-          <div class="form-row">
-          <label for="paymentMethod">Choose a payment method:</label>
+</head>
 
-          <select id="paymentMethod" name="source">
-            {{#each cards}}
-              <option value="{{this.id}}"> Card ending with {{this.last4}} </option>
-            {{/each}}
-           <option value="wechat" id="wechatOption"> WeChat </option>
-           <option value="addpayment"> Add payment method </option>
-          </select>
-        </div>
-          <div class="form-row">
-            <label for="card-element">
-              Confirm payment for $15 session or some
-            </label>
-            <div class="row">
-              <label for="CreditAmount" >Credit</label>
-              <input id="CreditAmount" type="text" placeholder="15" required="" name="CreditAmount">
-            </div>
-          </div>
+<body>
+
+  <div id="wechatModal" class="modal animated fadeIn">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="card">
+        <div class="card-content wechat-display">
+          <img class="wechat-logo" src="/images/wechat-pay-logo.png" />
           <div id="QRDisplay"></div>
-          <button id="formSubmitButton">Submit Payment</button>
-        </form>
-
+          <h2 id="amountDue"></h2>
+        </div>
       </div>
     </div>
-    <script>
-        var stripe = Stripe('{{stripePK}}');
+    <button onclick="hideModal()" id="close-modal" class="modal-close is-large" aria-label="close"></button>
+  </div>
 
-        paymentMethod.addEventListener('change', function() {
-          const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
-          if(currentSelectedValue == "addpayment"){
-            window.location.href = "/pay/addpaymentmethod";
+  <div class="page-content">
+    <div class="side-nav">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+          <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+          <li><a href="/discover">Discover</a></li>
+        </ul>
+        <p class="menu-label">Account</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="balance" href="/pay">Balance: ${{customerBalance}}</a></li>
+          <li><a href="/logout">Log out</a></li>
+        </ul>
+        <div></div>
+      </aside>
+    </div>
+    <div class="payment">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title">Add Money</h1>
+          <form action="/pay" method="post" id="paymentForm">
+            <div class="field">
+              <label class="label">Choose a Payment Method</label>
+              <div class="control">
+                <div class="select">
+                  <select id="paymentMethod" name="source">
+                    {{#each cards}}
+                    <option value="{{this.id}}">Card ending with {{this.last4}} </option>
+                    {{/each}}
+                    <option value="wechat" id="wechatOption">WeChat Pay</option>
+                    <option value="addpayment">Add Payment Method</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Enter Amount ($15 per session)</label>
+              <div class="control">
+                <input id="CreditAmount" class="input" type="text" name="CreditAmount" placeholder="Amount in USD">
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button id="formSubmitButton" class="button is-link">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var stripe = Stripe('{{stripePK}}');
+
+    function hideModal() {
+      document.getElementById("wechatModal").classList.remove("is-active");
+    }
+
+    paymentMethod.addEventListener('change', function () {
+      const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+      if (currentSelectedValue == "addpayment") {
+        window.location.href = "/pay/addpaymentmethod";
+      }
+    });
+
+    paymentForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
+      if (currentSelectedValue == "wechat") {
+
+        formSubmitButton.disabled = true;
+        stripe.createSource({
+          type: 'wechat',
+          amount: CreditAmount.value * 100,
+          currency: 'usd',
+        }).then(function (result) {
+          // handle result.error or result.source
+          if (result.error) return;
+          pollSource(result.source)
+          new QRCode(document.getElementById("QRDisplay"), result.source.wechat["qr_code_url"]);
+          document.getElementById("wechatModal").classList.add("is-active")
+          document.getElementById("amountDue").innerHTML = "Amount Due: $" + parseFloat(CreditAmount.value).toFixed(2);
+
+        });
+      }
+      else {
+        paymentForm.submit();
+      }
+
+    })
+
+    WeChatButton.addEventListener('click', function () {
+
+    })
+
+
+    function pollSource(src, timeout = 300000, interval = 500, start = null) {
+      const endStates = ['pending', 'canceled', 'failed', 'consumed'];
+      start = start ? start : Date.now()
+      stripe
+        .retrieveSource({
+          id: src.id,
+          client_secret: src.client_secret,
+        })
+        .then(function (result) {
+          if (endStates.includes(result.source.status) && Date.now() < start + timeout) {
+            // Not done yet. Let's wait and check again.
+            setTimeout(function () {
+              pollSource(src, timeout, interval, start)
+            }, 3000);
+          } else {
+
+            if (endStates.includes(result.source.status)) {
+              // Status has not changed yet. Let's time out.
+              console.warn(new Error('Polling timed out.'));
+            } else {
+              handlePaymentSource(result.source);
+            }
           }
         });
+    }
 
-        paymentForm.addEventListener('submit', function(e){
-          e.preventDefault();
+    function handlePaymentSource(src) {
+      var form = document.getElementById('paymentForm');
+      var hiddenInput = document.createElement('input');
+      wechatOption.value = src.id
+      form.appendChild(hiddenInput);
 
-          const currentSelectedValue = paymentMethod.options[paymentMethod.selectedIndex].value
-          if(currentSelectedValue == "wechat"){
-            formSubmitButton.disabled = true;
-            stripe.createSource({
-            type: 'wechat',
-            amount: CreditAmount.value * 100,
-            currency: 'usd',
-          }).then(function(result) {
-            // handle result.error or result.source
-            if(result.error) return;
-            pollSource(result.source)
-            new QRCode(document.getElementById("QRDisplay"), result.source.wechat["qr_code_url"]);
-          });
-          }
-          else {
-            paymentForm.submit();
-          }
-
-        })
-
-            WeChatButton.addEventListener('click', function(){
-
-        })
+      // Submit the form
+      form.submit();
+    }
 
 
-        function pollSource(src, timeout = 300000, interval = 500, start = null){
-          const endStates = ['pending', 'canceled', 'failed', 'consumed'];
-          start = start ? start : Date.now()
-          stripe
-            .retrieveSource({
-              id: src.id,
-              client_secret: src.client_secret,
-            })
-            .then(function(result) {
-              if (endStates.includes(result.source.status) && Date.now() < start + timeout) {
-                // Not done yet. Let's wait and check again.
-                 setTimeout(function(){
-                   pollSource(src, timeout, interval, start)
-                  }, 3000);
-              } else {
+  </script>
+</body>
 
-                if (endStates.includes(result.source.status)) {
-                  // Status has not changed yet. Let's time out.
-                  console.warn(new Error('Polling timed out.'));
-                } else {
-                  handlePaymentSource(result.source);
-                }
-              }
-            });
-        }
-
-          function handlePaymentSource(src){
-            var form = document.getElementById('paymentForm');
-            var hiddenInput = document.createElement('input');
-            wechatOption.value = src.id
-            form.appendChild(hiddenInput);
-
-            // Submit the form
-            form.submit();
-          }
-
-
-    </script>
-  </body>
 </html>

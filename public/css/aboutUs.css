@@ -71,6 +71,28 @@ body {
   opacity: 1;
   padding: 0% 3% 15% 3%;
 }
+.about-text {
+  width: 65%;
+  margin: auto;
+  text-align: center;
+  line-height: 200%;
+}
+.big-banner {
+  background-color: #F56363;
+  padding: 5% 0% 5% 0%;
+  background-image: url("/images/aboutUsBanner.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-y: -150px;
+  height: 100%;
+}
+.main-panel {
+  margin: 5% 0% 5% 0%;
+  padding: 5% 5% 5% 5%;
+  width: 100%;
+  background-color: #F2F2F2;
+  overflow: auto;
+}
 
 
 .left-nav h2 {
@@ -147,28 +169,4 @@ body {
 .why-icon i
 {
   font-size: 4rem;
-}
-
-.hero {
-  background-color: #014855 !important;
-}
-
-#heroBody {
-  background-image: url('/images/background-cropped.png');
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position-x: -40vw;
-  background-position-y: -10vh;
-}
-
-@media screen and (max-width: 1280px) {
-  #heroBody {
-    background-image: url('/images/background.png');
-    background-size:cover;
-    background-position-x: 0px;
-    background-position-y: 0vh;
-  }
-  #tutopointDescription {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
 }
