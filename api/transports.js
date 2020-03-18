@@ -32,74 +32,159 @@ const mediaCodecs = [
   },
 ];
 
-transports.post('/connect', async function(req, res) {
-  const roomid = req.body.roomid;
-  const profileid = req.user.id;
-  if (!rooms[roomid]) {
-    await createRouter(roomid);
+
+function handleIO(socket) {
+  const profileid = socket.request.session.passport ? socket.request.session.passport.user : null;
+  const sessionid = socket.request._query['sessionid'];
+  if (profileid == null || sessionid == null) return;
+
+  else {
+    socket.join(sessionid);
+    handleIOConnectTransport(socket, profileid, sessionid);
+    initializeSocketUser(socket, profileid, sessionid);
   }
-  const router = rooms[roomid].router;
+}
 
-  await createTransportForUser(roomid, profileid);
+async function initializeSocketUser(socket, profileid, sessionid) {
+  if (!rooms[sessionid]) {
+    await createRouter(sessionid);
+  }
 
-  const webRtcTransport = rooms[roomid][profileid].webRtcTransport;
-  const {id, iceParameters, iceCandidates, dtlsParameters} = webRtcTransport;
+  subscribeUser(socket, profileid, sessionid);
+  await createTransportForUser(sessionid, profileid);
 
-  const recvwebRtcTransport = rooms[roomid][profileid].recv;
-  const {id: recvid, iceParameters: recviceParameters, iceCandidates: recviceCandidates, dtlsParameters: recvdtlsParameters} = recvwebRtcTransport;
-  res.json({
-    message: 'success',
+  const router = rooms[sessionid].router;
+  const {id, iceParameters, iceCandidates, dtlsParameters} = rooms[sessionid][profileid].video;
+  const {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters} = rooms[sessionid][profileid].audio;
+
+  const reply = {
     routerRtpCapabilities: router.rtpCapabilities,
-    transportOptions: {id, iceParameters, iceCandidates, dtlsParameters},
-    recv: {id: recvid, iceParameters: recviceParameters, iceCandidates: recviceCandidates, dtlsParameters: recvdtlsParameters},
+    videoTransportOptions: {id, iceParameters, iceCandidates, dtlsParameters},
+    audioTransportOptions: {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters},
+  };
+
+  socket.emit('connectInfo', reply);
+}
+
+function handleIOConnectTransport(socket, profileid, sessionid) {
+  socket.on('connectRTC', function({dtlsParameters, kind, tag}) {
+    const profileTransports = rooms[sessionid][profileid];
+    console.log('conect');
+    let transport;
+    if (tag == undefined) {
+      console.log('prod');
+      if (kind == 'video') {
+        transport = profileTransports.video;
+      } else if (kind == 'audio') {
+        transport = profileTransports.audio;
+      }
+    }
+    if (tag != undefined) {
+      console.log(tag);
+      if (kind == 'video') {
+        transport = profileTransports[tag].videoTransport;
+      }
+      if (kind == 'audio') {
+        transport = profileTransports[tag].audioTransport;
+      }
+    }
+    socket.to(sessionid).emit('CheckStreams');
+    transport.connect({dtlsParameters});
   });
-});
 
-transports.post('/transportConnect', async function(req, res) {
-  const roomid = req.body.roomid;
-  const profileid = req.user.id;
-  let web;
-  if (req.body.type == 'recv') {
-    web = rooms[roomid][profileid].recv;
-  } else {
-    web = rooms[roomid][profileid].webRtcTransport;
-  }
-
-  const dtlsParameters = req.body.dtlsParameters;
-  web.connect({dtlsParameters});
-  res.json({message: 'ok'});
-});
-
-transports.post('/transportProduce', async function(req, res) {
-  const roomid = req.body.roomid;
-  const profileid = req.user.id;
-  const web = rooms[roomid][profileid].webRtcTransport;
-  const producer = await web.produce({
-    kind: req.body.kind,
-    rtpParameters: req.body.rtpParameters,
+  socket.on('produce', async function(producerData) {
+    const profileTransports = rooms[sessionid][profileid];
+    let transport;
+    if (producerData.kind == 'video') {
+      transport = profileTransports.video;
+      const producer = await transport.produce(producerData);
+      profileTransports.videoProducer = producer;
+      socket.emit('producerCallback', producer);
+    }
+    if (producerData.kind == 'audio') {
+      transport = profileTransports.audio;
+      const producer = await transport.produce(producerData);
+      profileTransports.audioProducer = producer;
+      socket.emit('producerCallback', producer);
+    }
   });
-  rooms[roomid][profileid]['producer'] = producer;
-  res.json({message: 'ok', producerId: producer.id});
-});
 
-transports.post('/transportsReceive', async function(req, res) {
-  const roomid = req.body.roomid;
-  const profileid = req.user.id;
-  const rtpCapabilities = await req.body.rtpCapabilities;
-  const producerId = rooms[roomid][profileid]['producer'].id;
-  console.log(producerId);
-  const router = rooms[roomid].router;
+  socket.on('consume', async function({tag, rtpCapabilities, type}) {
+    const profileTransports = rooms[sessionid][profileid];
+    profileTransports[tag] = {};
+    const router = rooms[sessionid].router;
+    if (type == 'video') {
+      if (router.canConsume({producerId: tag, rtpCapabilities: rtpCapabilities})) {
+        const videoReceive = await router.createWebRtcTransport({
+          listenIps: ['10.0.0.171', '127.0.0.1'],
+          announcedIp: '73.140.155.16',
+          enableUdp: true,
+          enableTcp: true,
+          preferUdp: true,
+          enableSctp: true,
+        });
 
-  if (router.canConsume({producerId: producerId, rtpCapabilities: rtpCapabilities})) {
-    const consumer = await rooms[roomid][profileid].recv.consume({producerId: producerId, rtpCapabilities: rtpCapabilities});
-    const {id, producerId: c_producerId, rtpParameters, kind} = consumer;
+        videoReceive.on('icestatechange', (iceState) => {
+          console.log('FUCKING YES ICE state changed to %s', iceState);
+        });
 
+        profileTransports[tag].videoTransport = await videoReceive;
+        profileTransports[tag].videoConsumer = await profileTransports[tag].videoTransport.consume({producerId: tag, rtpCapabilities: rtpCapabilities});
+        const {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters} = videoReceive;
+        const {id, producerId, kind, rtpParameters} = profileTransports[tag].videoConsumer;
+        socket.emit('receiveConsumer', {producerId: tag, type: type, consumerInfo: {id, producerId, kind, rtpParameters}, transportOptions: {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters}});
+      }
+    } else if (type == 'audio') {
+      if (router.canConsume({producerId: tag, rtpCapabilities: rtpCapabilities})) {
+        const audioReceive = await router.createWebRtcTransport({
+          listenIps: ['10.0.0.171', '127.0.0.1'],
+          announcedIp: '73.140.155.16',
+          enableUdp: true,
+          enableTcp: true,
+          preferUdp: true,
+          enableSctp: true,
+        });
 
-    res.json({message: 'ok', consumerData: {id, producerId: c_producerId, rtpParameters, kind}});
-  } else {
-    res.json({error: 'Cannot consume. Incompatible Codecs.'});
-  }
-});
+        profileTransports[tag].audioTransport = await audioReceive;
+        profileTransports[tag].audioConsumer = await profileTransports[tag].audioTransport.consume({producerId: tag, rtpCapabilities: rtpCapabilities});
+
+        const {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters} = audioReceive;
+        const {id, producerId, kind, rtpParameters} = profileTransports[tag].audioConsumer;
+        socket.emit('receiveConsumer', {producerId: tag, type: type, consumerInfo: {id, producerId, kind, rtpParameters}, transportOptions: {id: a_id, iceParameters: a_iceParameters, iceCandidates: a_iceCandidates, dtlsParameters: a_dtlsParameters}});
+      }
+    }
+  });
+}
+
+async function subscribeUser(socket, profileid, sessionid) {
+  socket.on('getAllStreams', function() {
+    const room = rooms[sessionid];
+    const profiles = Object.keys(room)
+        .filter((item) => {
+          if (item == 'router' || item == profileid) {
+            return false;
+          } else {
+            return true;
+          }
+        })
+        .map((profile) => {
+          const profileObj = rooms[sessionid][profile];
+          const ret = {};
+
+          if (profileObj.videoProducer != undefined) {
+            ret['videoTag'] = profileObj.videoProducer.id;
+          }
+          if (profileObj.audioProducer != undefined) {
+            ret['audioTag'] = profileObj.audioProducer.id;
+          }
+
+          return ret;
+        });
+
+    socket.emit('AllStreams', profiles);
+  });
+}
+
 
 async function createWorker() {
   try {
@@ -130,7 +215,7 @@ async function createRouter(id) {
 async function createTransportForUser(roomid, userid) {
   const router = rooms[roomid].router;
 
-  const webRtcTransport = await router.createWebRtcTransport({
+  const videoRtc= await router.createWebRtcTransport({
     listenIps: ['10.0.0.171', '127.0.0.1'],
     announcedIp: '73.140.155.16',
     enableUdp: true,
@@ -139,7 +224,7 @@ async function createTransportForUser(roomid, userid) {
     enableSctp: true,
   });
 
-  const recvWebRtcTransport = await router.createWebRtcTransport({
+  const audioRtc = await router.createWebRtcTransport({
     listenIps: ['10.0.0.171', '127.0.0.1'],
     announcedIp: '73.140.155.16',
     enableUdp: true,
@@ -148,18 +233,16 @@ async function createTransportForUser(roomid, userid) {
     enableSctp: true,
   });
 
-  webRtcTransport.on('icestatechange', (iceState) => {
-    console.log('ICE state changed to %s', iceState);
+  videoRtc.on('icestatechange', (iceState) => {
+    console.log('Video ICE state changed to %s', iceState);
   });
 
-  const plainRtpTransport = await router.createPlainRtpTransport({
-    listenIp: '10.0.0.171',
-    announcedIp: '73.140.155.16',
-    rtcpMux: true,
-    comedia: true,
+  audioRtc.on('icestatechange', (iceState) => {
+    console.log('Audio ICE state changed to %s', iceState);
   });
 
-  rooms[roomid][userid] = {webRtcTransport: webRtcTransport, plain: plainRtpTransport, recv: recvWebRtcTransport};
+
+  rooms[roomid][userid] = {audio: audioRtc, video: videoRtc};
 }
 
 function init() {
@@ -172,4 +255,5 @@ function init() {
 module.exports = {
   router: transports,
   initialize: init,
+  handleIO: handleIO,
 };

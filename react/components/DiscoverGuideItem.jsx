@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop }) => {
+const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop, onClick }) => {
     return (
-      <div className="card dashboard__discoverGuide_Item">
+      <div onClick={onClick} className="card dashboard__discoverGuide_Item">
         <div className="card-image">
           <figure className="image is-2by1">
             <img

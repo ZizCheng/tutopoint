@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 
 import discoverAPI from '../api/discover.js';
+import profileStore from "../store/profileStore.js";
 
 import Appointments from './appointments.jsx'
 import DiscoverGuideItem from './DiscoverGuideItem.jsx';
@@ -19,7 +20,7 @@ import DiscoverGuideItem from './DiscoverGuideItem.jsx';
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {topGuides: null}
+    this.state = {topGuides: null, profile: profileStore.getState()};
   }
 
   componentDidMount(){
@@ -28,6 +29,10 @@ class Dashboard extends React.Component {
         .then((guides) => {
             this.setState({topGuides: guides})
         })
+
+        profileStore.subscribe(() => {
+          this.setState({ profile: profileStore.getState() });
+        });
   }
 
   render() {
@@ -37,7 +42,7 @@ class Dashboard extends React.Component {
 
     return (
       <React.Fragment>
-        <div id="dashboard__discoverGuide" className="card is-hidden-touch">
+        <div id="dashboard__discoverGuide" className={`card is-hidden-touch ${this.state.profile?.__t != guides ? 'is-hidden' : ""}`}>
           <header className="card-header">
             <p className="is-size-3 card-header-title">Discover Guides</p>
             <p className="card-header-icon has-text-black">

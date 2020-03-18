@@ -1,5 +1,13 @@
-
 .discover__guideWrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(27em, 1fr) );
+}
+
+#discover__focusedGuide {
+  padding: 1.5em;
+  background-color: #FFFFFF;
+  min-height: 0 !important;
+  width: 70vw;
+  height: 80vh;
+  border-radius: 25px;
 }

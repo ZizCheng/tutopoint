@@ -10,7 +10,7 @@ discover.use(auth.ensureUserIsClient);
 discover.get('/', function(req, res) {
   Guides
       .find({})
-      .select('_id name university major grade university profilePic backdrop')
+      .select('_id name university major grade university profilePic backdrop bio')
       .then((listOfGuides) => res.json(JSON.parse(JSON.stringify(listOfGuides))))
       .catch((err) => console.log(err));
 });
