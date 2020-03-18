@@ -1,8 +1,8 @@
-
-
 // CALENDAR
 // pass in any time within month
 function newCalendar(date) {
+  $(".calendar-month-name").html(monthNames[date.getMonth()]);
+
   $('.calendar-body').html('');
 
   const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);

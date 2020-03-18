@@ -1,0 +1,43 @@
+.page-content {
+    display: flex;
+    height: 100%;
+}
+
+.payment {
+    flex: 1;
+    margin: 32px;
+}
+
+.side-nav {
+    padding-top: 40px;
+    margin-left: 20px;
+    box-shadow: 7px 2px 11px rgba(0, 0, 0, 0.16);
+    height: 105%;
+}
+
+.input {
+    width: 600px;
+}
+
+.StripeElement {
+    box-sizing: border-box;
+    width: 600px;
+    height: 40px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: #dbdbdb;
+    background-color: white;
+}
+
+.StripeElement--invalid {
+    border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+}
+
+button {
+    margin-top: 15px;
+}
