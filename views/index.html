@@ -46,7 +46,7 @@
         login modal
         use JS to toggle the is-active class on the div
     -->
-    <div class="modal">
+    <div id="loginModal" class="modal">
         <div class="modal-background"></div>
         <div class="modal-content">
             <div class="card login">
@@ -66,12 +66,12 @@
                 </a>
                 <p>Don't have an account? <a class="is-primary">Sign Up</a></p>
             </div>
-        <button class="modal-close is-large" aria-label="close"></button>
+        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
         </div>
     </div>
 
     <!--register modal-->
-    <div class="modal is-active">
+    <div id="registerModal" class="modal">
         <div class="modal-background"></div>
         <div class="modal-content">
             <div class="card login">
@@ -101,7 +101,7 @@
                 </a>
                 <p>Already have an account? <a class="is-primary">Log in</a></p>
             </div>
-        <button class="modal-close is-large" aria-label="close"></button>
+        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
         </div>
     </div>
     <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -120,9 +120,9 @@
                     <a class="navbar-item" href="/guides" style="margin-right: 6%; font-size: 20px;">Our Guides</a>
                     <a class="navbar-item" href="/about" style="margin-right: 6%; font-size: 20px;">About Us</a>
                     <a class="navbar-item" href="/mission" style="margin-right: 6%; font-size: 20px;">Mission</a>
-                    <button class="button is-danger is-rounded top-button" href="/signup"
+                    <button onclick="showLogin()" class="button is-danger is-rounded top-button" href="/signup"
                         style="margin: 12px 8px 12px 8px;">Sign up</button>
-                    <button class="button is-danger is-rounded top-button" href="/login"
+                    <button onclick="showRegister()" class="button is-danger is-rounded top-button" href="/login"
                         style="margin: 12px 20% 12px 8px;">Log in</button>
                 </div>
             </div>
@@ -358,6 +358,21 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script type="text/javascript" src="/js/index.js"></script>
+
+    <script type="text/javascript">
+        let loginModal = document.getElementById("loginModal");
+        let registerModal = document.getElementById("registerModal");
+        function showLogin() {
+           loginModal.classList.add("is-active");
+        }
+        function showRegister() {
+            loginModal.classList.add("is-active");
+        }
+        function hideModal() {
+            loginModal.classList.remove("is-active");
+            registerModal.classList.remove("is-active");
+        }
+    </script>
 </body>
 <footer class="footer" style="padding-bottom: 1em !important;">
     <div class="content has-text-centered">
