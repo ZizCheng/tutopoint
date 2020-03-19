@@ -6,15 +6,20 @@ import DiscoverGuideItem from "./DiscoverGuideItem.jsx";
 import "./discover.scss";
 import discoverAPI from "../api/discover.js";
 
-import moment from "moment-timezone.js";
+import momentA from 'moment';
+import moment from "moment-timezone";
 
 class Schedule extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {};
   }
 
   componentDidMount() {
+    console.log(moment().tz("America/Los_Angeles").format());
     discoverAPI.getGuideSchedule(this.props.id).then(data => {
+      console.log("data:");
+      console.log(data);
       this.setState({schedule: data?.schedule});
     })
   }
@@ -27,12 +32,15 @@ class Schedule extends React.Component {
         "America/Los_Angeles",
         "America/New_York",
         "Asia/Shanghai",
-      ].map(timezone => {
-        console.log(moment(schedule).tz(timezone).format(format));
+      ].map((timezone) => {
         return (
-          <td>{moment(schedule).tz(timezone).format(format)}</td>
+          <td key={key}>{moment(schedule[0]).tz(timezone).format(format)}</td>
         );
       });
+      timezones.push(
+        <td key={key}><button className="button">Schedule</button></td>
+      );
+      console.log(timezones);
       return (
         <tr>
           {timezones}
@@ -40,7 +48,7 @@ class Schedule extends React.Component {
       );
     });
     return (
-        <table className="table">
+        <table className="table is-fullwidth">
           <thead>
             <tr>
               <th className="has-text-grey">Detected Time</th>
@@ -50,7 +58,7 @@ class Schedule extends React.Component {
               <th className="has-text-grey">Availability</th>
             </tr>
           </thead>
-          
+          {schedules}
         </table>
     );
   }
@@ -76,7 +84,6 @@ class Discover extends React.Component {
     const currentGuide = this.state.topGuides[i];
 
     this.setState({ focus: true, focusedGuide: currentGuide });
-    console.log(this.state.topGuides);
   }
 
   render() {
