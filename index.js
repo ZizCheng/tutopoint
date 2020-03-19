@@ -32,7 +32,7 @@ const sessionRouter = require('./routes/sessionRouter.js');
 const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
 const balanceAPI = require('./api/balance.js');
-// const transportsAPI = require('./api/transports.js');
+const transportsAPI = require('./api/transports.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -65,7 +65,7 @@ app.use('/session', sessionRouter);
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
 app.use('/api/balance', balanceAPI);
-// app.use('/api/transports', transportsAPI.router);
+app.use('/api/transports', transportsAPI.router);
 
 
 app.engine('handlebars', handlebars());
@@ -100,6 +100,7 @@ app.get('*', auth.loggedIn, function(req, res) {
 http.listen(config.port, function() {
   console.log(`Server listening on :${config.port}`);
 });
+transportsAPI.initialize();
 // transportsAPI.initialize();
 
 
