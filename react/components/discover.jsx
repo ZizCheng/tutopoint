@@ -6,6 +6,58 @@ import DiscoverGuideItem from "./DiscoverGuideItem.jsx";
 import "./discover.scss";
 import discoverAPI from "../api/discover.js";
 
+import moment from "moment-timezone.js";
+
+class Schedule extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    discoverAPI.getGuideSchedule(this.props.id).then(data => {
+      this.setState({schedule: data?.schedule});
+    })
+  }
+
+  render() {
+    const schedules = this.state.schedule?.map((schedule, key) => {
+      const format = "ddd MM/DD HH:mm";
+      const timezones = [
+        moment.tz.guess(),
+        "America/Los_Angeles",
+        "America/New_York",
+        "Asia/Shanghai",
+      ].map(timezone => {
+        console.log(moment(schedule).tz(timezone).format(format));
+        return (
+          <td>{moment(schedule).tz(timezone).format(format)}</td>
+        );
+      });
+      return (
+        <tr>
+          {timezones}
+        </tr>
+      );
+    });
+    return (
+        <table className="table">
+          <thead>
+            <tr>
+              <th className="has-text-grey">Detected Time</th>
+              <th className="has-text-grey">Los Angeles Time</th>
+              <th className="has-text-grey">Beijing Time</th>
+              <th className="has-text-grey">New York Time</th>
+              <th className="has-text-grey">Availability</th>
+            </tr>
+          </thead>
+          
+        </table>
+    );
+  }
+}
+
+
+
 class Discover extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +76,7 @@ class Discover extends React.Component {
     const currentGuide = this.state.topGuides[i];
 
     this.setState({ focus: true, focusedGuide: currentGuide });
+    console.log(this.state.topGuides);
   }
 
   render() {
@@ -47,23 +100,37 @@ class Discover extends React.Component {
     return (
       <React.Fragment>
         {this.state.focus && (
-          <div className="overlay">
-            <div className="overlay-center">
+          <div className="modal is-active">
+            <div className="modal-background"></div>
+            <div className="modal-content">
               <div id="discover__focusedGuide" className="card">
-                <div className="columns">
-                  <div class="column is-2">
-                    <figure className="image is-1by1">
-                      <img
-                        src={
-                          this.state.focusedGuide.profilePic
-                            ? profilePic
-                            : "https://bulma.io/images/placeholders/96x96.png"
-                        }
-                        alt="Placeholder image"
-                      />
-                    </figure>
+                <div className="columns profile-modal">
+                  <div className="column is-one-quarter">
+                    <div className="profile-image">
+                      <figure className="image is-1by1">
+                        <img
+                          src={
+                            typeof this.state.focusedGuide?.profilePic !==
+                            "undefined"
+                              ? this.state.focusedGuide.profilePic
+                              : "https://bulma.io/images/placeholders/96x96.png"
+                          }
+                          alt="Placeholder image"
+                        />
+                      </figure>
+                      <figure className="image is-1by1 logo-image">
+                        <img
+                          src={
+                            typeof this.state.focusedGuide?.logo !== "undefined"
+                              ? this.state.focusedGuide.logo
+                              : "https://bulma.io/images/placeholders/96x96.png"
+                          }
+                          alt="Placeholder image"
+                        />
+                      </figure>
+                    </div>
                   </div>
-                  <div class="column">
+                  <div className="column">
                     <h1 className="is-size-3 has-text-weight-bold">
                       {this.state.focusedGuide.name}
                     </h1>
@@ -74,12 +141,12 @@ class Discover extends React.Component {
                     </h2>
 
                     {/* <p className="is-size-6">Rating</p> */}
-                    <p className="is-size-6 has-text-weight-bold">
+                    <p className="is-size-6 has-text-weight-bold bio-text">
                       {this.state.focusedGuide.bio}
                     </p>
-                    <div class="tabs">
+                    <div className="tabs">
                       <ul>
-                        <li class="is-active">
+                        <li className="is-active">
                           <a>Schedule</a>
                         </li>
                         <li>
@@ -87,10 +154,17 @@ class Discover extends React.Component {
                         </li>
                       </ul>
                     </div>
+
+                    {/* schedule */}
+                    <Schedule id={this.state.focusedGuide._id}/>  
                   </div>
                 </div>
               </div>
             </div>
+            <button
+              className="modal-close is-large"
+              aria-label="close"
+            ></button>
           </div>
         )}
         <div id="appointments" className="card">

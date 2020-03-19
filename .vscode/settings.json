@@ -2,5 +2,6 @@
     "cSpell.ignoreWords": [
         "client",
         "mediasoup"
-    ]
+    ],
+    "eslint.enable": true
 }

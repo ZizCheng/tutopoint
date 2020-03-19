@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
 .discover__guideWrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(27em, 1fr) );
@@ -10,4 +12,23 @@
   width: 70vw;
   height: 80vh;
   border-radius: 25px;
+}
+
+.profile-image {
+  width: 80%;
+}
+
+.logo-image {
+  margin-top: 2em;
+}
+
+.bio-text {
+  margin-top: 2em;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  color: #646464;
+}
+
+.tabs {
+  margin-top: 4em;
 }
