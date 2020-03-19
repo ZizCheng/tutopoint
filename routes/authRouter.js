@@ -2,12 +2,10 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
-const Token = require('../models/model.js').VerifyToken;
+const VerifyToken = require('../models/model.js').VerifyTokens;
+const ResetToken = require('../models/model.js').ResetTokens;
 const Users = require('../models/model.js').Users;
 const Referrals = require('../models/model.js').Referrals;
-
-const secret = require('../secret.js').stripe;
-const stripe = require('stripe')(secret.sk_key);
 
 router.get('/login', function(req, res) {
   res.render('login', {
@@ -21,7 +19,7 @@ router.get('/awaitVerification', function(req, res) {
 });
 
 router.get('/verify/:token', function(req, res) {
-  Token.findOne({token: req.params.token}, function(err, token) {
+  VerifyToken.findOne({token: req.params.token}, function(err, token) {
     if (!token) return res.status(400).send({type: 'not-verified', msg: 'We were unable to find a valid token. Your token my have expired.'});
 
     // If we found a token, find a matching user
@@ -51,6 +49,42 @@ router.get('/signup', (req, res) => {
     layout: false,
     referralCode,
   });
+});
+router.get('/signup/:id', (req, res) => {
+  const referralCode = req.params.id;
+  res.render('signup', {
+    layout: false,
+    referralCode,
+  });
+});
+router.get('/reset', (req, res) => {
+  res.render('initialReset', {
+    layout: false,
+  });
+});
+router.post('/reset', auth.reset, (req, res) => {
+  res.render('awaitReset', {
+    layout: false,
+  });
+});
+router.get('/reset/:token', (req, res) => {
+  ResetToken.findOne({token: req.params.token}, function(err, token) {
+    if (!token) return res.status(400).send({type: 'not-verified', msg: 'Invalid Password Reset Token.'});
+
+    // If we found a token, find a matching user
+    Users.findOne({_id: token.for}, function(err, user) {
+      if (!user) return res.status(400).send({msg: 'We were unable to find a user for this token.'});
+
+      const email = user.email;
+      res.render('resetForm', {
+        layout: false,
+        email,
+      });
+    });
+  });
+});
+router.post('/reset/:token', auth.resetUser, function(req, res) {
+  res.redirect('/dashboard');
 });
 router.post('/signup', auth.newUser, (req, res) => {
   res.redirect('/dashboard');

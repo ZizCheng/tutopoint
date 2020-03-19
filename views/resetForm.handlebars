@@ -6,8 +6,9 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/bulma.css">
-  <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/signup.css">
 </head>
+
 <header>
 
   <nav class="navbar shadow" role="navigation" aria-label="main navigation">
@@ -32,34 +33,47 @@
 <body>
   <div class="wrapper">
     <div class="form-content card">
-      <h3 class="title login-title">Log in</h3>
-      <form method="post" action="/login">
+      <h3 class="title login-title">Reset Password</h3>
+      <form method="post">
         <div class="field">
-          <label class="label">Email</label>
+          <label class="label">For email:</label>
           <div class="control">
-            <input class="input" name="email" type="email">
-            <p class="help is-success">{{error}}</p>
+            <input class="email-input input" name="email" type="text" value="{{email}}" readonly="true">
           </div>
         </div>
         <div class="field">
-          <label class="label">Password</label>
+          <label class="label">New Password</label>
           <div class="control">
             <input class="input" name="password" type="password">
-            <p class="help is-success">{{error}}</p>
           </div>
         </div>
+        <p class="has-text-danger"> {{error}} </p>
+        <input class="input" type="hidden" name="userType" value="client">
         <div class="control">
-          <button class="button is-primary" style="margin-top: 10px;">Submit</button>
+          <button class="button is-primary">Submit</button>
         </div>
       </form>
-      <div class="has-text-centered">
-        <a class="has-text-centered is-size-6" href="/signup"> Don't have an account? Sign up. </a>
-      </div>
-      <div class="has-text-centered">
-        <a class="has-text-centered is-size-6" href="/reset"> Forgot your password? </a>
-      </div>
     </div>
   </div>
+  <script>
+    var email = getUrlParameter("email");
+    if (email) $(".email-input").val(email);
+
+    function getUrlParameter(Param) {
+      var PageURL = window.location.search.substring(1)
+      var URLVariables = PageURL.split('&')
+      var ParameterName
+
+      for (var i = 0; i < URLVariables.length; i++) {
+        ParameterName = URLVariables[i].split('=');
+
+        if (ParameterName[0] === Param) {
+          return decodeURIComponent(ParameterName[1]);
+        }
+      }
+      return false;
+    };
+  </script>
 </body>
 
 </html>

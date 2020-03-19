@@ -9,9 +9,9 @@ const mailAuth = require('../secret.js').mailAuth;
 
 const Users = require('../models/model.js').Users;
 const Clients = require('../models/model.js').Clients;
-const Guides = require('../models/model.js').Guides;
 const Referrals = require('../models/model.js').Referrals;
-const VerifyToken = require('../models/model.js').VerifyToken;
+const VerifyToken = require('../models/model.js').VerifyTokens;
+const ResetToken = require('../models/model.js').ResetTokens;
 
 authConfig = {
   salt: 2,
@@ -99,7 +99,7 @@ function handleReferral(client, referralCode) {
     Referrals.findOne({code: referralCode})
         .then((ref) => {
           if (ref == null) {
-            reject(client); return;
+            resolve(client); return;
           }
           ref.referred.push(client.id);
           ref.save()
@@ -133,6 +133,37 @@ function mailToken(user) {
         to: user.email.toString(),
         subject: 'NO REPLY Confirm TutoPoint Email Address',
         text: `Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n`,
+      };
+      transporter.sendMail(mailOptions, function(err) {
+        if (err) {
+          reject(err);
+        } else {
+          console.log('yippy');
+          resolve(user);
+        }
+      });
+    });
+  });
+}
+
+function mailReset(user) {
+  return new Promise((resolve, reject) =>{
+    const token = new ResetToken({for: user._id, token: crypto.randomBytes(16).toString('hex')});
+    token.save(function(err) {
+      if (err) {
+        reject(err);
+      }
+
+      // Send the email
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: mailAuth,
+      });
+      const mailOptions = {
+        from: 'tutopointauth@gmail.com',
+        to: user.email.toString(),
+        subject: 'NO REPLY TutoPoint Password Reset',
+        text: `Hello\n\n Please reset your password at this link: https://tutopoint.com/reset/${token.token}\n\n`,
       };
       transporter.sendMail(mailOptions, function(err) {
         if (err) {
@@ -193,6 +224,36 @@ exports.newUser = function(req, res, next) {
     } else if (req.body.userType == 'guide') {
       res.redirect('/apply');
     } else res.send('Error occurred');
+  });
+};
+
+exports.resetUser = function(req, res, next) {
+  ResetToken.findOne({token: req.params.token}, function(err, token) {
+    if (!token) return res.status(400).send({type: 'not-verified', msg: 'Invalid Password Reset Token.'});
+
+    // If we found a token, find a matching user
+    Users.findOne({_id: token.for}, function(err, user) {
+      if (!user) return res.status(400).send({msg: 'We were unable to find a user for this token.'});
+
+      // Verify and save the user
+      bcrypt.hash(req.body.password, 10, (err, hash) => {
+        user.password = hash;
+        user.isVerified = true;
+        user.save(function(err) {
+          if (err) {
+            return res.status(500).send({msg: err.message});
+          };
+          next();
+        });
+      });
+    });
+  });
+};
+
+exports.reset = function(req, res, next) {
+  Users.findOne({email: req.body.email}, function(err, user) {
+    if (!user) return res.status(400).send({msg: 'This is not a recognized email'});
+    mailReset(user).then(() => next());
   });
 };
 
