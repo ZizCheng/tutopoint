@@ -6,65 +6,90 @@ import DiscoverGuideItem from "./DiscoverGuideItem.jsx";
 import "./discover.scss";
 import discoverAPI from "../api/discover.js";
 
-import momentA from 'moment';
 import moment from "moment-timezone";
 
 class Schedule extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { schedule: null };
+
+    this.select = this.select.bind(this);
   }
 
   componentDidMount() {
-    console.log(moment().tz("America/Los_Angeles").format());
-    discoverAPI.getGuideSchedule(this.props.id).then(data => {
-      console.log("data:");
-      console.log(data);
-      this.setState({schedule: data?.schedule});
-    })
+    console.log(
+      moment()
+        .tz("America/Los_Angeles")
+        .format()
+    );
+    discoverAPI.getGuideSchedule(this.props.id).then( data => {
+      data?.schedule.map(interval => {
+        interval.push({ selected: false, available: true });
+      });
+      this.setState({ schedule: data?.schedule });
+    });
+  }
+
+  select(intervalIndex) {
+    if (this.state.schedule[intervalIndex].selected == true) {
+      //booking the thing
+
+    }
+    else {
+      let newSchedule = this.state.schedule.slice();
+      for (let i = 0; i < this.state.schedule.length; i++) {
+        newSchedule[i].selected = false;
+      }
+      newSchedule[intervalIndex].selected = true;
+      this.setState({
+        schedule: newSchedule
+      });
+    }
   }
 
   render() {
-    const schedules = this.state.schedule?.map((schedule, key) => {
+    const schedules = this.state.schedule?.map((interval, row) => {
       const format = "ddd MM/DD HH:mm";
       const timezones = [
         moment.tz.guess(),
         "America/Los_Angeles",
         "America/New_York",
-        "Asia/Shanghai",
-      ].map((timezone) => {
+        "Asia/Shanghai"
+      ].map((timezone, column) => {
         return (
-          <td key={key}>{moment(schedule[0]).tz(timezone).format(format)}</td>
+          <td key={row + "" + column}>
+            {moment(interval[0])
+              .tz(timezone)
+              .format(format)}
+          </td>
         );
       });
       timezones.push(
-        <td key={key}><button className="button">Schedule</button></td>
+        <td key={row + "" + 4}>
+          <button className={"button" + (this.state.schedule[row].selected ? " is-primary" : "")} onClick={this.select.bind(this, row)}>
+            {this.state.schedule[row].selected ? "Confirm" : "Selected"}
+          </button>
+        </td>
       );
       console.log(timezones);
-      return (
-        <tr>
-          {timezones}
-        </tr>
-      );
+      return <tr>{timezones}</tr>;
     });
     return (
-        <table className="table is-fullwidth">
-          <thead>
-            <tr>
-              <th className="has-text-grey">Detected Time</th>
-              <th className="has-text-grey">Los Angeles Time</th>
-              <th className="has-text-grey">Beijing Time</th>
-              <th className="has-text-grey">New York Time</th>
-              <th className="has-text-grey">Availability</th>
-            </tr>
-          </thead>
-          {schedules}
-        </table>
+      <table className="table is-fullwidth">
+        <thead>
+          <tr>
+            <th className="has-text-grey">Detected Time</th>
+            <th className="has-text-grey">Los Angeles Time</th>
+            <th className="has-text-grey">Beijing Time</th>
+            <th className="has-text-grey">New York Time</th>
+            <th className="has-text-grey">Availability</th>
+          </tr>
+        </thead>
+        <tbody>{schedules}</tbody>
+      </table>
     );
   }
 }
-
-
 
 class Discover extends React.Component {
   constructor(props) {
@@ -163,7 +188,7 @@ class Discover extends React.Component {
                     </div>
 
                     {/* schedule */}
-                    <Schedule id={this.state.focusedGuide._id}/>  
+                    <Schedule id={this.state.focusedGuide._id} />
                   </div>
                 </div>
               </div>
