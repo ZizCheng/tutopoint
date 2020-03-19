@@ -2,300 +2,387 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="utf-8">
-  <title>Tutopoint</title>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="/css/bulma.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/index.css">
-  <link rel="stylesheet" href="/css/navbar.css">
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
-  <style>
-    #discoverSection {
-      margin-top: 1.5em;
-    }
+    <meta charset="utf-8">
+    <title>Tutopoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/bulma.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+    <style>
+        #discoverSection {
+            margin-top: 1.5em;
+        }
 
-    .profilePicture {
-      position: absolute !important;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+        .profilePicture {
+            position: absolute !important;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-    .backdrop {
-      filter: blur(.5px) brightness(80%);
-    }
+        .backdrop {
+            filter: blur(.5px) brightness(80%);
+        }
 
-    .rating {
-      position: absolute !important;
-      bottom: 0%;
-      left: 50%;
-      transform: translate(-50%, 0%);
-    }
+        .rating {
+            position: absolute !important;
+            bottom: 0%;
+            left: 50%;
+            transform: translate(-50%, 0%);
+        }
 
-    .no-margin-bottom {
-      margin-bottom: .5em !important;
-    }
-  </style>
+        .no-margin-bottom {
+            margin-bottom: .5em !important;
+        }
+    </style>
 </head>
 
 <body style="padding-bottom: 0.5em;">
-
-
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="container">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        <figure class="icon is-1by1">
-          <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT" width="330px"
-            height="330px">
-        </figure>
-        TUTOPOINT
-      </a>
-    </div>
-    <div class="navbar-menu">
-      <div class="navbar-end">
-        <a class="navbar-item" href="/guides" style="margin-right: 6%; font-size: 20px;">Our Guides</a>
-        <a class="navbar-item" href="/about" style="margin-right: 6%; font-size: 20px;">About Us</a>
-        <a class="navbar-item" href="/mission" style="margin-right: 6%; font-size: 20px;">Mission</a>
-        <button class="button is-danger is-rounded top-button" href="/signup" style="margin: 12px 8px 12px 8px;">Sign up</button>
-        <button class="button is-danger is-rounded top-button" href="/login" style="margin: 12px 20% 12px 8px;">Log in</button>
-      </div>
-    </div>
-  </div>
-  </nav>
-
-  <div class="landing">
-    <div class="short-description">
-      Don't let corona hold you back. Online college consulting with authentic college students.
-    </div>
-    <div class="form-content card">
-      <h3 class="title has-text-centered" style="font: Bold 25px/30px Lato; letter-spacing: 0; color: #646464;">Let's get started.</h3>
-      <form method="post" action="/login">
-        <div class="field">
-          <div class="control">
-            <input class="input is-rounded" name="email" type="email" placeholder="Email" style="margin-bottom: 15px;">
-            <input class="input is-rounded" name="email" type="email" placeholder="Name" style="margin-bottom: 5px;">
-          </div>
-        </div>
-        <div class="control">
-          <button class="button is-danger is-rounded" style="width: 100%;">Register</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-
-  <section>
-    <div class="container">
-      <h1 id="guides-section" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker"
-        style="margin-top: 1em; margin-bottom: 1em;"> Meet Our Guides </h1>
-
-  <div class="carousel container">
-
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/berkeley.jpg">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/zizcheng.jpg">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-      </footer>
-    </div>
-
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/princeton.png">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-            src="/images/CheyenneZhang.jpg">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Cheyenne Zhang</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">Princeton University</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-
-      </footer>
-    </div>
-
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/harvard.jpg">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-            src="/images/JenniferHong.png">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Jennifer Hong</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">Harvard University</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Chemical & Physical Biology</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-
-      </footer>
-    </div>
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/berkeley.jpg">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/zizcheng.jpg">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-
-      </footer>
-    </div>
-
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/berkeley.jpg">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/zizcheng.jpg">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-
-      </footer>
-    </div>
-    <div class="card">
-      <div class="card-image">
-        <figure class="backdrop image is-2by1">
-          <img src="/images/berkeley.jpg">
-        </figure>
-        <figure class="profilePicture image is-128x128">
-          <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;" src="/images/zizcheng.jpg">
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="media-content">
-          <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
-          <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
-          <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a href="/signup" class="card-footer-item">Schedule</a>
-
-      </footer>
-    </div>
-  </div>
-  </section>
-
-  <section class="why-section">
-    <div class="divider"></div>
-    <div class="why-container">
-      <h1 class="why-title title">Why Tutopoint</h1>
-      <div class="why-wrapper columns">
-        <div class="why-column column">
-          <div class="card why-card">
-            <div class="card-content">
-              <h1 class="title">Cheap</h1>
+    <!--
+        login modal
+        use JS to toggle the is-active class on the div
+    -->
+    <div id="loginModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="card login">
+                <h1>Login</h1>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Email">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Password">
+                    </div>
+                </div>
+                <a class="button is-primary">
+                    <strong>Log in</strong>
+                </a>
+                <p>Don't have an account? <a class="is-primary">Sign Up</a></p>
+                <p><a class="is-primary">Forgot Password?</a></p>
             </div>
-            <div class="card-content">
-              <span class="why-icon icon has-text-primary">
-                <i class="fas fa-yen-sign"></i>
-              </span>
-            </div>
-            <div class="why-card-description card-content ">
-              Tutopoint provides the cheapest plans you will find anywhere, starting at $15 per session.
-            </div>
-          </div>
+        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
         </div>
-        <div class="why-column column">
-          <div class="card why-card">
-            <div class="card-content">
-              <h1 class="title">Online</h1>
-            </div>
-            <div class="card-content">
-              <span class="why-icon icon has-text-primary">
-                <i class="fas fa-laptop"></i>
-              </span>
-            </div>
-            <div class="why-card-description card-content">
-              Tutopoint brings college counseling right to your home with
-              online sessions. There is no need to fuss about driving somewhere.
-            </div>
-          </div>
-        </div>
-        <div class="why-column column">
-          <div class="card why-card">
-            <div class="card-content">
-              <h1 class="title">Safe</h1>
-            </div>
-            <div class="card-content">
-              <span class="why-icon icon has-text-primary">
-                <i class="fas fa-lock"></i>
-              </span>
-            </div>
-            <div class="why-card-description card-content">
-              We do extensive background checks to ensure that all counselors are authentic college students.
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </section>
 
-  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-  <script type="text/javascript" src="/js/index.js"></script>
+    <!--register modal-->
+    <div id="registerModal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="card login">
+                <h1>Register</h1>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Email">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Referral Code (Optional)">
+                    </div>
+                </div>
+                <a class="button is-primary">
+                    <strong>Register</strong>
+                </a>
+                <p>Already have an account? <a class="is-primary">Log in</a></p>
+            </div>
+        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+        </div>
+    </div>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">
+                    <figure class="icon is-1by1">
+                        <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT"
+                            width="330px" height="330px">
+                    </figure>
+                    TUTOPOINT
+                </a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <a class="navbar-item" href="/guides" style="margin-right: 6%; font-size: 20px;">Our Guides</a>
+                    <a class="navbar-item" href="/about" style="margin-right: 6%; font-size: 20px;">About Us</a>
+                    <a class="navbar-item" href="/mission" style="margin-right: 6%; font-size: 20px;">Mission</a>
+                    <button onclick="showLogin()" class="button is-danger is-rounded top-button" href="/signup"
+                        style="margin: 12px 8px 12px 8px;">Sign up</button>
+                    <button onclick="showRegister()" class="button is-danger is-rounded top-button" href="/login"
+                        style="margin: 12px 20% 12px 8px;">Log in</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="landing">
+        <div class="short-description">
+            Don't let corona hold you back. Online college consulting with authentic college students.
+        </div>
+        <div class="form-content card">
+            <h3 class="title has-text-centered" style="font: Bold 25px/30px Lato; letter-spacing: 0; color: #646464;">
+                Let's get started.</h3>
+            <form method="post" action="/login">
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-rounded" name="email" type="email" placeholder="Email"
+                            style="margin-bottom: 15px;">
+                        <input class="input is-rounded" name="email" type="email" placeholder="Name"
+                            style="margin-bottom: 5px;">
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-danger is-rounded" style="width: 100%;">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <section>
+        <div class="container">
+            <h1 id="guides-section" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker"
+                style="margin-top: 1em; margin-bottom: 1em;"> Meet Our Guides </h1>
+
+            <div class="carousel container">
+
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/berkeley.jpg">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/zizcheng.jpg">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+                    </footer>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/princeton.png">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/CheyenneZhang.jpg">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Cheyenne Zhang</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">Princeton University</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+
+                    </footer>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/harvard.jpg">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/JenniferHong.png">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Jennifer Hong</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">Harvard University</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Chemical & Physical Biology</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+
+                    </footer>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/berkeley.jpg">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/zizcheng.jpg">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+
+                    </footer>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/berkeley.jpg">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/zizcheng.jpg">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+
+                    </footer>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="backdrop image is-2by1">
+                            <img src="/images/berkeley.jpg">
+                        </figure>
+                        <figure class="profilePicture image is-128x128">
+                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                                src="/images/zizcheng.jpg">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media-content">
+                            <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
+                            <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
+                            <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/signup" class="card-footer-item">Schedule</a>
+
+                    </footer>
+                </div>
+            </div>
+    </section>
+
+    <section class="why-section">
+        <div class="divider"></div>
+        <div class="why-container">
+            <h1 class="why-title title">Why Tutopoint</h1>
+            <div class="why-wrapper columns">
+                <div class="why-column column">
+                    <div class="card why-card">
+                        <div class="card-content">
+                            <h1 class="title">Cheap</h1>
+                        </div>
+                        <div class="card-content">
+                            <span class="why-icon icon has-text-primary">
+                                <i class="fas fa-yen-sign"></i>
+                            </span>
+                        </div>
+                        <div class="why-card-description card-content ">
+                            Tutopoint provides the cheapest plans you will find anywhere, starting at $15 per session.
+                        </div>
+                    </div>
+                </div>
+                <div class="why-column column">
+                    <div class="card why-card">
+                        <div class="card-content">
+                            <h1 class="title">Online</h1>
+                        </div>
+                        <div class="card-content">
+                            <span class="why-icon icon has-text-primary">
+                                <i class="fas fa-laptop"></i>
+                            </span>
+                        </div>
+                        <div class="why-card-description card-content">
+                            Tutopoint brings college counseling right to your home with
+                            online sessions. There is no need to fuss about driving somewhere.
+                        </div>
+                    </div>
+                </div>
+                <div class="why-column column">
+                    <div class="card why-card">
+                        <div class="card-content">
+                            <h1 class="title">Safe</h1>
+                        </div>
+                        <div class="card-content">
+                            <span class="why-icon icon has-text-primary">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                        </div>
+                        <div class="why-card-description card-content">
+                            We do extensive background checks to ensure that all counselors are authentic college
+                            students.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+
+    <script type="text/javascript">
+        let loginModal = document.getElementById("loginModal");
+        let registerModal = document.getElementById("registerModal");
+        function showLogin() {
+           loginModal.classList.add("is-active");
+        }
+        function showRegister() {
+            loginModal.classList.add("is-active");
+        }
+        function hideModal() {
+            loginModal.classList.remove("is-active");
+            registerModal.classList.remove("is-active");
+        }
+    </script>
 </body>
 <footer class="footer" style="padding-bottom: 1em !important;">
-  <div class="content has-text-centered">
-    <p>
-      Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint"
-          target="_top">zizcheng@berkeley.edu</a> </span>
-    </p>
-    <p> Made with love by Jason, Titor, and Ziz. </p>
-  </div>
+    <div class="content has-text-centered">
+        <p>
+            Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint"
+                    target="_top">zizcheng@berkeley.edu</a> </span>
+        </p>
+        <p> Made with love by Jason, Titor, and Ziz. </p>
+    </div>
 
 </footer>
 

@@ -144,11 +144,6 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/session">
-                      Session
-                    </NavLink>
-                  </li>
-                  <li>
                     <NavLink activeClassName="is-active" to="/logout">
                       Log Out
                     </NavLink>
@@ -179,9 +174,9 @@ class App extends React.Component {
                 <Route path="/success">
                   <PaymentSuccess />
                 </Route>
-                <Route path="/session">
+                {/* <Route path="/session/:id">
                   <Session />
-                </Route>
+                </Route> */}
               </Switch>
             </div>
           </div>

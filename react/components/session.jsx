@@ -3,134 +3,185 @@ import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
 import transportsAPI from "../api/transports.js";
 import profileStore from "../store/profileStore.js";
+import io from "socket.io-client";
 import * as mediasoupClient from "mediasoup-client";
+import { SSM } from "aws-sdk";
 
-const produceVideo = async (sendTransport, device) => {
-    
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const videoTrack = stream.getVideoTracks()[0];
-      sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
-        console.log('connected!!')
-      // Signal local DTLS parameters to the server side transport.
-      try {
-        await transportsAPI.transportConnect(123, {
-          transportsId: sendTransport.id,
-          dtlsParameters: dtlsParameters
-        });
+const produce = async (sendTransport, device, socket, type) => {
+  let stream;
+  let track;
 
-        // Tell the transport that parameters were transmitted.
-        callback();
-      } catch (error) {
-        // Tell the transport that something was wrong.
-        errback(error);
-      }
-    });
+  if (type == "video") {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    track = stream.getVideoTracks()[0];
+  } else if (type == "audio") {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    track = stream.getAudioTracks()[0];
+  }
 
-    sendTransport.on("produce", async (parameters, callback, errback) => {
-      // Signal parameters to the server side transport and retrieve the id of
-      // the server side new producer.
-      try {
-        const data = await transportsAPI.transportProduce(123, {
-          transportId: sendTransport.id,
-          kind: parameters.kind,
-          rtpParameters: parameters.rtpParameters,
-          appData: parameters.appData
-        });
-
-        // Let's assume the server included the created producer id in the response
-        // data object.
-        const { id } = data;
-
-        // Tell the transport that parameters were transmitted and provide it with the
-        // server side producer's id.
- 
-        callback({ id });
-      } catch (error) {
-        // Tell the transport that something was wrong.
-        errback(error);
-      }
-    });
-      const producer = await sendTransport.produce({
-        track: videoTrack
+  sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
+    try {
+      socket.emit("connectRTC", {
+        transportsId: sendTransport.id,
+        dtlsParameters: dtlsParameters,
+        kind: type
       });
+      callback();
+    } catch (error) {
+      errback(error);
+    }
+  });
 
-      
-}
-
+  sendTransport.on("produce", async (parameters, callback, errback) => {
+    try {
+      console.log("We should be here.");
+      socket.emit("produce", {
+        transportId: sendTransport.id,
+        kind: parameters.kind,
+        rtpParameters: parameters.rtpParameters,
+        appData: parameters.appData
+      });
+      socket.on("producerCallback", function(data) {
+        const { id } = data;
+        callback({ id });
+      });
+    } catch (error) {
+      errback(error);
+    }
+  });
+  const producer = await sendTransport.produce({
+    track: track
+  });
+};
 
 class Session extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {profile: profileStore.getState()}
+    this.state = {
+      profile: profileStore.getState(),
+      sessionid: `sessionid=${props.match.params.id}`
+    };
 
     this.receive = this.receive.bind(this);
   }
 
   async componentDidMount() {
-    let device = new mediasoupClient.Device();
-    const {
-      transportOptions,
-      routerRtpCapabilities,
-      recv
-    } = await transportsAPI.getSession(123);
-    await device.load({ routerRtpCapabilities });
+    const socket = io(window.location.origin, { query: this.state.sessionid });
+    document.getElementById("remoteVideo").srcObject = new MediaStream();
+    socket.on("connectInfo", async function({
+      audioTransportOptions,
+      videoTransportOptions,
+      routerRtpCapabilities
+    }) {
+      let device = new mediasoupClient.Device();
+      audioTransportOptions["iceServers"] = [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:numb.viagenie.ca",
+          username: "tutopointauth@gmail.com",
+          credential: "tutopoint"
+        }
+      ];
 
-    console.log(device);
+      videoTransportOptions["iceServers"] = [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:numb.viagenie.ca",
+          username: "tutopointauth@gmail.com",
+          credential: "tutopoint"
+        }
+      ];
 
-    let sendTransport;
-    
+      await device.load({ routerRtpCapabilities });
+      console.log(device);
+      if (device.canProduce("video")) {
+        let sendTransport = device.createSendTransport(videoTransportOptions);
+        produce(sendTransport, device, socket, "video");
+      }
 
-    if (device.canProduce("video")) {
-        // transportOptions["iceServers"] = [{urls: 'stun:stun.l.google.com:19302'}, {urls: 'turn:numb.viagenie.ca', username: 'tutopointauth@gmail.com', credential: 'tutopoint'}];
-        sendTransport = device.createSendTransport(transportOptions);
-        produceVideo(sendTransport, device);
+      if (device.canProduce("audio")) {
+        let sendTransport = device.createSendTransport(audioTransportOptions);
+        produce(sendTransport, device, socket, "audio");
+      }
 
+      socket.on("receiveConsumer", async function(data) {
+        console.log(data)
+        let transportOptions = data.transportOptions;
+        const consumerInfo = data.consumerInfo;
+        const producerId = data.producerId;
+        const type = data.type;
+        transportOptions["iceServers"] = [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: "turn:numb.viagenie.ca",
+            username: "tutopointauth@gmail.com",
+            credential: "tutopoint"
+          }
+        ];
+        let recvTransport = await device.createRecvTransport(transportOptions);
+
+        recvTransport.on(
+          "connect",
+          async ({ dtlsParameters }, callback, errback) => {
+            try {
+              socket.emit("connectRTC", {
+                transportsId: recvTransport.id,
+                dtlsParameters: dtlsParameters,
+                kind: type,
+                tag: producerId
+              });
+
+              callback();
+            } catch (error) {
+              errback(error);
+            }
+          }
+        );
+
+        const DeviceConsumer = await recvTransport.consume(consumerInfo);
+        const { track } = DeviceConsumer;
+
+
+        document.getElementById("remoteVideo").srcObject.addTrack(track);
+        document.getElementById("remoteVideo").play();
+       
         
-        
-        
+      });
 
-    }
+      socket.on("AllStreams", async function(data) {
+        if (data.length > 0) {
+          const stream = data[0];
+          const videoTag = stream.videoTag;
+          const audioTag = stream.audioTag;
+          socket.emit("consume", {
+            tag: videoTag,
+            rtpCapabilities: device.rtpCapabilities,
+            type: "video"
+          });
+          socket.emit("consume", {
+            tag: audioTag,
+            rtpCapabilities: device.rtpCapabilities,
+            type: "audio"
+          });
+          // consume(socket, audioTag, device, "audio")
+        } else{
+          console.log("checking streams")
+          setTimeout(() => {socket.emit("getAllStreams")}, 1000)
+        }
+      });
 
-    this.setState({
-        device: device,
-        sendTransport: sendTransport,
-        recv: recv
-    })
+      socket.on("CheckStream", function(){
+        socket.emit("getAllStreams");
+      });
 
+      socket.emit("getAllStreams");
 
+      
+    });
   }
 
-  async receive(){
-    let recvTransport;
-    let recv = this.state.recv;
-    recvTransport = await this.state.device.createRecvTransport(recv);
-
-    recvTransport.on("connect", async ({dtlsParameters}, callback, errback) => {
-      // Signal local DTLS parameters to the server side transport.
-      try {
-        await transportsAPI.transportConnect(123, {
-          transportsId: recvTransport.id,
-          dtlsParameters: dtlsParameters
-        }, "recv");
-
-        // Tell the transport that parameters were transmitted.
-        callback();
-      } catch (error) {
-        // Tell the transport that something was wrong.
-        errback(error);
-      }
-    });
-
-    // recv["iceServers"] = [{urls: 'stun:stun.l.google.com:19302'}, {urls: 'turn:numb.viagenie.ca', username: 'tutopointauth@gmail.com', credential: 'tutopoint'}];
-    let consumer = await transportsAPI.transportRecv(123, {rtpCapabilities: this.state.device.rtpCapabilities});
-    const DeviceConsumer = await recvTransport.consume(consumer.consumerData);
-    
-      // Render the remote video track into a HTML video element.
-    const { track } = DeviceConsumer;
-    
-    document.getElementById("remoteVideo").srcObject = (new MediaStream([ track ]));
-    document.getElementById("remoteVideo").play();
-        
+  async receive() {
+    socket.emit("getAllStreams");
   }
 
   render() {
@@ -138,7 +189,7 @@ class Session extends React.Component {
       <div>
         <h1>Session WIP</h1>
         <button onClick={this.receive}>getVideo</button>
-        <video id="remoteVideo"></video>
+        <video id="remoteVideo" controls></video>
       </div>
     );
   }

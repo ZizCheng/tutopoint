@@ -7,6 +7,7 @@ $gray: #f9f9f9;
 $white: #FFFFFF;
 $dark-gray: #00000029;
 $orange: #F56363;
+$grey: #646464
 $light-gray: #646464;
 $edgy-gray: #9E9E9E;
 $black: #000000;
@@ -41,6 +42,14 @@ $steps-divider-size: 3px;
 $primary: $orange;
 $grey-light: $light-gray;
 
+
+//modal
+$modal-content-width: 1500px;
+
+//tabs
+$tabs-link-active-border-bottom-color: $orange;
+$tabs-link-active-color: $orange;
+
 .highlight
     color: $orange;
 
@@ -68,6 +77,7 @@ $grey-light: $light-gray;
 
 // Import only what you need from Bulma
 @import "../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../node_modules/bulma/sass/components/tabs.sass";
 @import "../../node_modules/bulma/sass/base/_all.sass";
 @import "../../node_modules/bulma/sass/elements/button.sass";
 @import "../../node_modules/bulma/sass/elements/container.sass";
@@ -84,6 +94,8 @@ $grey-light: $light-gray;
 @import "../../node_modules/bulma/sass/components/card.sass";
 @import "../../node_modules/bulma/sass/grid/_all.sass";
 @import "../../node_modules/bulma-o-steps/bulma-steps.sass";
+@import "../../node_modules/bulma/sass/components/modal.sass";
+@import "../../node_modules/bulma/sass/elements/table.sass";
 
 +touch
     .container.is-fluid
