@@ -140,5 +140,6 @@ router.get('/referral', auth.loggedIn, function(req, res) {
       });
 });
 
+router.get('/onboard', auth.ensureUserIsGuide, auth.guideHasOnboarded);
 
 module.exports = router;

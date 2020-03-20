@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./appointments.scss";
+import sessionAPI from "../api/session.js";
 
+import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+
+import { withRouter } from "react-router-dom";
 
 const calculateTimeLeft = date => {
   const difference = new Date(date) - Date.now();
@@ -28,12 +32,14 @@ const AppointmentItem = ({
   guideMajor,
   guideUniversity,
   guideProfilePic,
+  onClick,
+  sessionid, 
+  confirm,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
   if (status == "active") {
-    console.log(status);
     useEffect(() => {
       const timer = setTimeout(() => {
         setTimeLeft(calculateTimeLeft(date))
@@ -54,7 +60,6 @@ const AppointmentItem = ({
       );
     });
 
-    console.log(timerComponents);
   } else {
     timerComponents = [];
   }
@@ -62,7 +67,7 @@ const AppointmentItem = ({
   return (
     <article className={`media ${status}`}>
       <figure className="media-left">
-        <p className="image is-128x128">
+        <p className="image is-128x128 is-hidden-touch">
           <img
             className="is-rounded"
             src={
@@ -75,11 +80,11 @@ const AppointmentItem = ({
       </figure>
       <div className="media-content">
         <div className="content">
-          <p className="is-size-4 has-text-weight-bold">{title}</p>
-          <p className="is-size-4 has-text-weight-light">
+          <p className="is-size-6-mobile is-size-4 has-text-weight-bold">{title}</p>
+          <p className="is-size-7-mobile is-size-4 has-text-weight-light">
             {guideGrade} at {guideUniversity}
           </p>
-          <p className="is-size-4 has-text-weight-light">{guideMajor}</p>
+          <p className="is-size-7-mobile is-size-5 has-text-weight-light">{guideMajor}</p>
         </div>
       </div>
       <div className="media-right">
@@ -91,11 +96,13 @@ const AppointmentItem = ({
 
         {status == "active" ? (
           <div className="control is-expanded">
-            <button className={"button is-light is-fullwidth"} disabled={Date.now()+300000 > new Date(date).valueOf() ? '' : 'disabled'}>Join</button>
+            <button className={"button is-light is-fullwidth"} onClick={() => {onClick(sessionid)}} disabled={Date.now()+300000 > new Date(date).valueOf() ? '' : 'disabled'}>Join</button>
           </div>
         ) : (
           ""
         )}
+        {(profileStore.getState().__t == "guides") && (status == "unconfirmed") && 
+        <button className={"button is-light is-fullwidth"} onClick={() => {confirm(sessionid)}}>Confirm</button>}
       </div>
     </article>
   );
@@ -107,6 +114,7 @@ class Appointments extends React.Component {
     this.state = { isUpcoming: true, profile: profileStore.getState() };
 
     this.handleClick = this.handleClick.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
   }
 
   handleClick(bool) {
@@ -119,11 +127,26 @@ class Appointments extends React.Component {
     });
   }
 
+  sessionClicked(i){
+    window.location.href = `/session/${i}`
+  }
+
+  handleConfirm(sessionid){
+
+    sessionAPI.confirm(sessionid)
+      .then((resp) => {
+        if(resp?.message == "ok"){
+          // Needs fixing. Timer does not want to end causing hook crash.
+          window.location.href="/dashboard"
+        }
+      })
+  }
+
   render() {
     const pastSession = this.state.profile?.sessions
       .filter(session => {
         const sessionDate = new Date(session.date);
-        return Date.now() - 300000 >= sessionDate.valueOf();
+        return Date.now() - 300000 >= sessionDate.valueOf() || session.completed;
       })
       .map((session, i) => {
         return (
@@ -136,7 +159,7 @@ class Appointments extends React.Component {
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
-            status="inactive"
+            status=""
           />
         );
       });
@@ -144,9 +167,21 @@ class Appointments extends React.Component {
     const activeSession = this.state.profile?.sessions
       .filter(session => {
         const sessionDate = new Date(session.date);
-        return Date.now() - 300000 < sessionDate.valueOf();
+        return Date.now() - 300000 < sessionDate.valueOf() && !session.cancelled;
       })
       .map((session, i) => {
+        const sessionDate = new Date(session.date);
+        let sessionStatus;
+
+        if(session.confirmed) {
+          sessionStatus = "confirmed";
+          if(sessionDate > Date.now() - 300000){
+            sessionStatus = "active";
+          }
+        }
+        else {
+          sessionStatus = "unconfirmed";
+        }
         return (
           <AppointmentItem
             key={i}
@@ -157,7 +192,10 @@ class Appointments extends React.Component {
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
-            status="active"
+            onClick={this.sessionClicked}
+            sessionid={session._id}
+            confirm={this.handleConfirm}
+            status={sessionStatus}
           />
         );
       });
@@ -203,4 +241,4 @@ class Appointments extends React.Component {
   }
 }
 
-export default Appointments;
+export default withRouter(Appointments);
