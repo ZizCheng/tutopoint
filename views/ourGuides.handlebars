@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>About Us</title>
+  <title>Our Guides</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel="stylesheet" href="/css/bulma.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
@@ -12,6 +12,29 @@
   <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
   <link rel="stylesheet" href="/css/index.css">
+  <style>
+          #discoverSection {
+          margin-top: 1.5em;
+      }
+      .profilePicture {
+          position: absolute !important;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+      }
+      .backdrop {
+          filter: blur(.5px) brightness(80%);
+      }
+      .rating {
+          position: absolute !important;
+          bottom: 0%;
+          left: 50%;
+          transform: translate(-50%,0%);
+      }
+      .no-margin-bottom {
+          margin-bottom: .5em !important;
+      }
+  </style>
 </head>
 <body>
   <!--
@@ -134,68 +157,72 @@
   </nav>
 
 
+  <section id="discoverSection">
+      <div class="container">
+          {{#each guideChunks}}
+          <div class="columns is-centered">
+            {{#each this}}
+            <div class="profile column is-one-quarter" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
+              <div class="card">
+                <div class="card-image">
+                  <figure class="backdrop image is-2by1">
+                    <img src="{{this.backdrop}}">
+                  </figure>
+                  <figure class="profilePicture image is-128x128">
+                    <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+                  </figure>
+                  <div class="rating">
+                    <span class="icon has-text-danger">
+                      <i class="fas fa-star"></i>
+                    </span>
+                  </div>
 
-  <div id="about" class="image is-3by1 big-banner"
-    style="margin-bottom: 1em;"></div>
+                </div>
+                <div class="card-content">
+                  <div class="media-content">
+                    <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
+                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}}</p>
+                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.grade}}</p>
+                    <p class="title is-6 has-text-centered no-margin-bottom">{{this.major}}</p>
+                  </div>
+                </div>
+                <footer class="card-footer">
+                  <a onclick="show('registerModal')" class="card-footer-item">Schedule Now!</a>
 
-  <div class="container ">
-    <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> About Us </p>
-    <p class="is-size-4 about-text"> TutoPoint is a digital college consulting platform
-       designed to make your life easier. We take a innovative and fresh style of college consulting
-       to the table: </p>
-  </div>
-  <div class="main-panel columns">
-    <div class="column">
-      <img src="/images/collegeStudents.png">
+                </footer>
+              </div>
+            </div>
+            {{/each}}
+            </div>
+          {{/each}}
     </div>
-    <div class="column is-two-thirds">
-      <p class="is-size-4" style="vertical-align: middle;"> Our guides are all current college undergraduates at the nations
-         top universities studying highly competitive majors. They understand the struggle
-         because a couple years ago they were in your same exact position, and they know how to get
-          you in because they got themselves in. Read more about<span> <a href="/mission"> our mission. </a> </span> </p>
-    </div>
-  </div>
-  <div class="main-panel columns">
-    <div class="column is-two-thirds">
-      <p class="is-size-4" style="vertical-align: middle;"> The sessions that take place through TutoPoint are 100%
-        digital. Finding, booking, scheduling, and meeting with your guide is all done with the click of a few buttons,
-        and now college consulting is accessible from the comfort of your home.  </p>
-    </div>
-    <div class="column">
-      <img src="/images/digital.png">
-    </div>
-  </div>
-  <div class="main-panel columns">
-    <div class="column">
-      <img src="/images/time.png">
-    </div>
-    <div class="column is-two-thirds">
-      <p class="is-size-4" style="vertical-align: middle;"> Dynamic payments allow you to only pay for time you use.
-        Traditional college consultants sell expensive packages for 3-4 years at a time. At TutoPoint, you only pay
-        the guide during your time speaking with them, starting with only $15!  </p>
-    </div>
-  </div>
-  <div class="main-panel columns">
-    <div class="column is-two-thirds">
-      <p class="is-size-4" style="vertical-align: middle;"> The most modern college consulting experience featuring
-        video call, screen share, shared documents, and much, much more. You can now seamlessly integrate anything you
-        need help with straight into our platform and show your guide. </p>
-    </div>
-    <div class="column">
-      <img src="/images/digital2.png">
-    </div>
-  </div>
-  <div class="container ">
-    <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> What are you waiting for? </p>
-    <p class="is-size-4 has-text-centered" style="margin: 0px 0px 30px 0px;"> The future lies ahead!
-      <span> <a onclick="show('registerModal')"> Register Now </a> </span></p>
-  </div>
+    </section>
+
+
   <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
   <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
   <script type="text/javascript" src="/js/index.js"></script>
 
   <script type="text/javascript">
+      searchType.addEventListener('change', function() {
+        var ev = new Event('keyup');
+        searchBar.dispatchEvent(ev);
+      })
+      searchBar.addEventListener('keyup', function(){
+        const queryType = searchType.value.toLowerCase();
+        const profiles = document.getElementsByClassName('profile')
+        for(var i = 0; i < profiles.length; i++){
+          let currentEl = profiles[i]
+          const name = profiles[i].getAttribute(`data-${queryType}`).toLowerCase();
+          if(!name.includes(searchBar.value.toLowerCase())){
+            currentEl.classList.add('is-hidden')
+          }
+          else {
+            currentEl.classList.remove('is-hidden')
+          }
+        }
+      })
       function hideModal() {
           loginModal.classList.remove("is-active");
           registerModal.classList.remove("is-active");

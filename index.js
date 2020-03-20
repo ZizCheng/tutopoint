@@ -16,6 +16,7 @@ const stripe = require('stripe')(secret.sk_key);
 const databaseCredentials = require('./secret.js').databaseCredentials;
 
 const Users = require('./models/model.js').Users;
+const Guides = require('./models/model.js').Guides;
 const Sessions = require('./models/model.js').Sessions;
 const FailedPayments = require('./models/model.js').failedPayments;
 
@@ -93,10 +94,17 @@ app.get('/about', function(req, res) {
 app.get('/mission', function(req, res) {
   res.sendFile('views/mission.html', {root: __dirname});
 });
+const chunk = (arr, size) =>
+  Array.from({length: Math.ceil(arr.length / size)}, (v, i) =>
+    arr.slice(i * size, i * size + size),
+  );
 app.get('/guides', function(req, res) {
-  res.sendFile('views/ourGuides.html', {root: __dirname});
+  Guides
+      .find({})
+      .select('_id name university major grade university profilePic backdrop')
+      .then((listOfGuides) => res.render('ourGuides', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
+      .catch((err) => res.send(err));
 });
-
 app.use(express.static('dist'));
 app.get('/dashboard', auth.loggedIn, function(req, res) {
   res.sendFile('dist/index.html', {root: __dirname});
