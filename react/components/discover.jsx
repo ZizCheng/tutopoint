@@ -3,16 +3,21 @@ import ReactDOM from "react-dom";
 
 import DiscoverGuideItem from "./DiscoverGuideItem.jsx";
 
+import { withRouter } from "react-router-dom";
+
 import "./discover.scss";
 import discoverAPI from "../api/discover.js";
+import profileAPI from "../api/profile.js";
+import sessionAPI from "../api/session.js";
+
+import profileStore from "../store/profileStore.js";
 
 import moment from "moment-timezone";
 
-class Schedule extends React.Component {
+class ScheduleWithoutRouter extends React.Component {
   constructor(props) {
     super(props);
     this.state = { schedule: null };
-
     this.select = this.select.bind(this);
   }
 
@@ -32,8 +37,13 @@ class Schedule extends React.Component {
 
   select(intervalIndex) {
     if (this.state.schedule[intervalIndex].selected == true) {
-      //booking the thing
-
+      const guideID = this.props.id;
+      sessionAPI.requestSession(guideID, this.state.schedule[intervalIndex][0])
+        .then((response) => {
+          if(response.message == 'ok') {
+            this.props.history.push('/dashboard');
+          }
+        })
     }
     else {
       let newSchedule = this.state.schedule.slice();
@@ -90,6 +100,8 @@ class Schedule extends React.Component {
     );
   }
 }
+
+const Schedule = withRouter(ScheduleWithoutRouter);
 
 class Discover extends React.Component {
   constructor(props) {

@@ -33,6 +33,7 @@ const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
 const balanceAPI = require('./api/balance.js');
 const transportsAPI = require('./api/transports.js');
+const sessionAPI = require('./api/session.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -66,6 +67,7 @@ app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
 app.use('/api/balance', balanceAPI);
 app.use('/api/transports', transportsAPI.router);
+app.use('/api/session', sessionAPI);
 
 
 app.engine('handlebars', handlebars());
