@@ -1,199 +1,100 @@
-@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap");
 
+.custom-container {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-.slick-prev:before, .slick-next:before {
+html,
+body {
+  height: 100%;
+}
+
+.navbar {
+  padding: 1em 0;
+}
+
+.nav-link {
+  text-decoration: none;
+  font-family: "Lato", "sans-serif";
+  font-weight: 300;
+  color: #000;
+  font-size: 1.5em;
+}
+
+.button {
+  background-color: #ff3636;
+  color: #fff;
+  border-radius: 40px;
+  border: none;
+  width: 150px;
+}
+
+.button strong {
+  font-family: "Lato", "sans-serif";
+  font-weight: 300;
+  font-size: 1.2em;
+}
+.bg-section {
+  background-color: #f56363;
+}
+
+.display {
+  margin-top: auto;
+  align-items: center;
+}
+
+.center-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.motto {
+  font-family: "Lato", "sans-serif";
+  color: white;
+  font-weight: 300;
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.card {
+  border-radius: 30px;
+}
+
+.card-content {
+  padding: 2.5em;
+}
+
+.register-box-heading {
+  margin-bottom: 1em;
+}
+
+h1 {
+  font-family: "Lato", "sans-serif";
+  font-weight: 700;
+  font-size: 1.6em;
+}
+
+.display-field {
+  width: 20em;
+}
+
+.carousel-title {
+    margin-top: auto;
+}
+
+.slick-prev:before,
+.slick-next:before {
   color: lightgray !important;
 }
 
 .slick-slide {
   margin: 0px 25px;
 }
-.card {
-  margin-bottom: 20px;
-}
-body {
-  font-family: 'Lato', 'sans-serif';
-}
-.wrapper {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-}
 
-.form-content {
-  border-radius: 30px 30px 30px 30px;
-  background: #fff;
-  padding: 30px 30px 30px 30px;
-  width: 100%;
-  max-width: 450px;
-  position: relative;
-}
-
-.mcontainer {
-  width: 80%;
-  margin: auto;
-}
-
-.top-nav {
-  padding: 5px 0px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-}
-
-.nav-shadow {
-  box-shadow: 7px 2px 6px rgba(0, 0, 0, 0.16);
-}
-
-
-.logo {
-  width: 60px;
-}
-.landing {
-  height: 700px;
-  background-color: antiquewhite;
-  background-image: url('/images/background-landing.png');
-  background-repeat: no-repeat;
-  background-size: 100%;
-  padding: 9% 10% 0px 65%;
-}
-.short-description {
-  text-align: center;
-  letter-spacing: 0;
-  font-family: 'Lato';
-  font-weight: 300;
-  font-size: 26px;
-  color: #FFFFFF;
-  text-shadow: 0px 3px 6px #00000029;
-  opacity: 1;
-  padding: 0% 3% 15% 3%;
-}
-
-
-.left-nav h2 {
-  font-size: 30px;
-}
-
-.right-nav {
-  display: flex;
-  align-items: center;
-}
-
-.right-nav li {
-  padding-left: 40px;
-  font-family: Lato, sans-serif;
-  font-weight: 300;
-}
-
-.right-nav li a {
-  text-decoration: none;
-  color: black;
-  font-size: 22px;
-}
-
-.left-nav {
-  display: flex;
-  align-items: center;
-}
-
-.main-display{
-  background-image: url(/images/background.jpg);
-  height: 100%;
-  background-color: antiquewhite;
-}
-
-.start-now {
-  margin-top: 30px;
-}
-
-.why-section
-{
-  margin: 100px;
-}
-.why-container
-{
-  text-align: center;
-}
-.why-title
-{
-  font-size: 3rem;
-  margin-top: 3rem;
-}
-.why-wrapper
-{
-  margin: 80px 0;
-  justify-content: space-between;
-}
-.why-column
-{
-  padding: 1.5rem;
-}
-.why-card
-{
-  padding: 1rem;
-}
-.why-card .why-card-description
-{
-  padding: 1rem 3rem 3rem 3rem;
-}
-.why-icon
-{
-  width: 4rem;
-  height: 4rem;
-}
-.why-icon i
-{
-  font-size: 4rem;
-}
-
-.hero {
-  background-color: #014855 !important;
-}
-
-#heroBody {
-  background-image: url('/images/background-cropped.png');
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position-x: -40vw;
-  background-position-y: -10vh;
-}
-
-@media screen and (max-width: 1280px) {
-  #heroBody {
-    background-image: url('/images/background.png');
-    background-size:cover;
-    background-position-x: 0px;
-    background-position-y: 0vh;
-  }
-  #tutopointDescription {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-}
-
-/* login */
-.login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 50px 0;
-  border-radius: 44px;
-}
-
-.login h1 {
-  font-family: 'Lato', sans-serif;
-  font-weight: 700;
-  color: #646464;
-  font-size: 35px;
-  margin-bottom: 27px;
-}
-
-.login a, .login div, .login button {
-  width: 350px;
-}
-
-.login button {
-  margin-bottom: .2em;
+.carousel {
+    margin-top: auto;
 }

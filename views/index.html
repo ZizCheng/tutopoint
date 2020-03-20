@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
 
 <head>
+
     <meta charset="utf-8">
     <title>Tutopoint</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -12,406 +13,185 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
-    <style>
-        #discoverSection {
-            margin-top: 1.5em;
-        }
-
-        .profilePicture {
-            position: absolute !important;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .backdrop {
-            filter: blur(.5px) brightness(80%);
-        }
-
-        .rating {
-            position: absolute !important;
-            bottom: 0%;
-            left: 50%;
-            transform: translate(-50%, 0%);
-        }
-
-        .no-margin-bottom {
-            margin-bottom: .5em !important;
-        }
-    </style>
-</head>
-
-<body style="padding-bottom: 0.5em;">
-    <!--
-        login modal
-        use JS to toggle the is-active class on the div
-    -->
-    <div id="loginModal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <form method="post" action="/login">
-                <div class="card login">
-                    <h1>Login</h1>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="email" type="email" placeholder="Email">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="password" type="password" placeholder="Password">
-                        </div>
-                    </div>
-                    <button type="submit" class="button is-primary">
-                        <strong>Log in</strong>
-                    </button>
-                    <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
-                    <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
-            </form>
-        </div>
-        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-    </div>
-    </div>
-
-    <!--register modal-->
-    <div id="registerModal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <form method="post" action="/signup">
-                <div class="card login">
-                    <h1>Register</h1>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="email" type="email" placeholder="Email">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="name" type="text" placeholder="Name">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="password" type="password" placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="referralCode" type="text" placeholder="Referral Code (Optional)">
-                        </div>
-                    </div>
-                    <input class="input" type="hidden" name="userType" value="client">
-                    <button class="button is-primary">
-                        <strong>Register</strong>
-                    </button>
-            </form>
-            <p>Already have an account? <a onClick="show('loginModal')" class="is-primary">Log in</a></p>
-        </div>
-        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-    </div>
-    </div>
-
-    <!--reset password modal-->
-    <div id="resetModal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="card login">
-                <h1>reset password</h1>
-                <form method="post" action="/reset">
-                    <div class="field">
-                        <label class="label">Please enter your email</label>
-                        <div class="control">
-                            <input class="input" name="email" placeholder="email">
-                        </div>
-                    </div>
-                    <input class="input" type="hidden" name="userType" value="client">
-                    <button type="submit" class="button is-primary">
-                        <strong>submit</strong>
-                    </button>
-                    </a>
-                </form>
-                <p><a class="link">back to login</a></p>
-                <p><a class="link">forgot password?</a></p>
-            </div>
-            <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-        </div>
-    </div>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="/">
-                    <figure class="icon is-1by1">
-                        <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="tutopoint"
-                            width="330px" height="330px">
-                    </figure>
-                    tutopoint
-                </a>
-            </div>
-            <div class="navbar-menu">
-                <div class="navbar-end">
-                    <a class="navbar-item" href="/guides" style="margin-right: 6%; font-size: 20px;">our guides</a>
-                    <a class="navbar-item" href="/about" style="margin-right: 6%; font-size: 20px;">about us</a>
-                    <a class="navbar-item" href="/mission" style="margin-right: 6%; font-size: 20px;">mission</a>
-                    <button onclick="show('registerModal')" class="button is-danger is-rounded top-button"
-                        href="/signup" style="margin: 12px 8px 12px 8px;">sign up</button>
-                    <button onclick="show('loginModal')" class="button is-danger is-rounded top-button" href="/login"
-                        style="margin: 12px 20% 12px 8px;">log in</button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="landing">
-        <div class="short-description">
-            don't let corona hold you back. online college consulting with authentic college students.
-        </div>
-        <div class="form-content card">
-            <h3 class="title has-text-centered" style="font: bold 25px/30px lato; letter-spacing: 0; color: #646464;">
-                let's get started.</h3>
-            <form method="post" action="/login">
-                <div class="field">
-                    <div class="control">
-                        <input class="input is-rounded" name="email" type="email" placeholder="email"
-                            style="margin-bottom: 15px;">
-                        <input class="input is-rounded" name="email" type="email" placeholder="name"
-                            style="margin-bottom: 5px;">
-                    </div>
-                </div>
-                <div class="control">
-                    <button class="button is-danger is-rounded" style="width: 100%;">register</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-
-    <section>
-        <div class="container">
-            <h1 id="guides-section" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker"
-                style="margin-top: 1em; margin-bottom: 1em;"> meet our guides </h1>
-
-            <div class="carousel container">
-
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/berkeley.jpg">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/zizcheng.jpg">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">zizheng cheng</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">uc berkeley</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-                    </footer>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/princeton.png">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/cheyennezhang.jpg">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">cheyenne zhang</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">princeton university</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-
-                    </footer>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/harvard.jpg">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/jenniferhong.png">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">jennifer hong</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">harvard university</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">chemical & physical biology</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-
-                    </footer>
-                </div>
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/berkeley.jpg">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/zizcheng.jpg">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">zizheng cheng</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">uc berkeley</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-
-                    </footer>
-                </div>
-
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/berkeley.jpg">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/zizcheng.jpg">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">zizheng cheng</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">uc berkeley</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-
-                    </footer>
-                </div>
-                <div class="card">
-                    <div class="card-image">
-                        <figure class="backdrop image is-2by1">
-                            <img src="/images/berkeley.jpg">
-                        </figure>
-                        <figure class="profilePicture image is-128x128">
-                            <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                                src="/images/zizcheng.jpg">
-                        </figure>
-                    </div>
-                    <div class="card-content">
-                        <div class="media-content">
-                            <p class="title is-4 has-text-centered no-margin-bottom">zizheng cheng</p>
-                            <p class="title is-5 has-text-centered no-margin-bottom">uc berkeley</p>
-                            <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="/signup" class="card-footer-item">schedule</a>
-
-                    </footer>
-                </div>
-            </div>
-    </section>
-
-    <section class="why-section">
-        <div class="divider"></div>
-        <div class="why-container">
-            <h1 class="why-title title">why tutopoint</h1>
-            <div class="why-wrapper columns">
-                <div class="why-column column">
-                    <div class="card why-card">
-                        <div class="card-content">
-                            <h1 class="title">cheap</h1>
-                        </div>
-                        <div class="card-content">
-                            <span class="why-icon icon has-text-primary">
-                                <i class="fas fa-yen-sign"></i>
-                            </span>
-                        </div>
-                        <div class="why-card-description card-content ">
-                            tutopoint provides the cheapest plans you will find anywhere, starting at $15 per session.
-                        </div>
-                    </div>
-                </div>
-                <div class="why-column column">
-                    <div class="card why-card">
-                        <div class="card-content">
-                            <h1 class="title">online</h1>
-                        </div>
-                        <div class="card-content">
-                            <span class="why-icon icon has-text-primary">
-                                <i class="fas fa-laptop"></i>
-                            </span>
-                        </div>
-                        <div class="why-card-description card-content">
-                            tutopoint brings college counseling right to your home with
-                            online sessions. there is no need to fuss about driving somewhere.
-                        </div>
-                    </div>
-                </div>
-                <div class="why-column column">
-                    <div class="card why-card">
-                        <div class="card-content">
-                            <h1 class="title">safe</h1>
-                        </div>
-                        <div class="card-content">
-                            <span class="why-icon icon has-text-primary">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </div>
-                        <div class="why-card-description card-content">
-                            we do extensive background checks to ensure that all counselors are authentic college
-                            students.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script type="text/javascript" src="/js/index.js"></script>
 
-    <script type="text/javascript">
-        function hideModal() {
-            loginModal.classList.remove("is-active");
-            registerModal.classList.remove("is-active");
-        }
-        function show(id) {
-            hideModal();
-            let modal = document.getElementById(id);
-            modal.classList.add("is-active");
-        }
-    </script>
-</body>
-<footer class="footer" style="padding-bottom: 1em !important;">
-    <div class="content has-text-centered">
-        <p>
-            Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint"
-                    target="_top">zizcheng@berkeley.edu</a> </span>
-        </p>
-        <p> Made with love by Jason, Titor, and Ziz. </p>
+
+</head>
+
+<body>
+    <div class="custom-container">
+
+        <!--nav bar-->
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="https://bulma.io">
+                    <img src="/images/logo.png">
+                </a>
+
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                    data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+
+            <div id="navbarBasicExample" class="navbar-menu is-active">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <a class="nav-link">
+                            Our Guides
+                        </a>
+                    </div>
+                    <div class="navbar-item">
+                        <a class="nav-link">
+                            About Us
+                        </a>
+                    </div>
+                    <div class="navbar-item">
+                        <a class="nav-link">
+                            Mission
+                        </a>
+                    </div>
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-medium">
+                                <strong>Sign up</strong>
+                            </a>
+                            <a class="button is-medium">
+                                <strong>Login</strong>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+
     </div>
 
-</footer>
+    <!--background image-->
+    <div class="bg-section">
+
+        <div class="custom-container">
+            <div class="columns display">
+
+                <!--bg image-->
+                <div class="column">
+                    <img src="/images/kid.png" />
+                </div>
+
+                <!--motto and register box-->
+                <div class="column center-items">
+
+                    <p class="motto">Don't let COVID-19 hold you back. Online college consulting with authentic college
+                        students</p>
+
+                    <div class="card">
+                        <div class="card-content center-items">
+                            <h1 class="register-box-heading">Lets get started</h1>
+
+                            <!--Register Form-->
+                            <div class="field">
+                                <div class="control">
+                                    <input class="input display-field" name="email" type="email" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <input class="input display-field" name="password" type="password"
+                                        placeholder="Password">
+                                </div>
+                            </div>
+                            <button type="submit" class="button">
+                                <strong>Sign Up</strong>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="custom-container center-items">
+        <h2 class="carousel-title">
+            Meet our guides
+        </h2>
+
+        <div class="carousel">
+            <div class="card">
+                <div class="card-image">
+                    <figure class="backdrop image is-2by1">
+                        <img src="/images/berkeley.jpg">
+                    </figure>
+                    <figure class="profilePicture image is-128x128">
+                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                            src="/images/zizcheng.jpg">
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="media-content">
+                        <p class="title is-4 has-text-centered no-margin-bottom">zizheng cheng</p>
+                        <p class="title is-5 has-text-centered no-margin-bottom">uc berkeley</p>
+                        <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/signup" class="card-footer-item">schedule</a>
+                </footer>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <figure class="backdrop image is-2by1">
+                        <img src="/images/princeton.png">
+                    </figure>
+                    <figure class="profilePicture image is-128x128">
+                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                            src="/images/cheyennezhang.jpg">
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="media-content">
+                        <p class="title is-4 has-text-centered no-margin-bottom">cheyenne zhang</p>
+                        <p class="title is-5 has-text-centered no-margin-bottom">princeton university</p>
+                        <p class="title is-6 has-text-centered no-margin-bottom">computer science</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/signup" class="card-footer-item">schedule</a>
+
+                </footer>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <figure class="backdrop image is-2by1">
+                        <img src="/images/harvard.jpg">
+                    </figure>
+                    <figure class="profilePicture image is-128x128">
+                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
+                            src="/images/jenniferhong.png">
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="media-content">
+                        <p class="title is-4 has-text-centered no-margin-bottom">jennifer hong</p>
+                        <p class="title is-5 has-text-centered no-margin-bottom">harvard university</p>
+                        <p class="title is-6 has-text-centered no-margin-bottom">chemical & physical biology</p>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <a href="/signup" class="card-footer-item">schedule</a>
+
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
 
 </html>
