@@ -37,9 +37,6 @@ class ScheduleWithoutRouter extends React.Component {
 
   select(intervalIndex) {
     if (this.state.schedule[intervalIndex].selected == true) {
-<<<<<<< HEAD
-      console.log(this.props.id);
-=======
       const guideID = this.props.id;
       sessionAPI.requestSession(guideID, this.state.schedule[intervalIndex][0])
         .then((response) => {
@@ -47,7 +44,6 @@ class ScheduleWithoutRouter extends React.Component {
             this.props.history.push('/dashboard');
           }
         })
->>>>>>> 767394f4aff70dbdbdd7ddafe399b87da43b9365
     }
     else {
       let newSchedule = this.state.schedule.slice();
