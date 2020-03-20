@@ -54,7 +54,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
         onFormCompleted({type:"SavedCard", card: sources[paymentMethod_el.selectedIndex], amount: amount.value})
         count >= 2 ? "" : setCount(count + 1);
       }
-      
+
     }
     else {
       count >= 2 ? "" : setCount(count + 1);
@@ -223,7 +223,7 @@ class Balance extends React.Component {
           }
         }
       });
-      }) 
+      })
   }
 
   confirmPay(){
@@ -256,8 +256,8 @@ class Balance extends React.Component {
         that.props.history.push('/success');
       });
     }
-    
-    
+
+
   }
 
   render() {
@@ -300,13 +300,13 @@ class Balance extends React.Component {
                   <p>Total: ${this.state.summary?.amount}</p>
               </div>)}
               {this.state.summary?.amount && (<a onClick={this.confirmPay} className="button is-primary has-text-centered is-hidden-touch"><span>Place Order</span></a>)}
-              {this.state.summary?.amount && 
+              {this.state.summary?.amount &&
               (<div className="field is-grouped is-grouped-centered is-hidden-desktop">
               <p className="control">
                 <a
                 onClick={() => {
                   this.setState({summary: null})
-                }} 
+                }}
                 className="button is-light">
                   Previous
                 </a>
@@ -318,7 +318,7 @@ class Balance extends React.Component {
               </p>
             </div>)}
               </div>
-              
+
             </div>
           </div>
         </div>
