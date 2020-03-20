@@ -58,7 +58,11 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   render() {
-    const schedules = this.state.schedule?.map((interval, row) => {
+    const schedules = this.state.schedule?.filter((schedule) => {
+      const currentSchedule = schedule[0];
+      return currentSchedule > Date.now();
+    })
+    .map((interval, row) => {
       const format = "ddd MM/DD HH:mm";
       const timezones = [
         moment.tz.guess(),
@@ -85,6 +89,7 @@ class ScheduleWithoutRouter extends React.Component {
       return <tr>{timezones}</tr>;
     });
     return (
+      <div class="table-container">
       <table className="table is-fullwidth">
         <thead>
           <tr>
@@ -97,6 +102,7 @@ class ScheduleWithoutRouter extends React.Component {
         </thead>
         <tbody>{schedules}</tbody>
       </table>
+      </div>
     );
   }
 }
@@ -109,6 +115,7 @@ class Discover extends React.Component {
     this.state = { topGuides: null };
 
     this.handleGuideClicked = this.handleGuideClicked.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
 
   componentDidMount() {
@@ -121,6 +128,10 @@ class Discover extends React.Component {
     const currentGuide = this.state.topGuides[i];
 
     this.setState({ focus: true, focusedGuide: currentGuide });
+  }
+
+  closeModal(){
+    this.setState({focus: false});
   }
 
   render() {
@@ -208,6 +219,7 @@ class Discover extends React.Component {
             <button
               className="modal-close is-large"
               aria-label="close"
+              onClick={this.closeModal}
             ></button>
           </div>
         )}
