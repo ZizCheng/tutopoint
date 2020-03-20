@@ -190,10 +190,10 @@ body {
   margin-bottom: 27px;
 }
 
-.login a, .login div {
+.login a, .login div, .login button {
   width: 350px;
 }
 
-.login a {
-  margin-bottom: 10px;
+.login button {
+  margin-bottom: .2em;
 }
