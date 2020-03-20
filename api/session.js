@@ -7,7 +7,6 @@ const Guides = require('../models/model.js').Guides;
 const Sessions = require('../models/model.js').Sessions;
 
 router.use(auth.loggedIn);
-router.use(auth.ensureUserIsClient);
 
 
 router.get('/list', auth.loggedIn, function(req, res) {

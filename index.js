@@ -20,13 +20,13 @@ const Sessions = require('./models/model.js').Sessions;
 const FailedPayments = require('./models/model.js').failedPayments;
 
 const authRouter = require('./routes/authRouter.js');
-// const scheduleRouter = require('./routes/scheduleRouter.js');
+const scheduleRouter = require('./routes/scheduleRouter.js');
 // const documentRouter = require('./routes/documentRouter.js');
 // const discoverRouter = require('./routes/discoverRouter.js');
 // const applicationRouter = require('./routes/applicationRouter.js');
 // const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
-// const bankRouter = require('./routes/bankRouter.js');
+const bankRouter = require('./routes/bankRouter.js');
 // const adminRouter = require('./routes/adminRouter.js');
 
 const profileAPI = require('./api/profile.js');
@@ -61,7 +61,8 @@ app.use(passport.session());
 //deprecated
 app.use(authRouter);
 app.use('/session', sessionRouter);
-
+app.use('/schedule', scheduleRouter);
+app.use('/bank', bankRouter);
 // API
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
@@ -85,6 +86,15 @@ passport.deserializeUser(auth.deserializeUser);
 
 app.get('/', function(req, res) {
   res.sendFile('views/index.html', {root: __dirname});
+});
+app.get('/about', function(req, res) {
+  res.sendFile('views/aboutUs.html', {root: __dirname});
+});
+app.get('/mission', function(req, res) {
+  res.sendFile('views/mission.html', {root: __dirname});
+});
+app.get('/guides', function(req, res) {
+  res.sendFile('views/ourGuides.html', {root: __dirname});
 });
 
 app.use(express.static('dist'));

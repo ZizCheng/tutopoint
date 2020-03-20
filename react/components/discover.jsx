@@ -41,7 +41,10 @@ class ScheduleWithoutRouter extends React.Component {
       sessionAPI.requestSession(guideID, this.state.schedule[intervalIndex][0])
         .then((response) => {
           if(response.message == 'ok') {
-            this.props.history.push('/dashboard');
+            profileAPI.getProfile().then(profile => {
+              profileStore.dispatch({ type: "Update", data: profile });
+              this.props.history.push('/dashboard');
+            });
           }
         })
     }
@@ -58,11 +61,7 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   render() {
-    const schedules = this.state.schedule?.filter((schedule) => {
-      const currentSchedule = schedule[0];
-      return currentSchedule > Date.now();
-    })
-    .map((interval, row) => {
+    const schedules = this.state.schedule?.map((interval, row) => {
       const format = "ddd MM/DD HH:mm";
       const timezones = [
         moment.tz.guess(),
