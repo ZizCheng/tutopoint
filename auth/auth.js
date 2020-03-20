@@ -275,7 +275,13 @@ exports.ensureUserIsClient = function(req, res, next) {
 
 exports.loggedIn = function(req, res, next) {
   if (req.isAuthenticated()) {
-    next();
+    if (req.user.__t == 'clients') {
+      if (!req.user.isVerified) {
+        res.redirect('/awaitVerification');
+      } else {
+        next();
+      }
+    } else next();
   } else {
     res.redirect('/login');
   }
