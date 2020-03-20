@@ -32,8 +32,7 @@ class Schedule extends React.Component {
 
   select(intervalIndex) {
     if (this.state.schedule[intervalIndex].selected == true) {
-      //booking the thing
-
+      console.log(this.props.id);
     }
     else {
       let newSchedule = this.state.schedule.slice();
