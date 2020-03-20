@@ -120,6 +120,11 @@ class App extends React.Component {
                       Dashboard
                     </NavLink>
                   </li>
+                  {this.state.profile?.__t == "guides" && (
+                    <li>
+                      <a href="/schedule">Schedule</a>
+                    </li>
+                  )}
                   <li>
                     <NavLink activeClassName="is-active" to="/appointments">
                       Appointments
@@ -131,21 +136,34 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
-                    {(this.state.profile?.__t == "clients" && <NavLink activeClassName="is-active" to="/discover">
-                      Discover
-                    </NavLink>)}
+                    {this.state.profile?.__t == "clients" && (
+                      <NavLink activeClassName="is-active" to="/discover">
+                        Discover
+                      </NavLink>
+                    )}
                   </li>
-                  {(this.state.profile?.__t == "clients" && <li>
-                    <NavLink activeClassName="is-active" to="/balance">
-                      Balance{" "}
-                      {this.state.profile
-                        ? `- $${(this.state.profile.stripe.balance / 100) * -1}`
-                        : ""}
-                    </NavLink>
-                  </li>)}
-                  {(this.state.profile?.__t == "guides" && !this.state.profile?.onboarded && <li>
-                    <a href="/onboard">Onboard</a>
-                  </li>)}
+                  {this.state.profile?.__t == "guides" && (
+                    <li>
+                      <a>Balance - ${this.state.profile?.balance}</a>
+                    </li>
+                  )}
+                  {this.state.profile?.__t == "clients" && (
+                    <li>
+                      <NavLink activeClassName="is-active" to="/balance">
+                        Balance{" "}
+                        {this.state.profile
+                          ? `- $${(this.state.profile.stripe.balance / 100) *
+                              -1}`
+                          : ""}
+                      </NavLink>
+                    </li>
+                  )}
+                  {this.state.profile?.__t == "guides" &&
+                    !this.state.profile?.onboarded && (
+                      <li>
+                        <a href="/onboard">Onboard</a>
+                      </li>
+                    )}
                   <li>
                     <NavLink activeClassName="is-active" to="/logout">
                       Log Out
@@ -165,12 +183,16 @@ class App extends React.Component {
                 <Route path="/Documents">
                   <Home />
                 </Route>
-                {(this.state.profile?.__t == "clients" && <Route path="/Discover">
-                  <Discover/>
-                </Route>)}
-                {(this.state.profile?.__t == "clients" && <Route path="/Balance">
-                  <Balance />
-                </Route>)}
+                {this.state.profile?.__t == "clients" && (
+                  <Route path="/Discover">
+                    <Discover />
+                  </Route>
+                )}
+                {this.state.profile?.__t == "clients" && (
+                  <Route path="/Balance">
+                    <Balance />
+                  </Route>
+                )}
                 <Route path="/Logout">
                   <Logout />
                 </Route>
@@ -209,9 +231,15 @@ const PaymentSuccess = () => {
   const profile = profileStore.getState();
 
   return (
-    <div id="paymentSuccess" style={{marginTop: "15vh"}}>
-      <img style={{marginLeft: "auto", marginRight: "auto", display: "block"}} className="image" width="171" height="161" src={checkmark}/>
-      
+    <div id="paymentSuccess" style={{ marginTop: "15vh" }}>
+      <img
+        style={{ marginLeft: "auto", marginRight: "auto", display: "block" }}
+        className="image"
+        width="171"
+        height="161"
+        src={checkmark}
+      />
+
       <h1 className="has-font-weight-bold is-size-1 has-text-centered">
         Your payment has been processed
       </h1>

@@ -14,6 +14,8 @@ router.get('/', async function(req, res) {
     profile['stripe'] = stripeData;
   } else {
     const stripeData = await stripe.accounts.retrieve(profile['stripeAccountId']);
+    const stripeBalance = await stripe.balance.retrieve({stripe_account: profile['stripeAccountId']});
+    profile['balance'] = stripeBalance.available[0].amount;
     profile['stripe'] = stripeData;
   }
   delete profile['password'];
