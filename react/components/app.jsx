@@ -131,18 +131,21 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/discover">
+                    {(this.state.profile?.__t == "clients" && <NavLink activeClassName="is-active" to="/discover">
                       Discover
-                    </NavLink>
+                    </NavLink>)}
                   </li>
-                  <li>
+                  {(this.state.profile?.__t == "clients" && <li>
                     <NavLink activeClassName="is-active" to="/balance">
                       Balance{" "}
                       {this.state.profile
                         ? `- $${(this.state.profile.stripe.balance / 100) * -1}`
                         : ""}
                     </NavLink>
-                  </li>
+                  </li>)}
+                  {(this.state.profile?.__t == "guides" && !this.state.profile?.onboarded && <li>
+                    <a href="/onboard">Onboard</a>
+                  </li>)}
                   <li>
                     <NavLink activeClassName="is-active" to="/logout">
                       Log Out
@@ -162,12 +165,12 @@ class App extends React.Component {
                 <Route path="/Documents">
                   <Home />
                 </Route>
-                <Route path="/Discover">
+                {(this.state.profile?.__t == "clients" && <Route path="/Discover">
                   <Discover/>
-                </Route>
-                <Route path="/Balance">
+                </Route>)}
+                {(this.state.profile?.__t == "clients" && <Route path="/Balance">
                   <Balance />
-                </Route>
+                </Route>)}
                 <Route path="/Logout">
                   <Logout />
                 </Route>

@@ -34,7 +34,6 @@ discover.get('/:id/schedule', function(req, res) {
   Guides
       .findOne({_id: req.params.id})
       .select('schedule')
-      .slice('schedule', [0, 10])
       .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
       .catch((err) => {
         console.log(err); res.send('Internal Server Error.');
