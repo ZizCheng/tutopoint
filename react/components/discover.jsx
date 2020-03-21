@@ -228,7 +228,7 @@ class Discover extends React.Component {
               Discover
             </p>
           </header>
-          <div className="discover__guideWrapper card-content">{guides}</div>
+          <div className="discover__guideWrapper card-content is-block-mobile">{guides}</div>
         </div>
       </React.Fragment>
     );

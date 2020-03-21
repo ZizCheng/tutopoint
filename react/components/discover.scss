@@ -2,7 +2,7 @@
 
 .discover__guideWrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20em, 1fr) );
+  grid-template-columns: repeat(4, minmax(20em, 1fr) );
 }
 
 #discover__focusedGuide {
