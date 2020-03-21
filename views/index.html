@@ -63,7 +63,7 @@
                     <h1>Register</h1>
                     <div class="field">
                         <div class="control">
-                            <input class="input" name="email" type="email" placeholder="Email">
+                            <input id="registerModalEmail" class="input" name="email" type="email" placeholder="Email">
                         </div>
                     </div>
                     <div class="field">
@@ -73,7 +73,7 @@
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input class="input" name="password" type="password" placeholder="Password">
+                            <input id="registerModalPassword" class="input" name="password" type="password" placeholder="Password">
                         </div>
                     </div>
                     <div class="field">
@@ -188,22 +188,22 @@
 
                     <div class="card">
                         <div class="card-content center-items">
-                            <h1 class="register-box-heading">Lets get started</h1>
+                            <h1 class="is-size-5-mobile register-box-heading">Lets get started</h1>
 
                             <!--Register Form-->
                             <div class="field">
                                 <div class="control">
-                                    <input class="input display-field is-flex-mobile" name="email" type="email"
+                                    <input id="front-email" class="input is-flex-mobile" name="email" type="email"
                                         placeholder="Email">
                                 </div>
                             </div>
-                            <div class="field">
+                            <div id="front-password" class="field">
                                 <div class="control">
-                                    <input class="input display-field" name="password" type="password"
+                                    <input class="input" name="password" type="password"
                                         placeholder="Password">
                                 </div>
                             </div>
-                            <button type="submit" class="button">
+                            <button onclick="register()" type="submit" class="button">
                                 <strong>Sign Up</strong>
                             </button>
                         </div>
