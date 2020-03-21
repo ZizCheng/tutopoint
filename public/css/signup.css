@@ -23,18 +23,15 @@ body {
   height: 100vh;
 }
 
-.form-content {
-  border-radius: 10px 10px 10px 10px;
-  border: 1px solid #dadce0;
-  background: #fff;
-  padding: 48px 48px 96px 48px;
-  width: 90%;
-  max-width: 450px;
-  position: relative;
+.icon {
+  width: 130px;
+  height: 99px; 
+  margin-bottom: 1em;
 }
 
 .login-title {
   font-size: 24px;
+  font-weight: 700;
 }
 .label {
   font-weight: normal;

@@ -16,19 +16,25 @@ const stripe = require('stripe')(secret.sk_key);
 const databaseCredentials = require('./secret.js').databaseCredentials;
 
 const Users = require('./models/model.js').Users;
+const Guides = require('./models/model.js').Guides;
 const Sessions = require('./models/model.js').Sessions;
 const FailedPayments = require('./models/model.js').failedPayments;
 
 const authRouter = require('./routes/authRouter.js');
 const scheduleRouter = require('./routes/scheduleRouter.js');
-const documentRouter = require('./routes/documentRouter.js');
-const discoverRouter = require('./routes/discoverRouter.js');
-const applicationRouter = require('./routes/applicationRouter.js');
-const payRouter = require('./routes/payRouter.js');
+// const documentRouter = require('./routes/documentRouter.js');
+// const discoverRouter = require('./routes/discoverRouter.js');
+// const applicationRouter = require('./routes/applicationRouter.js');
+// const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
-const adminRouter = require('./routes/adminRouter.js');
+// const adminRouter = require('./routes/adminRouter.js');
 
+const profileAPI = require('./api/profile.js');
+const discoverAPI = require('./api/discover.js');
+const balanceAPI = require('./api/balance.js');
+const transportsAPI = require('./api/transports.js');
+const sessionAPI = require('./api/session.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -39,7 +45,8 @@ const session = expressSession({
 
 mongoose.connect(databaseCredentials.url, {useNewUrlParser: true});
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
 
 
@@ -52,17 +59,17 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+//deprecated
 app.use(authRouter);
-app.use('/schedule', scheduleRouter);
-app.use('/document', documentRouter);
-app.use('/discover', discoverRouter);
-app.use('/apply', applicationRouter);
-app.use('/pay', payRouter);
 app.use('/session', sessionRouter);
+app.use('/schedule', scheduleRouter);
 app.use('/bank', bankRouter);
-app.use('/admin', adminRouter);
-app.use('/onboard', auth.guideHasOnboarded);
+// API
+app.use('/api/profile', profileAPI);
+app.use('/api/discover', discoverAPI);
+app.use('/api/balance', balanceAPI);
+app.use('/api/transports', transportsAPI.router);
+app.use('/api/session', sessionAPI);
 
 
 app.engine('handlebars', handlebars());
@@ -84,23 +91,47 @@ app.get('/', function(req, res) {
 app.get('/about', function(req, res) {
   res.sendFile('views/aboutUs.html', {root: __dirname});
 });
-app.get('/guides', function(req, res) {
-  res.sendFile('views/ourGuides.html', {root: __dirname});
-});
 app.get('/mission', function(req, res) {
   res.sendFile('views/mission.html', {root: __dirname});
 });
-
+const chunk = (arr, size) =>
+  Array.from({length: Math.ceil(arr.length / size)}, (v, i) =>
+    arr.slice(i * size, i * size + size),
+  );
+app.get('/guides', function(req, res) {
+  Guides
+      .find({})
+      .select('_id name university major grade university profilePic backdrop')
+      .then((listOfGuides) => res.render('ourGuides', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
+      .catch((err) => res.send(err));
+});
+app.use(express.static('dist'));
+app.get('/dashboard', auth.loggedIn, function(req, res) {
+  res.sendFile('dist/index.html', {root: __dirname});
+});
 app.get('/session/:id', auth.loggedIn, function(req, res) {
   if (!req.params.id) res.redirect('/dashboard');
   res.render('session', {sessionid: req.params.id, layout: false});
 });
-
-
-app.get('/test', function(req, res) {
-  console.log(req.user);
-  res.send(req.user);
+app.get('*', auth.loggedIn, function(req, res) {
+  res.sendFile('dist/index.html', {root: __dirname});
 });
+
+http.listen(config.port, function() {
+  console.log(`Server listening on :${config.port}`);
+});
+transportsAPI.initialize();
+// transportsAPI.initialize();
+
+
+// io.use(function(socket, next) {
+//   // Wrap the express middleware
+//   session(socket.request, {}, next);
+// });
+
+// io.on('connection', transportsAPI.handleIO);
+
+
 
 if (process.env.NODE_ENV == 'production') {
   io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
@@ -354,8 +385,4 @@ io.on('connection', function(socket, req, res) {
       }
     });
   });
-});
-
-http.listen(config.port, function() {
-  console.log(`Server listening on :${config.port}`);
 });

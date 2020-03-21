@@ -11,30 +11,155 @@
   <link rel="stylesheet" href="/css/navbar.css">
   <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
+  <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="container">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        <figure class="icon is-1by1">
-          <img src="https://tutopoint-img-bucket.s3-us-west-2.amazonaws.com/tutologo.png" alt="TUTOPOINT" width="330px"
-            height="330px">
-        </figure>
-        TUTOPOINT
-      </a>
-    </div>
-    <div class="navbar-menu">
-      <div class="navbar-end">
-        <a class="navbar-item" href="/guides" style="margin-right: 6%; font-size: 20px;">Our Guides</a>
-        <a class="navbar-item" href="/about" style="margin-right: 6%; font-size: 20px;">About Us</a>
-        <a class="navbar-item" href="/mission" style="margin-right: 6%; font-size: 20px;">Mission</a>
-        <button class="button is-danger is-rounded top-button" href="/signup" style="margin: 12px 8px 12px 8px;">Sign up</button>
-        <button class="button is-danger is-rounded top-button" href="/login" style="margin: 12px 20% 12px 8px;">Log in</button>
+
+  <!-- MODALS -->
+
+      <!--
+      login modal
+      use JS to toggle the is-active class on the div
+  -->
+  <div id="loginModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <form method="post" action="/login">
+              <div class="card center-items modal-card-c">
+                  <h1>Login</h1>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="email" type="email" placeholder="Email">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="password" type="password" placeholder="Password">
+                      </div>
+                  </div>
+                  <button type="submit" class="button">
+                      <strong>Log in</strong>
+                  </button>
+                  <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
+                  <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
+          </form>
       </div>
-    </div>
+      <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
   </div>
-  </nav>
+  </div>
+
+  <!--register modal-->
+  <div id="registerModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <form method="post" action="/signup">
+              <div class="card center-items modal-card-c">
+                  <h1>Register</h1>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="email" type="email" placeholder="Email">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="name" type="text" placeholder="Name">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="password" type="password" placeholder="Password">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="referralCode" type="text" placeholder="Referral Code (Optional)">
+                      </div>
+                  </div>
+                  <input class="input" type="hidden" name="userType" value="client">
+                  <button class="button">
+                      <strong>Register</strong>
+                  </button>
+          </form>
+          <p>Already have an account? <a onClick="show('loginModal')" class="is-primary">Log in</a></p>
+      </div>
+      <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+  </div>
+  </div>
+
+  <!--reset password modal-->
+  <div id="resetModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <div class="card center-items modal-card-c">
+              <h1>reset password</h1>
+              <form method="post" action="/reset">
+                  <div class="field">
+                      <label class="label">Please enter your email</label>
+                      <div class="control">
+                          <input class="input" name="email" placeholder="email">
+                      </div>
+                  </div>
+                  <input class="input" type="hidden" name="userType" value="client">
+                  <button type="submit" class="button">
+                      <strong>submit</strong>
+                  </button>
+                  </a>
+              </form>
+              <p><a onClick="show('loginModal')" class="link">back to login</a></p>
+          </div>
+          <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+      </div>
+  </div>
+  <div class="custom-container">
+
+      <!--nav bar-->
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+              <a class="navbar-item" href="https://bulma.io">
+                  <img src="/images/logo.png">
+              </a>
+
+              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                  data-target="navbarBasicExample">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+              </a>
+          </div>
+
+          <div id="navbarBasicExample" class="navbar-menu is-active">
+              <div class="navbar-end">
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/guides">
+                          Our Guides
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/about">
+                          About Us
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/mission">
+                          Mission
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <div class="buttons">
+                          <a onClick="show('registerModal')" class="button is-medium">
+                              <strong>Sign up</strong>
+                          </a>
+                          <a onClick="show('loginModal')" class="button is-medium">
+                              <strong>Login</strong>
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </nav>
+
+
+  </div>
 
 
 
@@ -51,14 +176,61 @@
     <div class="column">
       <img src="/images/collegeStudents.png">
     </div>
-    <div class="column">
+    <div class="column is-two-thirds">
       <p class="is-size-4" style="vertical-align: middle;"> Our guides are all current college undergraduates at the nations
          top universities studying highly competitive majors. They understand the struggle
          because a couple years ago they were in your same exact position, and they know how to get
-          you in because they got themselves in.  </p>
+          you in because they got themselves in. Read more about<span> <a href="/mission"> our mission. </a> </span> </p>
     </div>
   </div>
+  <div class="main-panel columns">
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> The sessions that take place through TutoPoint are 100%
+        digital. Finding, booking, scheduling, and meeting with your guide is all done with the click of a few buttons,
+        and now college consulting is accessible from the comfort of your home.  </p>
+    </div>
+    <div class="column">
+      <img src="/images/digital.png">
+    </div>
+  </div>
+  <div class="main-panel columns">
+    <div class="column">
+      <img src="/images/time.png">
+    </div>
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> Dynamic payments allow you to only pay for time you use.
+        Traditional college consultants sell expensive packages for 3-4 years at a time. At TutoPoint, you only pay
+        the guide during your time speaking with them, starting with only $15!  </p>
+    </div>
+  </div>
+  <div class="main-panel columns">
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> The most modern college consulting experience featuring
+        video call, screen share, shared documents, and much, much more. You can now seamlessly integrate anything you
+        need help with straight into our platform and show your guide. </p>
+    </div>
+    <div class="column">
+      <img src="/images/digital2.png">
+    </div>
+  </div>
+  <div class="container ">
+    <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> What are you waiting for? </p>
+    <p class="is-size-4 has-text-centered" style="margin: 0px 0px 30px 0px;"> The future lies ahead!
+      <span> <a onclick="show('registerModal')"> Register Now </a> </span></p>
+  </div>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script type="text/javascript" src="/js/index.js"></script>
 </body>
-<span> <a href="/mission"> our mission statement. </a> </span>
+<footer class="footer" style="padding-bottom: 1em !important;">
+    <div class="content has-text-centered">
+        <p>
+            Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint"
+                    target="_top">zizcheng@berkeley.edu</a> </span>
+        </p>
+        <p> Made with love by Jason, Titor, and Ziz. </p>
+    </div>
 
+</footer>
 </html>

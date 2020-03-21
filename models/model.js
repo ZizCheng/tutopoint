@@ -160,6 +160,12 @@ const VerifyToken = new Schema({
   createdAt: {type: Date, required: true, default: Date.now, expires: 43200},
 });
 
+const ResetToken = new Schema({
+  for: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User'},
+  token: {type: String, required: true},
+  createdAt: {type: Date, required: true, default: Date.now, expires: 43200},
+});
+
 const failedPayment = new Schema({
   guideId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -181,6 +187,7 @@ const Sessions = mongoose.model('sessions', Session);
 const Documents = mongoose.model('documents', Document);
 const ReferralDocs = mongoose.model('referrals', Referrals);
 const VerifyTokens = mongoose.model('verifyTokens', VerifyToken);
+const ResetTokens = mongoose.model('resetTokens', ResetToken);
 const failedPayments = mongoose.model('failedPayments', failedPayment);
 module.exports = {
   Users: Users,
@@ -189,6 +196,7 @@ module.exports = {
   Sessions: Sessions,
   Documents: Documents,
   Referrals: ReferralDocs,
-  VerifyToken: VerifyTokens,
+  VerifyTokens: VerifyTokens,
+  ResetTokens: ResetTokens,
   failedPayments: failedPayments,
 };

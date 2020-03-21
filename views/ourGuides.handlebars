@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Our Guides</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/aboutUs.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
+  <link rel="stylesheet" href="/css/index.css">
+  <style>
+          #discoverSection {
+          margin-top: 1.5em;
+      }
+      .profilePicture {
+          position: absolute !important;
+          top: 45%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+      }
+      .backdrop {
+          filter: blur(.5px) brightness(80%);
+      }
+      .rating {
+          position: absolute !important;
+          bottom: 0%;
+          left: 50%;
+          transform: translate(-50%,0%);
+      }
+      .no-margin-bottom {
+          margin-bottom: .5em !important;
+      }
+  </style>
+</head>
+<body>
+
+  <!-- MODALS -->
+
+      <!--
+      login modal
+      use JS to toggle the is-active class on the div
+  -->
+  <div id="loginModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <form method="post" action="/login">
+              <div class="card center-items modal-card-c">
+                  <h1>Login</h1>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="email" type="email" placeholder="Email">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="password" type="password" placeholder="Password">
+                      </div>
+                  </div>
+                  <button type="submit" class="button">
+                      <strong>Log in</strong>
+                  </button>
+                  <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
+                  <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
+          </form>
+      </div>
+      <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+  </div>
+  </div>
+
+  <!--register modal-->
+  <div id="registerModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <form method="post" action="/signup">
+              <div class="card center-items modal-card-c">
+                  <h1>Register</h1>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="email" type="email" placeholder="Email">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="name" type="text" placeholder="Name">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="password" type="password" placeholder="Password">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="control">
+                          <input class="input" name="referralCode" type="text" placeholder="Referral Code (Optional)">
+                      </div>
+                  </div>
+                  <input class="input" type="hidden" name="userType" value="client">
+                  <button class="button">
+                      <strong>Register</strong>
+                  </button>
+          </form>
+          <p>Already have an account? <a onClick="show('loginModal')" class="is-primary">Log in</a></p>
+      </div>
+      <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+  </div>
+  </div>
+
+  <!--reset password modal-->
+  <div id="resetModal" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+          <div class="card center-items modal-card-c">
+              <h1>reset password</h1>
+              <form method="post" action="/reset">
+                  <div class="field">
+                      <label class="label">Please enter your email</label>
+                      <div class="control">
+                          <input class="input" name="email" placeholder="email">
+                      </div>
+                  </div>
+                  <input class="input" type="hidden" name="userType" value="client">
+                  <button type="submit" class="button">
+                      <strong>submit</strong>
+                  </button>
+                  </a>
+              </form>
+              <p><a onClick="show('loginModal')" class="link">back to login</a></p>
+          </div>
+          <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+      </div>
+  </div>
+  <div class="custom-container">
+
+      <!--nav bar-->
+      <nav class="navbar" role="navigation" aria-label="main navigation">
+          <div class="navbar-brand">
+              <a class="navbar-item" href="https://bulma.io">
+                  <img src="/images/logo.png">
+              </a>
+
+              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+                  data-target="navbarBasicExample">
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+                  <span aria-hidden="true"></span>
+              </a>
+          </div>
+
+          <div id="navbarBasicExample" class="navbar-menu is-active">
+              <div class="navbar-end">
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/guides">
+                          Our Guides
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/about">
+                          About Us
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <a class="nav-link" href="/mission">
+                          Mission
+                      </a>
+                  </div>
+                  <div class="navbar-item">
+                      <div class="buttons">
+                          <a onClick="show('registerModal')" class="button is-medium">
+                              <strong>Sign up</strong>
+                          </a>
+                          <a onClick="show('loginModal')" class="button is-medium">
+                              <strong>Login</strong>
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </nav>
+
+
+  </div>
+
+
+  <section id="discoverSection">
+      <div class="container">
+          {{#each guideChunks}}
+          <div class="columns is-centered">
+            {{#each this}}
+            <div class="profile column is-one-quarter" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
+              <div class="card">
+                <div class="card-image">
+                  <figure class="backdrop image is-2by1">
+                    <img src="{{this.backdrop}}">
+                  </figure>
+                  <figure class="profilePicture image is-128x128">
+                    <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+                  </figure>
+                  <div class="rating">
+                    <span class="icon has-text-danger">
+                      <i class="fas fa-star"></i>
+                    </span>
+                  </div>
+
+                </div>
+                <div class="card-content">
+                  <div class="media-content">
+                    <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
+                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}}</p>
+                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.grade}}</p>
+                    <p class="title is-6 has-text-centered no-margin-bottom">{{this.major}}</p>
+                  </div>
+                </div>
+                <footer class="card-footer">
+                  <a onclick="show('registerModal')" class="card-footer-item">Schedule Now!</a>
+
+                </footer>
+              </div>
+            </div>
+            {{/each}}
+            </div>
+          {{/each}}
+    </div>
+    </section>
+
+
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script type="text/javascript" src="/js/index.js"></script>
+
+  <script type="text/javascript">
+      searchType.addEventListener('change', function() {
+        var ev = new Event('keyup');
+        searchBar.dispatchEvent(ev);
+      })
+      searchBar.addEventListener('keyup', function(){
+        const queryType = searchType.value.toLowerCase();
+        const profiles = document.getElementsByClassName('profile')
+        for(var i = 0; i < profiles.length; i++){
+          let currentEl = profiles[i]
+          const name = profiles[i].getAttribute(`data-${queryType}`).toLowerCase();
+          if(!name.includes(searchBar.value.toLowerCase())){
+            currentEl.classList.add('is-hidden')
+          }
+          else {
+            currentEl.classList.remove('is-hidden')
+          }
+        }
+      })
+  </script>
+</body>
+<footer class="footer" style="padding-bottom: 1em !important;">
+    <div class="content has-text-centered">
+        <p>
+            Have any questions? Email <span> <a href="mailto:zizcheng@berkeley.edu?subject=About%20Tutopoint"
+                    target="_top">zizcheng@berkeley.edu</a> </span>
+        </p>
+        <p> Made with love by Jason, Titor, and Ziz. </p>
+    </div>
+
+</footer>
+</html>

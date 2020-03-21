@@ -1,0 +1,116 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400&display=swap');
+
+$gray: #f9f9f9;
+$white: #FFFFFF;
+$dark-gray: #00000029;
+$orange: #F56363;
+$grey: #646464
+$light-gray: #646464;
+$edgy-gray: #9E9E9E;
+$black: #000000;
+// Update Bulma's global variables
+$family-sans-serif: "Lato", sans-serif;
+
+// Update some of Bulma' component variables
+$body-background-color: $gray;
+$navbar-background-color: rgba($gray, 100%);
+$menu-item-hover-color: $orange;
+$menu-item-active-color: $orange;
+$menu-label-font-size: 1.25em;
+$menu-list-line-height: 2;
+$menu-item-active-background-color: rgba($gray, 100%);
+
+
+// Link edit
+$link: $light-gray;
+$link-hover: $orange;
+$link-active: $orange;
+
+$fullhd-enabled: false;
+$widescreen-enabled: false;
+$table-enabled: false;
+$fullhd-enabled: false;
+
+$steps-default-color: $edgy-gray;
+$steps-completed-color: $orange;
+$steps-active-color: $orange;
+$steps-divider-size: 3px;
+
+$primary: $orange;
+$grey-light: $light-gray;
+
+
+//modal
+$modal-content-width: 1500px;
+
+//tabs
+$tabs-link-active-border-bottom-color: $orange;
+$tabs-link-active-color: $orange;
+
+.highlight
+    color: $orange;
+
+.active
+    background-color: $orange;
+    & p 
+        color: $white;
+
+.inactive
+    background-color: $gray;
+    & p
+        color: $black;
+
+.overlay
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0,0,0.1);
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow: hidden;
+
+
+
+// Import only what you need from Bulma
+@import "../../node_modules/bulma/sass/utilities/_all.sass";
+@import "../../node_modules/bulma/sass/components/tabs.sass";
+@import "../../node_modules/bulma/sass/base/_all.sass";
+@import "../../node_modules/bulma/sass/elements/button.sass";
+@import "../../node_modules/bulma/sass/elements/container.sass";
+@import "../../node_modules/bulma/sass/elements/title.sass";
+@import "../../node_modules/bulma/sass/elements/image.sass";
+@import "../../node_modules/bulma/sass/elements/icon.sass";
+@import "../../node_modules/bulma/sass/form/_all.sass";
+@import "../../node_modules/bulma/sass/components/navbar.sass";
+@import "../../node_modules/bulma/sass/layout/hero.sass";
+@import "../../node_modules/bulma/sass/layout/section.sass";
+@import "../../node_modules/bulma/sass/components/level.sass";
+@import "../../node_modules/bulma/sass/components/media.sass";
+@import "../../node_modules/bulma/sass/components/menu.sass";
+@import "../../node_modules/bulma/sass/components/card.sass";
+@import "../../node_modules/bulma/sass/grid/_all.sass";
+@import "../../node_modules/bulma-o-steps/bulma-steps.sass";
+@import "../../node_modules/bulma/sass/components/modal.sass";
+@import "../../node_modules/bulma/sass/elements/table.sass";
+
++touch
+    .container.is-fluid
+        padding-left: 5px;
+        padding-right: 5px;
+
++desktop
+    #main
+        margin: 10px 64px 0px 64px;
+        width: unset;
+
++tablet-only
+    #main
+        margin: 10px 12px 0px 12px;
+        width: unset;
+
+.media-right
+    flex-shrink: 1;
