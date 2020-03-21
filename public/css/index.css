@@ -73,8 +73,10 @@ body {
 }
 
 .card-content {
-  padding: 2.5em;
+  padding: 2em 5em;
+
 }
+
 
 .register-box-heading {
   margin-bottom: 1em;

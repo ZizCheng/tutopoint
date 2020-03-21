@@ -34,3 +34,13 @@ function show(id) {
   const modal = document.getElementById(id);
   modal.classList.add('is-active');
 }
+function register() {
+  show('registerModal');
+  let email = document.getElementById("front-email");
+  let password = document.getElementById("front-password")
+  let registerModalEmail = document.getElementById("registerModalEmail");
+  let registerModalPassword = document.getElementById("registerModalPassword");
+  registerModalEmail.value = email.value;
+  registerModalPassword.value = password.value;
+
+}
