@@ -80,7 +80,6 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -108,3 +107,7 @@ dist
 
 # Block out secret.js
 secret.js
+
+# Allow index.html from gitignore
+!/dist/index.html
+/dist/*
