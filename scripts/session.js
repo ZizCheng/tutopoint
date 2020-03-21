@@ -81,13 +81,12 @@ function confirmSession(session) {
         };
         transporter.sendMail(mailOptions, function(error, info) {
           if (error) {
-            reject(err);
-          } else {
-            session.save()
-                .then(() => resolve())
-                .catch((err) => reject(err));
+            // reject(err);
           }
         });
+        session.save()
+            .then(() => resolve())
+            .catch((err) => reject(err));
       });
     });
   });
