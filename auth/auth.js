@@ -177,7 +177,16 @@ function mailReset(user) {
   });
 }
 
+function validateEmail(email) {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
+
 exports.newUser = function(req, res, next) {
+  if (!validateEmail(req.body.email)) {
+    res.render('signup', {layout: false, emailError: 'Email Invalid', referralCode: req.body.referralCode});
+    return;
+  }
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     if (err) return next(err);
     let user;
