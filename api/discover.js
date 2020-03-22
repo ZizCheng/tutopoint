@@ -43,9 +43,8 @@ discover.get('/:id/schedule', function(req, res) {
 discover.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   req.body.schedule = JSON.parse(req.body.schedule);
   for (let i = 0; i < req.body.schedule.length; i++) {
-    for (let j = 0; j < req.body.schedule[i].length; j++) {
-      req.body.schedule[i][j] = new Date(req.body.schedule[i][j]);
-    }
+    req.body.schedule[i][0] = new Date(req.body.schedule[i][0]);
+    req.body.schedule[i][1] = new Date(req.body.schedule[i][1]);
   }
   if (Schedule.verify(req.body.schedule)) {
     req.user.schedule = req.body.schedule;
