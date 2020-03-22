@@ -170,6 +170,7 @@ class Balance extends React.Component {
 
     this.formComplete = this.formComplete.bind(this);
     this.confirmPay = this.confirmPay.bind(this);
+    this.closeWeChatHandler = this.closeWeChatHandler.bind(this);
   }
 
   formComplete(result) {
@@ -260,10 +261,15 @@ class Balance extends React.Component {
 
   }
 
+  closeWeChatHandler() {
+    this.setState({wechat: false});
+  }
+
   render() {
     return (
       <div id="Balance" className="container is-fluid">
         {this.state.wechat && (<div className="overlay"><div className="overlay-center">
+          <button onClick={this.closeWeChatHandler}class="modal-close is-large"></button>
           <div className="card">
             <div className="card-content">
             <QRCode value={this.state.wechat_qrcode} />
