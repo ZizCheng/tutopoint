@@ -30,14 +30,22 @@ discover.get('/:id', function(req, res) {
       });
 });
 
-discover.get('/:id/schedule', function(req, res) {
-  Guides
-      .findOne({_id: req.params.id})
-      .select('schedule')
-      .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
-      .catch((err) => {
-        console.log(err); res.send('Internal Server Error.');
-      });
+discover.get('/:id/schedule', async function(req, res) {
+  try {
+    const guides = await Guides
+        .findOne({_id: req.params.id})
+        .select('schedule');
+
+    const filteredSchedule = guides.schedule.filter((schedule) => {
+      const currentSchedule = schedule[1];
+
+      return schedule[1] > Date.now();
+    });
+
+    res.json({schedule: filteredSchedule});
+  } catch (err) {
+    res.status(400).json({message: 'Invalid Guide ID'});
+  }
 });
 
 discover.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
