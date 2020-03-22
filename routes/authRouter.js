@@ -39,7 +39,7 @@ router.get('/verify/:token', function(req, res) {
   });
 });
 
-router.post('/login', auth.authenticateUser, auth.userIsVerified, function(req, res) {
+router.post('/login', auth.authenticateUser, function(req, res) {
   res.redirect('/dashboard');
 });
 
