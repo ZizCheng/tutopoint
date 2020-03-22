@@ -22,33 +22,34 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   componentDidMount() {
-    console.log(
-      moment()
-        .tz("America/Los_Angeles")
-        .format()
-    );
-    discoverAPI.getGuideSchedule(this.props.id).then( data => {
-      data?.schedule.map(interval => {
-        interval.push({ selected: false, available: true });
+    discoverAPI.getGuideSchedule(this.props.id).then(data => {
+      let newIntervals = data?.schedule.slice();
+      for (const interval of newIntervals) {
+        console.log(typeof interval[2] != "undefined");
+        interval.push({selected: false});
+      }
+      newIntervals = newIntervals.filter(interval => { 
+        console.log(interval[2]);
+        return moment() < moment(interval[0]) && typeof interval[2] != "undefined";
       });
-      this.setState({ schedule: data?.schedule });
+      this.setState({ schedule: newIntervals });
     });
   }
 
   select(intervalIndex) {
     if (this.state.schedule[intervalIndex].selected == true) {
       const guideID = this.props.id;
-      sessionAPI.requestSession(guideID, this.state.schedule[intervalIndex][0])
-        .then((response) => {
-          if(response.message == 'ok') {
+      sessionAPI
+        .requestSession(guideID, this.state.schedule[intervalIndex][0])
+        .then(response => {
+          if (response.message == "ok") {
             profileAPI.getProfile().then(profile => {
               profileStore.dispatch({ type: "Update", data: profile });
-              this.props.history.push('/dashboard');
+              this.props.history.push("/dashboard");
             });
           }
-        })
-    }
-    else {
+        });
+    } else {
       let newSchedule = this.state.schedule.slice();
       for (let i = 0; i < this.state.schedule.length; i++) {
         newSchedule[i].selected = false;
@@ -57,6 +58,15 @@ class ScheduleWithoutRouter extends React.Component {
       this.setState({
         schedule: newSchedule
       });
+    }
+  }
+
+  renderButtonText(interval) {
+    if (interval[2] == "booked") {
+      return "booked";
+    }
+    else if (interval[2] == "available") {
+      return interval.selected ? "Confirm" : "Selected";
     }
   }
 
@@ -70,7 +80,7 @@ class ScheduleWithoutRouter extends React.Component {
         "Asia/Shanghai"
       ].map((timezone, column) => {
         return (
-          <td key={row + "" + column}>
+          <td className="monospace" key={row + "" + column}>
             {moment(interval[0])
               .tz(timezone)
               .format(format)}
@@ -79,28 +89,33 @@ class ScheduleWithoutRouter extends React.Component {
       });
       timezones.push(
         <td key={row + "" + 4}>
-          <button className={"button" + (this.state.schedule[row].selected ? " is-primary" : "")} onClick={this.select.bind(this, row)}>
-            {this.state.schedule[row].selected ? "Confirm" : "Selected"}
+          <button
+            className={
+              "button" +
+              (this.state.schedule[row].selected ? " is-primary" : "")
+            }
+            onClick={this.select.bind(this, row)}
+          >
+            {this.renderButtonText(this.state.schedule[row])}
           </button>
         </td>
       );
-      console.log(timezones);
       return <tr>{timezones}</tr>;
     });
     return (
-      <div class="table-container">
-      <table className="table is-fullwidth">
-        <thead>
-          <tr>
-            <th className="has-text-grey">Detected Time</th>
-            <th className="has-text-grey">Los Angeles Time</th>
-            <th className="has-text-grey">Beijing Time</th>
-            <th className="has-text-grey">New York Time</th>
-            <th className="has-text-grey">Availability</th>
-          </tr>
-        </thead>
-        <tbody>{schedules}</tbody>
-      </table>
+      <div className="table-container">
+        <table className="table is-fullwidth">
+          <thead>
+            <tr>
+              <th className="has-text-grey">Detected Time</th>
+              <th className="has-text-grey">Los Angeles Time</th>
+              <th className="has-text-grey">New York Time</th>
+              <th className="has-text-grey">Beijing Time</th>
+              <th className="has-text-grey">Availability</th>
+            </tr>
+          </thead>
+          <tbody>{schedules}</tbody>
+        </table>
       </div>
     );
   }
@@ -129,8 +144,8 @@ class Discover extends React.Component {
     this.setState({ focus: true, focusedGuide: currentGuide });
   }
 
-  closeModal(){
-    this.setState({focus: false});
+  closeModal() {
+    this.setState({ focus: false });
   }
 
   render() {
@@ -228,7 +243,9 @@ class Discover extends React.Component {
               Discover
             </p>
           </header>
-          <div className="discover__guideWrapper card-content is-block-mobile">{guides}</div>
+          <div className="discover__guideWrapper card-content is-block-mobile">
+            {guides}
+          </div>
         </div>
       </React.Fragment>
     );

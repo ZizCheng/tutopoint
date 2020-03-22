@@ -57,7 +57,7 @@ const Guide = new Schema({
   },
   // schedule is sorted based on first index of array
   schedule: [
-    [Date, Date],
+    [Date, Date, String],
   ],
   // 5 length array that stores how many 1 star, 2 star, etc. (1 star at index 0)
   ratings: [{

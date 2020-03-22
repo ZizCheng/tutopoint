@@ -30,22 +30,29 @@ discover.get('/:id', function(req, res) {
       });
 });
 
-discover.get('/:id/schedule', function(req, res) {
-  Guides
-      .findOne({_id: req.params.id})
-      .select('schedule')
-      .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
-      .catch((err) => {
-        console.log(err); res.send('Internal Server Error.');
-      });
+discover.get('/:id/schedule', async function(req, res) {
+  try {
+    const guides = await Guides
+        .findOne({_id: req.params.id})
+        .select('schedule');
+
+    const filteredSchedule = guides.schedule.filter((schedule) => {
+      const currentSchedule = schedule[1];
+
+      return schedule[1] > Date.now();
+    });
+
+    res.json({schedule: filteredSchedule});
+  } catch (err) {
+    res.status(400).json({message: 'Invalid Guide ID'});
+  }
 });
 
 discover.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   req.body.schedule = JSON.parse(req.body.schedule);
   for (let i = 0; i < req.body.schedule.length; i++) {
-    for (let j = 0; j < req.body.schedule[i].length; j++) {
-      req.body.schedule[i][j] = new Date(req.body.schedule[i][j]);
-    }
+    req.body.schedule[i][0] = new Date(req.body.schedule[i][0]);
+    req.body.schedule[i][1] = new Date(req.body.schedule[i][1]);
   }
   if (Schedule.verify(req.body.schedule)) {
     req.user.schedule = req.body.schedule;
