@@ -20,41 +20,6 @@
 </head>
 
 <body>
-
-    <!-- MODALS -->
-
-        <!--
-        login modal
-        use JS to toggle the is-active class on the div
-    -->
-    <div id="loginModal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <form method="post" action="/login">
-                <div class="card center-items modal-card-c">
-                    <h1>Login</h1>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="email" type="email" placeholder="Email">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <input class="input" name="password" type="password" placeholder="Password">
-                        </div>
-                        <p class="help is-danger">{{error}}</p>
-                    </div>
-                    <button type="submit" class="button">
-                        <strong>Log in</strong>
-                    </button>
-                    <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
-                    <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
-            </form>
-        </div>
-        <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-    </div>
-    </div>
-
     <!--register modal-->
     <div id="registerModal" class="modal is-active">
         <div class="modal-background"></div>
@@ -81,44 +46,19 @@
                         <div class="control">
                             <input class="input" name="referralCode" type="text" placeholder="Referral Code (Optional)">
                         </div>
+                        <p class="help is-danger">{{error}}</p>
                     </div>
                     <input class="input" type="hidden" name="userType" value="client">
                     <button class="button">
                         <strong>Register</strong>
                     </button>
             </form>
-            <p>Already have an account? <a onClick="show('loginModal')" class="is-primary">Log in</a></p>
+            <p>Already have an account? <a href="/login" class="is-primary">Log in</a></p>
         </div>
         <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
     </div>
     </div>
-
-    <!--reset password modal-->
-    <div id="resetModal" class="modal">
-        <div class="modal-background"></div>
-        <div class="modal-content">
-            <div class="card center-items modal-card-c">
-                <h1>reset password</h1>
-                <form method="post" action="/reset">
-                    <div class="field">
-                        <label class="label">Please enter your email</label>
-                        <div class="control">
-                            <input class="input" name="email" placeholder="email">
-                        </div>
-                    </div>
-                    <input class="input" type="hidden" name="userType" value="client">
-                    <button type="submit" class="button">
-                        <strong>submit</strong>
-                    </button>
-                    </a>
-                </form>
-                <p><a onClick="show('loginModal')" class="link">back to login</a></p>
-            </div>
-            <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-        </div>
-    </div>
-
-
+    
     <div class="custom-container">
 
         <!--nav bar-->

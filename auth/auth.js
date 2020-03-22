@@ -184,7 +184,7 @@ function validateEmail(email) {
 
 exports.newUser = function(req, res, next) {
   if (!validateEmail(req.body.email)) {
-    res.render('signup', {layout: false, emailError: 'Email Invalid', referralCode: req.body.referralCode});
+    res.render('signup', {layout: false, error: 'Email Invalid'});
     return;
   }
   bcrypt.hash(req.body.password, 10, (err, hash) => {
@@ -200,9 +200,9 @@ exports.newUser = function(req, res, next) {
       user.save(function(err, user) {
         if (err) {
           if (err.code == 11000) {
-            res.render('signup', {layout: false, emailError: 'Email already exists.', referralCode: req.body.referralCode});
+            res.render('signup', {layout: false, error: 'Email already exists.'});
           } else {
-            res.render('signup', {layout: false, error: 'Please make sure all fields are filled.', referralCode: req.body.referralCode});
+            res.render('signup', {layout: false, error: 'Please make sure all fields are filled.'});
           }
           return;
         }
