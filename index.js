@@ -28,7 +28,7 @@ const scheduleRouter = require('./routes/scheduleRouter.js');
 // const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
-// const adminRouter = require('./routes/adminRouter.js');
+const adminRouter = require('./routes/adminRouter.js');
 
 const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
@@ -64,6 +64,7 @@ app.use(authRouter);
 app.use('/session', sessionRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/bank', bankRouter);
+app.use('/admin', adminRouter);
 // API
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
