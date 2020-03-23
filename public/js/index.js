@@ -24,6 +24,10 @@ $(document).ready(function() {
   });
 });
 
+let dropdown = false;
+dropdownMenu = document.getElementById('dropdownMenu');
+dropdownButton = document.getElementById('dropdownButton');
+
 function hideModal() {
   loginModal.classList.remove('is-active');
   registerModal.classList.remove('is-active');
@@ -36,11 +40,21 @@ function show(id) {
 }
 function register() {
   show('registerModal');
-  let email = document.getElementById("front-email");
-  let password = document.getElementById("front-password")
-  let registerModalEmail = document.getElementById("registerModalEmail");
-  let registerModalPassword = document.getElementById("registerModalPassword");
+  const email = document.getElementById('front-email');
+  const password = document.getElementById('front-password');
+  const registerModalEmail = document.getElementById('registerModalEmail');
+  const registerModalPassword = document.getElementById('registerModalPassword');
   registerModalEmail.value = email.value;
   registerModalPassword.value = password.value;
-
+}
+function toggleDropdown() {
+  if (dropdown) {
+    dropdownMenu.classList.remove('is-active');
+    dropdownButton.classList.remove('is-active');
+    dropdown = false;
+    return;
+  }
+  dropdownButton.classList.add('is-active');
+  dropdownMenu.classList.add('is-active');
+  dropdown = true;
 }

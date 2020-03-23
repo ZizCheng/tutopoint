@@ -23,7 +23,7 @@
 
     <!-- MODALS -->
 
-        <!--
+    <!--
         login modal
         use JS to toggle the is-active class on the div
     -->
@@ -73,7 +73,8 @@
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input id="registerModalPassword" class="input" name="password" type="password" placeholder="Password">
+                            <input id="registerModalPassword" class="input" name="password" type="password"
+                                placeholder="Password">
                         </div>
                     </div>
                     <div class="field">
@@ -127,15 +128,15 @@
                     <img src="/images/logo.png">
                 </a>
 
-                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                    data-target="navbarBasicExample">
+                <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                    aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                 </a>
             </div>
 
-            <div id="navbarBasicExample" class="navbar-menu is-active">
+            <div id="dropdownMenu" class="navbar-menu">
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <a class="nav-link" href="/guides">
@@ -199,8 +200,7 @@
                             </div>
                             <div id="front-password" class="field">
                                 <div class="control">
-                                    <input class="input" name="password" type="password"
-                                        placeholder="Password">
+                                    <input class="input" name="password" type="password" placeholder="Password">
                                 </div>
                             </div>
                             <button onclick="register()" type="submit" class="button">
