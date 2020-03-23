@@ -1,6 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
+const passport = require('passport');
 
 const VerifyToken = require('../models/model.js').VerifyTokens;
 const ResetToken = require('../models/model.js').ResetTokens;
@@ -39,8 +40,22 @@ router.get('/verify/:token', function(req, res) {
   });
 });
 
-router.post('/login', auth.authenticateUser, function(req, res) {
-  res.redirect('/dashboard');
+router.post('/login', function(req, res, next) {
+  console.log('were in');
+  passport.authenticate('local', function(err, user, info) {
+    if (err) {
+      return res.render('login', {layout: false, error: 'Invalid Login'});
+    }
+    if (!user) {
+      return res.render('login', {layout: false, error: 'Invalid Login'});
+    }
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/dashboard');
+    });
+  })(req, res, next);
 });
 
 router.get('/signup', (req, res) => {
