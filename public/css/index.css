@@ -153,3 +153,7 @@ h1 {
     display: none;
   }
 }
+
+.media-content {
+    overflow-x: unset;
+}
