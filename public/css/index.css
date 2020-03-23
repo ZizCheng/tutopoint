@@ -12,11 +12,12 @@ body {
 }
 
 .modal-card-c {
-    padding: 2em 0;
+  padding: 2em 0;
 }
 
-.modal-card-c h1, .modal-card-c button {
-    margin-bottom: 1em;
+.modal-card-c h1,
+.modal-card-c button {
+  margin-bottom: 1em;
 }
 
 .navbar {
@@ -74,9 +75,7 @@ body {
 
 .card-content {
   padding: 2em 5em;
-
 }
-
 
 .register-box-heading {
   margin-bottom: 1em;
@@ -101,7 +100,7 @@ h1 {
 }
 
 .carousel-card {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .slick-prev:before,
@@ -110,7 +109,7 @@ h1 {
 }
 
 .slick-slide {
-  margin: 1em ;
+  margin: 1em;
 }
 
 .columns:last-child {
@@ -133,14 +132,28 @@ h1 {
 }
 
 .backdrop-image {
-    border-radius: 30px 30px 0 0;
+  border-radius: 30px 30px 0 0;
 }
 
 .footer {
-    margin-top: 4em;
-    background-color: #f2f2f2;
+  margin-top: 4em;
+  background-color: #f2f2f2;
 }
 
 .hidden {
   display: none;
+}
+
+@media screen and (max-width: 600px) {
+  .custom-container {
+    width: 90%;
+  }
+  .slick-prev:before,
+  .slick-next:before {
+    display: none;
+  }
+}
+
+.media-content {
+    overflow-x: unset;
 }

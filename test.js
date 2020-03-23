@@ -5,15 +5,15 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/TutoPoint');
 
-
-
-console.log("qwer");
-
-Guides.findById("5e46305c5e66bf4d18db4858", function(err, guide) {
-  console.log(guide);
-  Schedule.makeScheduleHourly(guide.schedule);
-  guide.markModified("schedule");
-  guide.save();
+var schedule = [
+  {start: time(4, 0), end: time(5, 0), status: "available"},
+  {start: time(8, 0), end: time(9, 0), status: "available"},
+];
+Users.findById("5e46644f6c179323d13cf072", function(err, user) {
+  user.schedule = schedule;
+  user.save(function(err) {
+    if(err) console.log(err);
+  });
 });
 
 
@@ -22,5 +22,5 @@ Guides.findById("5e46305c5e66bf4d18db4858", function(err, guide) {
 
 function time(hour, min)
 {
-  return new Date(2020, 1, 23, hour, min);
+  return new Date(2020, 3, 23, hour, min);
 }

@@ -96,8 +96,8 @@
       //JSON.parse changes dates into strings, need to convert back
       var schedule = JSON.parse(`{{{schedule}}}`);
       for(var i = 0;i<schedule.length;i++) {
-        schedule[i][0] = new Date(schedule[i][0]);
-        schedule[i][1] = new Date(schedule[i][1]);
+        schedule[i].start = new Date(schedule[i].start);
+        schedule[i].end = new Date(schedule[i].end);
       }
     </script>
     <script>
@@ -118,9 +118,11 @@
       createTimetable();
       updateTimetable();
 
+      /*
       var autosaveInterval = setInterval(function() {
         saveSchedule();
       }, 3000);
+      */
 
       $(".calendar-right-arrow").click(function(){
         day = 1;
