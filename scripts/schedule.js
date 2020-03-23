@@ -22,16 +22,16 @@ returns whether date is available in schedule
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
   if (temp == -1) return false;
-  return dateBetween(date, schedule[temp][0], schedule[temp][1]) && schedule[temp][2] == "available";
+  return dateBetween(date, schedule[temp].start, schedule[temp].end) && schedule[temp].status == "available";
 }
 
 /*
 returns whether interval is available in schedule
 */
 function intervalAvailable(interval, schedule) {
-  const temp = largestIndex(interval[0], schedule);
+  const temp = largestIndex(interval.start, schedule);
   if (temp == -1) return false;
-  return dateBetween(interval[0], schedule[temp][0], schedule[temp][1]) && dateBetween(interval[1], schedule[temp][0], schedule[temp][1]);
+  return dateBetween(interval.start, schedule[temp].start, schedule[temp].end) && dateBetween(interval.end, schedule[temp].start, schedule[temp].end);
 }
 
 /*
@@ -48,19 +48,19 @@ function insertInterval(interval, schedule) {
     if(dataIsEqual(schedule[i], interval))
     {
       // date 1 is between original interval
-      if (dateBetween(interval[0], schedule[i][0], schedule[i][1])) {
+      if (dateBetween(interval.start, schedule[i].start, schedule[i].end)) {
         // expand interval left
-        interval[0] = schedule[i][0];
+        interval.start = schedule[i].start;
         removeOriginalInterval = true;
       }
       // date 2 is between original interval
-      if (dateBetween(interval[1], schedule[i][0], schedule[i][1])) {
+      if (dateBetween(interval.end, schedule[i].start, schedule[i].end)) {
         // expand interval right
-        interval[1] = schedule[i][1];
+        interval.end = schedule[i].end;
         removeOriginalInterval = true;
       }
       // original interval is inside new interval
-      if (dateBetween(schedule[i][0], interval[0], interval[1]) && dateBetween(schedule[i][1], interval[0], interval[1])) {
+      if (dateBetween(schedule[i].start, interval.start, interval.end) && dateBetween(schedule[i].end, interval.start, interval.end)) {
         // proceed as if original interval wasn't there
         removeOriginalInterval = true;
       }
@@ -72,25 +72,25 @@ function insertInterval(interval, schedule) {
     else
     {
       // date 1 is between original interval
-      if (dateBetween(interval[0], schedule[i][0], schedule[i][1])) {
+      if (dateBetween(interval.start, schedule[i].start, schedule[i].end)) {
         //shorten original interval on right side
-        schedule[i][1] = interval[0];
+        schedule[i].end = interval.start;
       }
       // date 2 is between original interval
-      if (dateBetween(interval[1], schedule[i][0], schedule[i][1])) {
+      if (dateBetween(interval.end, schedule[i].start, schedule[i].end)) {
         //shorten original interval on left side
-        schedule[i][0] = interval[1];
+        schedule[i].start = interval.end;
       }
       // original interval is inside new interval
-      if (dateBetween(schedule[i][0], interval[0], interval[1]) && dateBetween(schedule[i][1], interval[0], interval[1])) {
+      if (dateBetween(schedule[i].start, interval.start, interval.end) && dateBetween(schedule[i].end, interval.start, interval.end)) {
         // proceed as if original interval wasn't there
         removeOriginalInterval = true;
       }
       // new interval is inside original interval
-      if (dateWithin(interval[0], schedule[i][0], schedule[i][1]) && dateWithin(interval[1], schedule[i][0], schedule[i][1])) {
+      if (dateWithin(interval.start, schedule[i].start, schedule[i].end) && dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
         // split original interval in 2 by shortening it to one side and inserting another interval
-        const newInterval = [interval[1], schedule[i][1]];
-        schedule[i][1] = interval[0];
+        const newInterval = [interval.end, schedule[i].end];
+        schedule[i].end = interval.start;
         schedule.splice(i+1, 0, newInterval);
         i++;
       }
@@ -104,7 +104,7 @@ function insertInterval(interval, schedule) {
   }
 
   // add interval in front of largest index
-  schedule.splice(largestIndex(interval[0], schedule) + 1, 0, interval);
+  schedule.splice(largestIndex(interval.start, schedule) + 1, 0, interval);
 }
 
 /*
@@ -116,24 +116,24 @@ the data of the interval does not matter
 function removeInterval(interval, schedule) {
   for (let i = 0; i<schedule.length; i++) {
     // criss crossed
-    if (dateWithin(interval[0], schedule[i][0], schedule[i][1]) && !dateWithin(interval[1], schedule[i][0], schedule[i][1])) {
+    if (dateWithin(interval.start, schedule[i].start, schedule[i].end) && !dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
       // move right side to interval left
-      schedule[i][1] = interval[0];
+      schedule[i].end = interval.start;
     }
-    if (!dateWithin(interval[0], schedule[i][0], schedule[i][1]) && dateWithin(interval[1], schedule[i][0], schedule[i][1])) {
+    if (!dateWithin(interval.start, schedule[i].start, schedule[i].end) && dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
       // move left side to interval right
-      schedule[i][0] = interval[1];
+      schedule[i].start = interval.end;
     }
     // interval completely inside
-    if (dateWithin(interval[0], schedule[i][0], schedule[i][1]) && dateWithin(interval[1], schedule[i][0], schedule[i][1])) {
+    if (dateWithin(interval.start, schedule[i].start, schedule[i].end) && dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
       // split original interval in 2 by shortening it to one side and inserting another interval
-      const newInterval = [interval[1], schedule[i][1]];
-      schedule[i][1] = interval[0];
+      const newInterval = [interval.end, schedule[i].end];
+      schedule[i].end = interval.start;
       schedule.splice(i+1, 0, newInterval);
       i++;
     }
     // interval completely surround
-    if (dateBetween(schedule[i][0], interval[0], interval[1]) && dateBetween(schedule[i][1], interval[0], interval[1])) {
+    if (dateBetween(schedule[i].start, interval.start, interval.end) && dateBetween(schedule[i].end, interval.start, interval.end)) {
       schedule.splice(i, 1);
       i--;
     }
@@ -150,8 +150,8 @@ function listHourlyStartTimes(schedule)
   for(var i = 0;i<schedule.length;i++)
   {
     var interval = schedule[i];
-    var incrementingDate = ceilDate(interval[0]);
-    while(interval[0].getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval[1].getTime()) {
+    var incrementingDate = ceilDate(interval.start);
+    while(interval.start.getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval.end.getTime()) {
       //clone incrementingDate and add to return array
       retList.push(new Date(incrementingDate));
       incrementingDate.setTime(incrementingDate.getTime() + msInHour);
@@ -172,9 +172,9 @@ function verify(schedule) {
   if (schedule.length == 0) return true;
   let prevDate = new Date(1970, 0, 1);
   for (let i = 0; i<schedule.length; i++) {
-    if (prevDate.getTime() > schedule[i][0].getTime()) return false;
-    if (schedule[i][0].getTime() >= schedule[i][1].getTime()) return false;
-    prevDate = schedule[i][1];
+    if (prevDate.getTime() > schedule[i].start.getTime()) return false;
+    if (schedule[i].start.getTime() >= schedule[i].end.getTime()) return false;
+    prevDate = schedule[i].end;
   }
   return true;
 }
@@ -188,7 +188,7 @@ in this case, checks if the strings are equal
 */
 function dataIsEqual(firstInterval, secondInterval)
 {
-  return firstInterval[2] === secondInterval[2]
+  return firstInterval.status === secondInterval.status
 }
 
 /*
@@ -197,7 +197,7 @@ does NOT change original interval
 */
 function getIntervalInHours(interval)
 {
-  return [ceilDate(interval[0]),floorDate(interval[1])];
+  return [ceilDate(interval.start),floorDate(interval.end)];
 }
 // rounds date down to nearest hour
 function floorDate(date)
@@ -216,15 +216,15 @@ function ceilDate(date)
 //returns whether interval is valid
 function intervalIsValid(interval)
 {
-  return interval[0] < interval[1];
+  return interval.start < interval.end;
 }
 
 
-// returns largest index such that schedule[index][0] <= date
+// returns largest index such that schedule[index].start <= date
 function largestIndex(date, schedule) {
   let largestIndex = -1;
   for (let i = 0; i<schedule.length; i++) {
-    if (schedule[i][0].getTime() <= date.getTime()) {
+    if (schedule[i].start.getTime() <= date.getTime()) {
       largestIndex = i;
     }
   }
