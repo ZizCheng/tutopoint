@@ -9,6 +9,9 @@ const profileReducer = (state, action) => {
   } else if (type == 'Update Balance') {
     state.stripe.balance = data.balance;
     return state;
+  } else if (type == 'Close Tutorial') {
+    state.tutorialHidden = true;
+    return state;
   } else {
     return state;
   }

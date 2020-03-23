@@ -88,6 +88,10 @@ const Client = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'sessions',
   }],
+  tutorialHidden: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Session = new Schema({
