@@ -199,9 +199,10 @@ class App extends React.Component {
                   <Home />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
-                  <Route path="/Discover">
+                    <Route path="/Discover">
                     <Discover />
                   </Route>
+                  
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">

@@ -126,15 +126,17 @@ const Schedule = withRouter(ScheduleWithoutRouter);
 class Discover extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { topGuides: null };
+    this.state = { topGuides: null, currentPage: 1 };
 
     this.handleGuideClicked = this.handleGuideClicked.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.previousPage = this.previousPage.bind(this);
+    this.nextPage = this.nextPage.bind(this);
   }
 
   componentDidMount() {
-    discoverAPI.getGuides().then(guides => {
-      this.setState({ topGuides: guides });
+    discoverAPI.getGuides(this.state.currentPage).then(guides => {
+      this.setState({ topGuides: guides.data, totalGuides: guides.count });
     });
   }
 
@@ -146,6 +148,24 @@ class Discover extends React.Component {
 
   closeModal() {
     this.setState({ focus: false });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if(prevState.currentPage != this.state.currentPage){
+      discoverAPI.getGuides(this.state.currentPage).then(guides => {
+        this.setState({ topGuides: guides.data, totalGuides: guides.count });
+      });
+    }
+  }
+
+  previousPage() {
+    if(this.state.currentPage == 1) return;
+    this.setState({currentPage: this.state.currentPage - 1})
+  }
+
+  nextPage() {
+    if(this.state.currentPage == Math.ceil(this.state.totalGuides / 12)) return;
+    this.setState({currentPage: this.state.currentPage + 1})
   }
 
   render() {
@@ -237,19 +257,28 @@ class Discover extends React.Component {
             ></button>
           </div>
         )}
-        <div id="appointments" className="card">
+        <div id="discover" className="card">
           <header className="card-header">
             <p className="is-size-3 card-header-title is-size-6-touch">
               Discover
             </p>
+            {/* <div className="card-header-icon has-text-white">
+              <p className="button has-text-white is-primary">Filter</p>
+            </div> */}
           </header>
           <div className="discover__guideWrapper card-content is-block-mobile">
             {guides}
           </div>
+          {(this.state.totalGuides  / 12 > 1) && <footer className="card-footer">
+          <nav className="card-footer-item is-centered" role="navigation" aria-label="pagination">
+            <a onClick={this.previousPage} className="pagination-previous">Previous</a>
+            <a onClick={this.nextPage} className="pagination-next">Next page</a>
+          </nav>
+  </footer>}
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default Discover;
+export default withRouter(Discover);
