@@ -56,9 +56,11 @@ const Guide = new Schema({
     default: 'en',
   },
   // schedule is sorted based on first index of array
-  schedule: [
-    [Date, Date],
-  ],
+  schedule: [{
+    start: Date,
+    end: Date,
+    status: String,
+  }],
   // 5 length array that stores how many 1 star, 2 star, etc. (1 star at index 0)
   ratings: [{
     type: Number,
@@ -86,6 +88,10 @@ const Client = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'sessions',
   }],
+  tutorialHidden: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Session = new Schema({

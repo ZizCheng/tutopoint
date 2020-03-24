@@ -27,4 +27,14 @@ router.get('/', async function(req, res) {
 });
 
 
+router.get('/closeTutorial', function(req, res) {
+  const user = req.user;
+
+  user.tutorialHidden = true;
+
+  user.save()
+      .then(() => res.json({message: 'ok'}))
+      .catch(() => res.json({error: 'Internal Server Error'}));
+});
+
 module.exports = router;

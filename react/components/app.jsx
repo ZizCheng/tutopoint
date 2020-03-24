@@ -32,6 +32,7 @@ class App extends React.Component {
     this.state = { profile: null, hidden: false };
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
+    this.closeTutorial = this.closeTutorial.bind(this);
   }
 
   toggleSideBarMobile() {
@@ -51,10 +52,24 @@ class App extends React.Component {
     });
   }
 
+  closeTutorial() {
+    profileAPI.closeTutorial()
+      .then(resp => {
+        if(resp.error){
+          console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
+        }
+        profileStore.dispatch({type: "Close Tutorial", data: this.state.profile});
+      })
+  }
+
   render() {
     return (
       <Router>
         <div id="main" className="container is-fluid">
+          {(this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden && <div>
+            Tutorial shit
+            <button onClick={this.closeTutorial}> NO NO NO NO NO HIDE IT </button>
+          </div>)}
           <nav
             className="navbar is-transparent"
             role="navigation"
@@ -184,9 +199,10 @@ class App extends React.Component {
                   <Home />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
-                  <Route path="/Discover">
+                    <Route path="/Discover">
                     <Discover />
                   </Route>
+                  
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">

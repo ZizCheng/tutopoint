@@ -2,6 +2,8 @@ $(document).ready(function() {
   $('.carousel').slick({
     slidesToShow: 3,
     arrows: true,
+    autoplay: true,
+    autoplaySpeed: 1800,
     responsive: [
       {
         breakpoint: 1200,
@@ -24,6 +26,10 @@ $(document).ready(function() {
   });
 });
 
+let dropdown = false;
+dropdownMenu = document.getElementById('dropdownMenu');
+dropdownButton = document.getElementById('dropdownButton');
+
 function hideModal() {
   loginModal.classList.remove('is-active');
   registerModal.classList.remove('is-active');
@@ -33,4 +39,24 @@ function show(id) {
   hideModal();
   const modal = document.getElementById(id);
   modal.classList.add('is-active');
+}
+function register() {
+  show('registerModal');
+  const email = document.getElementById('front-email');
+  const password = document.getElementById('front-password');
+  const registerModalEmail = document.getElementById('registerModalEmail');
+  const registerModalPassword = document.getElementById('registerModalPassword');
+  registerModalEmail.value = email.value;
+  registerModalPassword.value = password.value;
+}
+function toggleDropdown() {
+  if (dropdown) {
+    dropdownMenu.classList.remove('is-active');
+    dropdownButton.classList.remove('is-active');
+    dropdown = false;
+    return;
+  }
+  dropdownButton.classList.add('is-active');
+  dropdownMenu.classList.add('is-active');
+  dropdown = true;
 }

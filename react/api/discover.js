@@ -1,5 +1,5 @@
-const getGuides = () => {
-  return fetch('/api/discover').then((response) => response.json());
+const getGuides = (page) => {
+  return fetch(`/api/discover/page/${page}`).then((response) => response.json());
 };
 
 const getGuideSchedule = (id) => {

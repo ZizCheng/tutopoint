@@ -23,7 +23,7 @@
 
     <!-- MODALS -->
 
-        <!--
+    <!--
         login modal
         use JS to toggle the is-active class on the div
     -->
@@ -63,7 +63,7 @@
                     <h1>Register</h1>
                     <div class="field">
                         <div class="control">
-                            <input class="input" name="email" type="email" placeholder="Email">
+                            <input id="registerModalEmail" class="input" name="email" type="email" placeholder="Email">
                         </div>
                     </div>
                     <div class="field">
@@ -73,7 +73,8 @@
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input class="input" name="password" type="password" placeholder="Password">
+                            <input id="registerModalPassword" class="input" name="password" type="password"
+                                placeholder="Password">
                         </div>
                     </div>
                     <div class="field">
@@ -123,19 +124,20 @@
         <!--nav bar-->
         <nav class="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
-                <a class="navbar-item" href="https://bulma.io">
+                <a class="navbar-item" href="/">
                     <img src="/images/logo.png">
                 </a>
 
-                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                    data-target="navbarBasicExample">
+                <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                    aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>
                 </a>
             </div>
 
-            <div id="navbarBasicExample" class="navbar-menu is-active">
+            <div id="dropdownMenu" class="navbar-menu">
+
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <a class="nav-link" href="/guides">
@@ -183,27 +185,26 @@
                 <!--motto and register box-->
                 <div class="column center-items">
 
-                    <p class="motto">Don't let COVID-19 hold you back. Online college consulting with authentic college
+                    <p class="motto is-size-4-mobile">Don't let COVID-19 hold you back. Online college consulting with authentic college
                         students</p>
 
                     <div class="card">
                         <div class="card-content center-items">
-                            <h1 class="register-box-heading">Lets get started</h1>
+                            <h1 class="is-size-5-mobile register-box-heading">Lets get started</h1>
 
                             <!--Register Form-->
                             <div class="field">
                                 <div class="control">
-                                    <input class="input display-field is-flex-mobile" name="email" type="email"
+                                    <input id="front-email" class="input is-flex-mobile" name="email" type="email"
                                         placeholder="Email">
                                 </div>
                             </div>
-                            <div class="field">
+                            <div id="front-password" class="field">
                                 <div class="control">
-                                    <input class="input display-field" name="password" type="password"
-                                        placeholder="Password">
+                                    <input class="input" name="password" type="password" placeholder="Password">
                                 </div>
                             </div>
-                            <button type="submit" class="button">
+                            <button onclick="register()" type="submit" class="button">
                                 <strong>Sign Up</strong>
                             </button>
                         </div>
@@ -248,7 +249,7 @@
                     </figure>
                     <figure class="profilePicture image is-128x128">
                         <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                            src="/images/cheyennezhang.jpg">
+                            src="/images/CheyenneZhang.jpg">
                     </figure>
                 </div>
                 <div class="card-content">
@@ -271,7 +272,7 @@
                     </figure>
                     <figure class="profilePicture image is-128x128">
                         <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                            src="/images/jenniferhong.png">
+                            src="/images/JenniferHong.png">
                     </figure>
                 </div>
                 <div class="card-content">
@@ -297,7 +298,6 @@
             </p>
             <p> Made with love by Jason, Titor, and Ziz. </p>
         </div>
-
     </footer>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>

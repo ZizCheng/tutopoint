@@ -25,9 +25,9 @@ class Dashboard extends React.Component {
 
   componentDidMount(){
       discoverAPI
-        .getGuides()
+        .getGuides(1)
         .then((guides) => {
-            this.setState({topGuides: guides})
+            this.setState({topGuides: guides.data})
         })
 
         profileStore.subscribe(() => {
