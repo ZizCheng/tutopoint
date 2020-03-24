@@ -5,22 +5,31 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/TutoPoint');
 
-var schedule = [
-  {start: time(4, 0), end: time(5, 0), status: "available"},
-  {start: time(8, 0), end: time(9, 0), status: "available"},
-];
-Users.findById("5e46644f6c179323d13cf072", function(err, user) {
-  user.schedule = schedule;
-  user.save(function(err) {
-    if(err) console.log(err);
-  });
+
+
+
+//sample usage of Schedule
+const date1 = time(8, 0); //3/23/2020 8:00 AM
+const date2 = time(14, 0); //3/23/2020 2:00 PM
+
+
+Guides.findOne({}, function(err, user) {
+  console.log("Guide: " + user.name);
+  console.log("Hourly start times: " + Schedule.listAvailableTimes(user.schedule));
+
+  console.log(Schedule.bookDate(date2, user.schedule));
+  user.save();
+
+  console.log(Schedule.dateBooked(date1, user.schedule));
+  console.log(Schedule.dateBooked(date2, user.schedule));
 });
 
 
 
 
-
+//shortcut to creating times
+//    3/23/2020 HH:MM
 function time(hour, min)
 {
-  return new Date(2020, 3, 23, hour, min);
+  return new Date(2020, 2, 23, hour, min);
 }
