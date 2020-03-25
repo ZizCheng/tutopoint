@@ -6,7 +6,8 @@ import {
   Route,
   NavLink,
   Link,
-  Redirect
+  Redirect,
+  withRouter,
 } from "react-router-dom";
 import SVG from "react-inlinesvg";
 
@@ -16,6 +17,7 @@ import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
 import Discover from "./discover.jsx";
+import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 
 import profileStore from "../store/profileStore.js";
@@ -33,6 +35,7 @@ class App extends React.Component {
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
     this.closeTutorial = this.closeTutorial.bind(this);
+    this.goToProfile = this.goToProfile.bind(this);
   }
 
   toggleSideBarMobile() {
@@ -62,9 +65,14 @@ class App extends React.Component {
       })
   }
 
+  goToProfile() {
+    console.log("Go to profile.")
+    this.props.history.push('/profile')
+  }
+
   render() {
     return (
-      <Router>
+      <div>
         <div id="main" className="container is-fluid">
           {(this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden && <div>
             Tutorial shit
@@ -108,7 +116,7 @@ class App extends React.Component {
                   </div>
                 </div>
                 <div id="profilePicture" className="navbar-brand">
-                  <figure className="image is-48x48">
+                  <figure onClick={this.goToProfile} className="image is-48x48">
                     <img
                       className="is-rounded"
                       src={
@@ -195,6 +203,9 @@ class App extends React.Component {
                 <Route path="/Appointments">
                   <Appointments />
                 </Route>
+                <Route path="/Profile">
+                  <Profile/>
+                </Route>
                 <Route path="/Documents">
                   <Home />
                 </Route>
@@ -222,7 +233,7 @@ class App extends React.Component {
             </div>
           </div>
         </div>
-      </Router>
+      </div>
     );
   }
 }
@@ -277,4 +288,4 @@ const PaymentSuccess = () => {
   );
 };
 
-export default App;
+export default withRouter(App);
