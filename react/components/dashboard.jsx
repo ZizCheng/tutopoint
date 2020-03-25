@@ -30,10 +30,14 @@ class Dashboard extends React.Component {
             this.setState({topGuides: guides.data})
         })
 
-        profileStore.subscribe(() => {
+        this.unsubscribe = profileStore.subscribe(() => {
           this.setState({ profile: profileStore.getState() });
         });
   }
+
+  componentWillUnmount() {
+    this.unsubscribe()
+}
 
   render() {
     const guides = this.state.topGuides?.slice(0, 4).map((guide, i) => {
