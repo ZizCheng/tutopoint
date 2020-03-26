@@ -28,7 +28,7 @@ class ScheduleWithoutRouter extends React.Component {
         console.log(typeof interval[2] != "undefined");
         interval.push({selected: false});
       }
-      newIntervals = newIntervals.filter(interval => { 
+      newIntervals = newIntervals.filter(interval => {
         console.log(interval[2]);
         return moment() < moment(interval[0]) && typeof interval[2] != "undefined";
       });
