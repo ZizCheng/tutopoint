@@ -136,11 +136,11 @@ const Session = new Schema({
 const Document = new Schema({
   title: {
     type: String,
-    required: [true, 'Title is required.'],
+    required: true,
   },
-  text: {
+  aws_filename: {
     type: String,
-    required: [true, 'Text is required.'],
+    required: true,
   },
 });
 

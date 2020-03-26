@@ -32,6 +32,7 @@ const adminRouter = require('./routes/adminRouter.js');
 
 const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
+const documentAPI = require('./api/document.js');
 const balanceAPI = require('./api/balance.js');
 const transportsAPI = require('./api/transports.js');
 const sessionAPI = require('./api/session.js');
@@ -68,6 +69,7 @@ app.use('/admin', adminRouter);
 // API
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
+app.use('/api/document', documentAPI);
 app.use('/api/balance', balanceAPI);
 app.use('/api/transports', transportsAPI.router);
 app.use('/api/session', sessionAPI);

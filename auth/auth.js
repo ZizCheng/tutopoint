@@ -323,7 +323,6 @@ exports.deserializeUser = function(id, cb) {
         },
       })
       .populate('ratedSessions')
-      .populate('documents')
       .exec(function(err, user) {
         cb(err, user);
       });

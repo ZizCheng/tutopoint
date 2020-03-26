@@ -1,0 +1,29 @@
+/*
+outer
+*/
+.document-container
+{
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  background-color: white;
+}
+.document-row
+{
+  display: flex;
+  flex-direction: row;
+}
+
+/*
+document card
+*/
+.document-card
+{
+  display: flex;
+  flex-direction: column;
+}
+.document-card-bottom
+{
+  display: flex;
+  flex-direction: row;
+}
