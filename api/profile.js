@@ -2,6 +2,10 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
+const Users = require('../models/model.js').Users;
+const Referrals = require('../models/model.js').Referrals;
+
+
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
 
@@ -11,7 +15,11 @@ router.get('/', async function(req, res) {
   const profile = req.user.toJSON();
   if (profile['__t'] == 'clients') {
     const stripeData = await stripe.customers.retrieve(profile['stripeCustomerId']);
+    const transactions = await stripe.customers.listBalanceTransactions(profile['stripeCustomerId'], {limit: 10});
+    const referrals = await Referrals.findOne({referrer: req.user.id}).populate('referred', 'name');
     profile['stripe'] = stripeData;
+    profile['transactions'] = transactions;
+    profile['referrals'] = referrals;
   } else {
     const stripeData = await stripe.accounts.retrieve(profile['stripeAccountId']);
     const stripeBalance = await stripe.balance.retrieve({stripe_account: profile['stripeAccountId']});
@@ -24,6 +32,24 @@ router.get('/', async function(req, res) {
 
 
   res.json(profile);
+});
+
+router.put('/', async function(req, res) {
+  const allowedChanges = {'name': true};
+  const data = req.body.data;
+  const changes = {};
+  if (data) {
+    const keys = Object.keys(data);
+    keys.forEach((field) => {
+      if (allowedChanges[field]) {
+        changes[field] = data[field];
+      }
+    });
+  }
+
+  await Users.findByIdAndUpdate(req.user.id, changes);
+
+  res.json({message: 'ok'});
 });
 
 
