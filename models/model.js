@@ -138,6 +138,10 @@ const Document = new Schema({
     type: String,
     required: true,
   },
+  date: {
+    type: Date,
+    required: true,
+  },
   aws_filename: {
     type: String,
     required: true,
