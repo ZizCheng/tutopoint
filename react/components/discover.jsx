@@ -70,14 +70,11 @@ class ScheduleWithoutRouter extends React.Component {
       return "booked";
     }
     else if (interval.status == "available") {
-      return interval.selected ? "Confirm" : "Selected";
+      return interval.selected ? "Confirm" : "Select";
     }
   }
 
   render() {
-    console.log("--------rendering Schedule");
-    console.log("this.state.schedule: ");
-    console.log(this.state.schedule);
     var intervalTableHtml = 'Loading';
     if(this.state.schedule !== null)
     {
