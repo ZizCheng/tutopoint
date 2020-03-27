@@ -32,6 +32,15 @@
     font-weight: bold;
     margin-right: 1em;
     font-size: 1.5em;
+
+    &.footnote {
+      font-size: 12px;
+      font-weight: 100;
+      flex-grow: 3;
+      text-align: center;
+      padding-top: .5em;
+      text-align:center !important;
+    }
   }
   .input {
     border-radius: 18px;
@@ -53,6 +62,7 @@
 
   .field:not(.Balance__FormConfirmation) {
     justify-content: flex-start;
+    flex-wrap: wrap;
     p:not(.Balance__FormConfirmation) {
       flex-basis: 50%;
       text-align: right;
@@ -132,4 +142,67 @@ input,
   outline: 0;
   border-radius: 18px;
   background: white;
+}
+
+
+.shake-horizontal {
+	-webkit-animation: shake-horizontal 0.5s steps(30, end) ;
+	        animation: shake-horizontal 0.5s steps(30, end) ;
+}
+
+ @-webkit-keyframes shake-horizontal {
+  0%,
+  100% {
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70% {
+    -webkit-transform: translateX(-10px);
+            transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60% {
+    -webkit-transform: translateX(10px);
+            transform: translateX(10px);
+  }
+  80% {
+    -webkit-transform: translateX(8px);
+            transform: translateX(8px);
+  }
+  90% {
+    -webkit-transform: translateX(-8px);
+            transform: translateX(-8px);
+  }
+}
+@keyframes shake-horizontal {
+  0%,
+  100% {
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70% {
+    -webkit-transform: translateX(-10px);
+            transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60% {
+    -webkit-transform: translateX(10px);
+            transform: translateX(10px);
+  }
+  80% {
+    -webkit-transform: translateX(8px);
+            transform: translateX(8px);
+  }
+  90% {
+    -webkit-transform: translateX(-8px);
+            transform: translateX(-8px);
+  }
 }

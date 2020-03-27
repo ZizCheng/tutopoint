@@ -15,7 +15,7 @@ import {
 
 const stripePromise = loadStripe("pk_test_7lBG8gut6VvygbnBDxJHYiK300GhqhqUOC");
 
-const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
+const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror }, ref) => {
   const [count, setCount] = useState(0);
   const [stripeCardInfo, setStripeCardInfo] = useState("invalid");
   const [paymentMethod, setPaymentMethod] = useState('NewCard')
@@ -89,6 +89,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
                 placeholder="Amount in USD"
               />
             </div>
+            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $15 for 15 minutes. You need at least $15 in your balance to book a session.</p>
           </div>
         </div>
         <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
@@ -165,7 +166,10 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources }, ref) => {
 class Balance extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false};
+    const search = props.location.search;
+    const params = new URLSearchParams(search);
+    const balance= Boolean(params.get('balanceerror')) ? true : false; 
+    this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false, balanceerror: balance};
     this.formRef = React.createRef();
 
     this.formComplete = this.formComplete.bind(this);
@@ -292,6 +296,7 @@ class Balance extends React.Component {
                     ref={this.formRef}
                     onFormCompleted={this.formComplete}
                     sources={this.state.profile?.stripe.sources.data}
+                    balanceerror={this.state.balanceerror}
                   />
                 </Elements>
               </div>

@@ -46,8 +46,11 @@ class ScheduleWithoutRouter extends React.Component {
               profileStore.dispatch({ type: "Update", data: profile });
               this.props.history.push("/dashboard");
             });
+          }else if(response.error && response.code == 15){
+            this.props.history.push('/balance?balanceerror=true')
           }
         });
+        
     } else {
       let newSchedule = this.state.schedule.slice();
       for (let i = 0; i < this.state.schedule.length; i++) {
