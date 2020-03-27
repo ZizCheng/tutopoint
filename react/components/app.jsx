@@ -18,6 +18,7 @@ import Balance from "./balance.jsx";
 import Dashboard from "./dashboard.jsx";
 import Discover from "./discover.jsx";
 import Documents from "./document.jsx";
+import DocumentEdit from "./DocumentEdit.jsx";
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 
@@ -67,8 +68,8 @@ class App extends React.Component {
   }
 
   goToProfile() {
-    console.log("Go to profile.")
-    this.props.history.push('/profile')
+    console.log("Go to profile.");
+    this.props.history.push('/profile');
   }
 
   render() {
@@ -207,14 +208,17 @@ class App extends React.Component {
                 <Route path="/Profile">
                   <Profile/>
                 </Route>
-                <Route path="/Documents">
+                <Route exact path="/Documents">
                   <Documents />
+                </Route>
+                <Route path="/Documents/:id">
+                  <DocumentEdit />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
                     <Route path="/Discover">
                     <Discover />
                   </Route>
-                  
+
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">
