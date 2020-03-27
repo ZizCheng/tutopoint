@@ -192,7 +192,8 @@ class Balance extends React.Component {
   handlePaymentSource(src, that){
     balanceAPI.pay(src.id, this.state.summary.amount)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
         that.props.history.push('/success');
       });
   }
@@ -246,14 +247,16 @@ class Balance extends React.Component {
     else if(this.state.summary.type == "SavedCard"){
       balanceAPI.pay(this.state.summary.card.id, this.state.summary.amount, true)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
         that.props.history.push('/success');
       });
     }
     else if(this.state.summary.type == "NewCard"){
       balanceAPI.pay(this.state.summary.card.token.id, this.state.summary.amount)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance}});
+        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
         that.props.history.push('/success');
       });
     }

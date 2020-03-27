@@ -1,10 +1,13 @@
-import React from 'react';
+import 'react-app-polyfill/stable';
+import 'react-app-polyfill/ie11';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter as Router} from 'react-router-dom';
-import App from './components/app.jsx'
+import Loading from "./components/loading.jsx";
+const App = React.lazy(() =>  import('./components/app.jsx'));
 
 
 ReactDOM.render(
-  <Router><App/></Router>,
+  <Suspense fallback={<Loading/>}><Router><App/></Router></Suspense>,
   document.getElementById('root')
 );
