@@ -41,7 +41,7 @@ function requestSession(client, guide, date) {
       const email = guide.email;
       const name = guide.name;
       const mailOptions = {
-        from: 'tutopointauth@gmail.com',
+        from: 'TutoPoint Bookings <bookings@tutopoint.com>',
         to: email,
         subject: '[TutoPoint] New Booking',
         text: 'Hello ' + name + ', someone has booked your time at ' +
@@ -72,7 +72,7 @@ function confirmSession(session) {
         const name = guide.name;
         const date = session.date;
         const mailOptions = {
-          from: 'tutopointauth@gmail.com',
+          from: 'TutoPoint Bookings <bookings@tutopoint.com>',
           to: email,
           subject: '[TutoPoint] Session Confirmed!',
           text: 'Hello, ' + name + ' has confirmed your upcoming session at ' +
@@ -102,7 +102,7 @@ function cancelSession(session) {
     const email = session.createdBy.email;
     const name = session.createdBy.name;
     const mailOptions = {
-      from: 'tutopointauth@gmail.com',
+      from: 'TutoPoint Bookings <bookings@tutopoint.com>',
       to: email,
       subject: '[TutoPoint] New Booking',
       text: 'Hello ' + name + ', your session at '+ t +

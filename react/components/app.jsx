@@ -13,10 +13,11 @@ import SVG from "react-inlinesvg";
 
 import profileAPI from "../api/profile.js";
 
-import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
+import Dashboard from "./dashboard.jsx";
 import Discover from "./discover.jsx";
+import Documents from "./document.jsx";
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 
@@ -207,7 +208,7 @@ class App extends React.Component {
                   <Profile/>
                 </Route>
                 <Route path="/Documents">
-                  <Home />
+                  <Documents />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
                     <Route path="/Discover">

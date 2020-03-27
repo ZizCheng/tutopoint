@@ -28,10 +28,11 @@ const scheduleRouter = require('./routes/scheduleRouter.js');
 // const payRouter = require('./routes/payRouter.js');
 const sessionRouter = require('./routes/sessionRouter.js');
 const bankRouter = require('./routes/bankRouter.js');
-// const adminRouter = require('./routes/adminRouter.js');
+const adminRouter = require('./routes/adminRouter.js');
 
 const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
+const documentAPI = require('./api/document.js');
 const balanceAPI = require('./api/balance.js');
 const transportsAPI = require('./api/transports.js');
 const sessionAPI = require('./api/session.js');
@@ -64,9 +65,11 @@ app.use(authRouter);
 app.use('/session', sessionRouter);
 app.use('/schedule', scheduleRouter);
 app.use('/bank', bankRouter);
+app.use('/admin', adminRouter);
 // API
 app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
+app.use('/api/document', documentAPI);
 app.use('/api/balance', balanceAPI);
 app.use('/api/transports', transportsAPI.router);
 app.use('/api/session', sessionAPI);
