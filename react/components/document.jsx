@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import Quill from "quill";
+
 import "./document.scss";
 import documentAPI from "../api/document.js";
 
@@ -11,14 +13,13 @@ class DocumentCard extends React.Component {
     this.cardClick = this.cardClick.bind(this);
   }
   cardClick(e) {
-    var id = this.props.id;
-    documentAPI.getDocument(id).then(function(data) {
-      alert(data);
+    documentAPI.getDocumentText(this.props.document._id).then(function(data) {
+      console.log(data);
     });
   }
   render() {
     return (
-      <div className="document-card" onClick={this.cardClick}>
+      <div className="document-card column is-2" onClick={this.cardClick}>
         <div className="document-card-top">
           Placeholder text.<br />
           Going to change to document text later<br />
@@ -26,8 +27,8 @@ class DocumentCard extends React.Component {
         </div>
         <div className="document-card-bottom">
           <div className="document-card-bottom-left">
-            Notes with Ziz Cheng
-            2/19/2020
+            <p className="document-title">{this.props.document.title}</p>
+            <p className="document-date">{this.props.document.date.toLocaleDateString("en-US")}</p>
           </div>
           <div className="document-card-bottom-right">
 
@@ -41,7 +42,23 @@ class Documents extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      documents: [],
+    };
+
     this.newDocumentClick = this.newDocumentClick.bind(this);
+  }
+
+  componentDidMount() {
+    documentAPI.listDocuments().then((data) => {
+      //convert JSON date to JS date
+      for(var document of data) {
+        document.date = new Date(document.date);
+      }
+      this.setState({
+        documents: data
+      });
+    });
   }
 
   newDocumentClick(e) {
@@ -51,25 +68,31 @@ class Documents extends React.Component {
   }
 
   render() {
+    var documentCards = [];
+    for(const document of this.state.documents)
+    {
+      documentCards.push(<DocumentCard document={document} key={document._id} />);
+    }
+
     return (
       <div className="document-container">
-        <div className="document-container-top">
-          <div className="document-new-container">
-            <div className="document-new" onClick={this.newDocumentClick}>
-              New Document
+        <div className="document-wrapper">
+          <div className="document-container-top">
+            <div className="document-new-container">
+              <div className="document-new" onClick={this.newDocumentClick}>
+                New Document
+              </div>
             </div>
           </div>
-        </div>
-        <div className="document-container-bottom">
-          <div className="document-grid">
-            <div className="document-row">
-              <DocumentCard />
-              <DocumentCard />
+          <div className="document-container-bottom">
+            <div className="document-grid">
+              <div className="document-row columns">
+                {documentCards}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
     );
   }
 }
