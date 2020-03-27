@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap');
+
+/*
+outer
+*/
+.document-container
+{
+  
+}
+.document-wrapper
+{
+  display: flex;
+  flex-direction: column;
+  border-radius: 25px;
+  background-color: white;
+  box-shadow: 0 3px 6px 0 #D6D6D6;
+  font-family: "Lato", sans-serif;
+}
+
+/*
+document card
+*/
+.document-card
+{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #646464;
+  margin: 1rem;
+}
+.document-card-bottom
+{
+  display: flex;
+  flex-direction: row;
+}

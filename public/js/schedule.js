@@ -67,18 +67,33 @@ function rowClicked(rowEle) {
 
 // TIMETABLE UPDATING
 function updateTimetable() {
-  $(".timetable-square-available").removeClass("timetable-square-available");
-  const hourlyStartTimes = listHourlyStartTimes(schedule);
   const lower = startOfWeek;
   const upper = addDaysToDate(lower, 7);
-  for (let i = 0; i < hourlyStartTimes.length; i++) {
-    const date = hourlyStartTimes[i];
+  $(".timetable-square-available").removeClass("timetable-square-available");
+  $(".timetable-square-booked").removeClass("timetable-square-booked");
+
+  const availableTimes = listAvailableTimes(schedule);
+  for (let i = 0; i < availableTimes.length; i++) {
+    const date = availableTimes[i];
     if (dateBetween(date, lower, upper)) {
       // date is inside week
       const row = date.getHours();
       const col = date.getDay();
       $(".timetable-square-" + row + "-" + col).addClass(
         "timetable-square-available"
+      );
+    }
+  }
+
+  const bookedTimes = listBookedTimes(schedule);
+  for (let i = 0; i < bookedTimes.length; i++) {
+    const date = bookedTimes[i];
+    if (dateBetween(date, lower, upper)) {
+      // date is inside week
+      const row = date.getHours();
+      const col = date.getDay();
+      $(".timetable-square-" + row + "-" + col).addClass(
+        "timetable-square-booked"
       );
     }
   }
@@ -232,12 +247,22 @@ function saveSchedule() {
 
 // CORE FUNCTIONS
 /*
-returns whether date is available in schedule
+returns whether date is available in schedule (inclusive left, exclusive right)
+works for all dates, not just hourly dates
 */
 function dateAvailable(date, schedule) {
   const temp = largestIndex(date, schedule);
   if (temp == -1) return false;
-  return dateBetween(date, schedule[temp].start, schedule[temp].end) && schedule[temp].status == "available";
+  return date >= schedule[temp].start && date < schedule[temp].end && schedule[temp].status == "available";
+}
+/*
+returns whether date is available in schedule (inclusive left, exclusive right)
+works for all dates, not just hourly dates
+*/
+function dateBooked(date, schedule) {
+  const temp = largestIndex(date, schedule);
+  if (temp == -1) return false;
+  return date >= schedule[temp].start && date < schedule[temp].end && schedule[temp].status == "booked";
 }
 
 /*
@@ -248,9 +273,32 @@ function intervalAvailable(interval, schedule) {
   if (temp == -1) return false;
   return dateBetween(interval.start, schedule[temp].start, schedule[temp].end) && dateBetween(interval.end, schedule[temp].start, schedule[temp].end);
 }
+/*
+makes available time booked
+returns true if time was available, false if time was not
+only works for hourly dates
+*/
+function bookDate(date, schedule)
+{
+  var index = findDate(date, schedule);
+  if(index == -1) return false;
+  schedule[index].status = "booked";
+  return true;
+}
+/*
+makes booked time available
+returns true if time was booked, false if time was not
+*/
+function unbookDate(date, schedule)
+{
+  var index = findDate(date, schedule);
+  if(index == -1 || schedule[index].status === "available") return false;
+  schedule[index].status = "available";
+  return true;
+}
 
 /*
-inserts interval into schedule, returning nothing
+inserts available interval into schedule, returning nothing
 the result is guaranteed to be a valid schedule that contains the new interval and all old intervals
 */
 function insertInterval(interval, schedule) {
@@ -262,14 +310,14 @@ function insertInterval(interval, schedule) {
     //if data is equal
     if(dataIsEqual(schedule[i], interval))
     {
-      // date 1 is between original interval
-      if (dateBetween(interval.start, schedule[i].start, schedule[i].end)) {
+      // date 1 is within original interval
+      if (dateWithin(interval.start, schedule[i].start, schedule[i].end)) {
         // expand interval left
         interval.start = schedule[i].start;
         removeOriginalInterval = true;
       }
-      // date 2 is between original interval
-      if (dateBetween(interval.end, schedule[i].start, schedule[i].end)) {
+      // date 2 is within original interval
+      if (dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
         // expand interval right
         interval.end = schedule[i].end;
         removeOriginalInterval = true;
@@ -286,13 +334,13 @@ function insertInterval(interval, schedule) {
     //if data is not equal
     else
     {
-      // date 1 is between original interval
-      if (dateBetween(interval.start, schedule[i].start, schedule[i].end)) {
+      // date 1 is within original interval
+      if (dateWithin(interval.start, schedule[i].start, schedule[i].end)) {
         //shorten original interval on right side
         schedule[i].end = interval.start;
       }
-      // date 2 is between original interval
-      if (dateBetween(interval.end, schedule[i].start, schedule[i].end)) {
+      // date 2 is within original interval
+      if (dateWithin(interval.end, schedule[i].start, schedule[i].end)) {
         //shorten original interval on left side
         schedule[i].start = interval.end;
       }
@@ -347,7 +395,7 @@ function removeInterval(interval, schedule) {
       schedule.splice(i+1, 0, newInterval);
       i++;
     }
-    // interval completely surround
+    // interval completely surround (or exactly the same)
     if (dateBetween(schedule[i].start, interval.start, interval.end) && dateBetween(schedule[i].end, interval.start, interval.end)) {
       schedule.splice(i, 1);
       i--;
@@ -356,15 +404,17 @@ function removeInterval(interval, schedule) {
 }
 
 /*
-returns a list of all hours within a schedule (inclusive left, exclusive right)
+returns a list of all available hours within a schedule (inclusive left, exclusive right)
 */
-function listHourlyStartTimes(schedule)
+function listAvailableTimes(schedule)
 {
   const msInHour = 60 * 60 * 1000;
   var retList = [];
   for(var i = 0;i<schedule.length;i++)
   {
     var interval = schedule[i];
+    if(interval.status != "available") continue;
+
     var incrementingDate = ceilDate(interval.start);
     while(interval.start.getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval.end.getTime()) {
       //clone incrementingDate and add to return array
@@ -375,23 +425,26 @@ function listHourlyStartTimes(schedule)
   return retList;
 }
 
-//Makes all intervals in schedule hourly. returns nothing
-function makeScheduleHourly(schedule) {
-  for(var i = 0;i<schedule.length;i++) {
-    schedule[i] = getIntervalInHours(schedule[i]);
-  }
-}
+/*
+returns a list of all booked hours within a schedule (inclusive left, exclusive right)
+*/
+function listBookedTimes(schedule)
+{
+  const msInHour = 60 * 60 * 1000;
+  var retList = [];
+  for(var i = 0;i<schedule.length;i++)
+  {
+    var interval = schedule[i];
+    if(interval.status != "booked") continue;
 
-// returns if schedule is disjoint and ordered
-function verify(schedule) {
-  if (schedule.length == 0) return true;
-  let prevDate = new Date(1970, 0, 1);
-  for (let i = 0; i<schedule.length; i++) {
-    if (prevDate.getTime() > schedule[i].start.getTime()) return false;
-    if (schedule[i].start.getTime() >= schedule[i].end.getTime()) return false;
-    prevDate = schedule[i].end;
+    var incrementingDate = ceilDate(interval.start);
+    while(interval.start.getTime() <= incrementingDate.getTime() && incrementingDate.getTime() < interval.end.getTime()) {
+      //clone incrementingDate and add to return array
+      retList.push(new Date(incrementingDate));
+      incrementingDate.setTime(incrementingDate.getTime() + msInHour);
+    }
   }
-  return true;
+  return retList;
 }
 
 
@@ -406,32 +459,12 @@ function dataIsEqual(firstInterval, secondInterval)
   return firstInterval.status === secondInterval.status
 }
 
-/*
-returns an interval that is hourly by rounding the start date up and end date down
-does NOT change original interval
-*/
-function getIntervalInHours(interval)
-{
-  return [ceilDate(interval.start),floorDate(interval.end)];
-}
-// rounds date down to nearest hour
-function floorDate(date)
-{
-  const msInHour = 60 * 60 * 1000;
-  const ms = date.getTime();
-  return new Date(Math.floor(date.getTime() / msInHour ) * msInHour);
-}
 //rounds date up to nearest hour
 function ceilDate(date)
 {
   const msInHour = 60 * 60 * 1000;
   const ms = date.getTime();
   return new Date(Math.ceil(date.getTime() / msInHour ) * msInHour);
-}
-//returns whether interval is valid
-function intervalIsValid(interval)
-{
-  return interval.start < interval.end;
 }
 
 
@@ -452,4 +485,13 @@ function dateBetween(date, lower, upper) {
 // checks if date is between 2 bounds, exclusive
 function dateWithin(date, lower, upper) {
   return (lower.getTime() < date.getTime() && date.getTime() < upper.getTime());
+}
+//find index of start time
+function findDate(date, schedule) {
+  for(var i = 0;i<schedule.length;i++) {
+    if(schedule[i].start.getTime() === date.getTime()) {
+      return i;
+    }
+  }
+  return -1;
 }

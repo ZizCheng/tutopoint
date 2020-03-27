@@ -50,18 +50,19 @@ discover.get('/:id', function(req, res) {
 });
 
 discover.get('/:id/schedule', async function(req, res) {
+  console.log("/:id/schedule recieved request");
   try {
-    const guides = await Guides.findOne({_id: req.params.id}).select(
-        'schedule',
-    );
+    const guides = await Guides
+        .findById(req.params.id)
+        .select('schedule');
 
+    //only get dates that are at most 1 hour behind present
     const filteredSchedule = guides.schedule.filter((schedule) => {
-      const currentSchedule = schedule[1];
-
-      return schedule[1] > Date.now();
+      return schedule.end > Date.now();
     });
 
-    res.json({schedule: filteredSchedule});
+    console.log("filteredSchedule: " + filteredSchedule);
+    res.json(filteredSchedule);
   } catch (err) {
     res.status(400).json({message: 'Invalid Guide ID'});
   }
@@ -73,11 +74,9 @@ discover.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
     req.body.schedule[i].start = new Date(req.body.schedule[i].start);
     req.body.schedule[i].end = new Date(req.body.schedule[i].end);
   }
-  if (Schedule.verify(req.body.schedule)) {
-    req.user.schedule = req.body.schedule;
-    req.user.save();
-    res.send('success');
-  } else res.send('fail');
+  req.user.schedule = req.body.schedule;
+  req.user.save();
+  res.send('success');
 });
 
 module.exports = discover;

@@ -9,6 +9,7 @@ import "./discover.scss";
 import discoverAPI from "../api/discover.js";
 import profileAPI from "../api/profile.js";
 import sessionAPI from "../api/session.js";
+import scheduleAPI from "../api/schedule.js";
 
 import profileStore from "../store/profileStore.js";
 
@@ -22,15 +23,13 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   componentDidMount() {
-    discoverAPI.getGuideSchedule(this.props.id).then(data => {
-      let newIntervals = data?.schedule.slice();
+    discoverAPI.getGuideSchedule(this.props.id).then((data) => {
+      let newIntervals = data?.slice();
       for (const interval of newIntervals) {
-        console.log(typeof interval[2] != "undefined");
-        interval.push({selected: false});
+        interval.selected = false;
       }
-      newIntervals = newIntervals.filter(interval => { 
-        console.log(interval[2]);
-        return moment() < moment(interval[0]) && typeof interval[2] != "undefined";
+      newIntervals = newIntervals.filter(interval => {
+        return moment() < moment(interval.start) && typeof interval.status != "undefined";
       });
       this.setState({ schedule: newIntervals });
     });
@@ -40,7 +39,7 @@ class ScheduleWithoutRouter extends React.Component {
     if (this.state.schedule[intervalIndex].selected == true) {
       const guideID = this.props.id;
       sessionAPI
-        .requestSession(guideID, this.state.schedule[intervalIndex][0])
+        .requestSession(guideID, this.state.schedule[intervalIndex].start)
         .then(response => {
           if (response.message == "ok") {
             profileAPI.getProfile().then(profile => {
@@ -62,46 +61,53 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   renderButtonText(interval) {
-    if (interval[2] == "booked") {
+    console.log(interval);
+    if (interval.status == "booked") {
       return "booked";
     }
-    else if (interval[2] == "available") {
-      return interval.selected ? "Confirm" : "Selected";
+    else if (interval.status == "available") {
+      return interval.selected ? "Confirm" : "Select";
     }
   }
 
   render() {
-    const schedules = this.state.schedule?.map((interval, row) => {
-      const format = "ddd MM/DD HH:mm";
-      const timezones = [
-        moment.tz.guess(),
-        "America/Los_Angeles",
-        "America/New_York",
-        "Asia/Shanghai"
-      ].map((timezone, column) => {
-        return (
-          <td className="monospace" key={row + "" + column}>
-            {moment(interval[0])
-              .tz(timezone)
-              .format(format)}
+    var intervalTableHtml = 'Loading';
+    if(this.state.schedule !== null)
+    {
+      scheduleAPI.stringToDate(this.state.schedule);
+      intervalTableHtml = scheduleAPI.listTimes(this.state.schedule).map((time, row) => {
+        const format = "ddd MM/DD HH:mm";
+        const timezones = [
+          moment.tz.guess(),
+          "America/Los_Angeles",
+          "America/New_York",
+          "Asia/Shanghai"
+        ].map((timezone, column) => {
+          return (
+            <td className="monospace" key={row + "" + column}>
+              {moment(time)
+                .tz(timezone)
+                .format(format)}
+            </td>
+          );
+        });
+        timezones.push(
+          <td key={row + "" + 4}>
+            <button
+              className={
+                "button" +
+                (this.state.schedule[row].selected ? " is-primary" : "")
+              }
+              disabled={(this.state.schedule[row].status == 'booked')}
+              onClick={this.select.bind(this, row)}
+            >
+              {this.renderButtonText(this.state.schedule[row])}
+            </button>
           </td>
         );
+        return <tr>{timezones}</tr>;
       });
-      timezones.push(
-        <td key={row + "" + 4}>
-          <button
-            className={
-              "button" +
-              (this.state.schedule[row].selected ? " is-primary" : "")
-            }
-            onClick={this.select.bind(this, row)}
-          >
-            {this.renderButtonText(this.state.schedule[row])}
-          </button>
-        </td>
-      );
-      return <tr>{timezones}</tr>;
-    });
+    }
     return (
       <div className="table-container">
         <table className="table is-fullwidth">
@@ -114,7 +120,7 @@ class ScheduleWithoutRouter extends React.Component {
               <th className="has-text-grey">Availability</th>
             </tr>
           </thead>
-          <tbody>{schedules}</tbody>
+          <tbody>{intervalTableHtml}</tbody>
         </table>
       </div>
     );

@@ -35,6 +35,7 @@ const AppointmentItem = ({
   onClick,
   sessionid,
   confirm,
+  cancel,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
@@ -110,9 +111,30 @@ const AppointmentItem = ({
             >
               Join
             </button>
+            <button
+              className={"button is-light is-fullwidth"}
+              onClick={() => {
+                cancel(sessionid);
+              }}
+              disabled={
+                profileStore.getState().__t == "clients" ? "" : "disabled"
+              }
+            >
+              Cancel
+            </button>
           </div>
         ) : (
-          ""
+          <button
+            className={"button is-light is-fullwidth"}
+            onClick={() => {
+              cancel(sessionid);
+            }}
+            disabled={
+              profileStore.getState().__t == "clients" ? "" : "disabled"
+            }
+          >
+            Cancel
+          </button>
         )}
         {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
           <button
@@ -139,6 +161,7 @@ class Appointments extends React.Component {
 
     this.handleClick = this.handleClick.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   handleClick(bool) {
@@ -161,6 +184,17 @@ class Appointments extends React.Component {
 
   handleConfirm(sessionid) {
     sessionAPI.confirm(sessionid).then(resp => {
+      if (resp?.message == "ok") {
+        // Needs fixing. Timer does not want to end causing hook crash.
+        // window.location.href = "/dashboard";
+        profileAPI.getProfile()
+        .then(() => this.props.history.push('/dashboard'));
+      }
+    });
+  }
+
+  handleCancel(sessionid) {
+    sessionAPI.cancel(sessionid).then(resp => {
       if (resp?.message == "ok") {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
@@ -269,6 +303,7 @@ class Appointments extends React.Component {
             onClick={this.sessionClicked}
             sessionid={session._id}
             confirm={this.handleConfirm}
+            cancel={this.handleCancel}
             status={sessionStatus}
           />
         );
