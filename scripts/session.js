@@ -8,6 +8,7 @@ const Users = require('../models/model.js').Users;
 const Sessions = require('../models/model.js').Sessions;
 const nodemailer = require('nodemailer');
 const mailAuth = require('../secret.js').mailAuth;
+const Schedule = require('../scripts/schedule.js');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: mailAuth,
@@ -34,6 +35,7 @@ function requestSession(client, guide, date) {
         console.log(err);
         reject(err);
       };
+      Schedule.bookDate(date, guide.schedule);
       client.sessions.push(newSession);
       client.save();
       guide.sessions.push(newSession);
@@ -113,6 +115,10 @@ function cancelSession(session) {
       if (error) {
         console.log(error);
       } else {
+        console.log(t);
+        console.log(session.createdBy.schedule)
+        Schedule.unbookDate(t, session.createdBy.schedule);
+        session.createdBy.save();
         session.cancelled = true;
         session.save()
             .then((session) => resolve(session))

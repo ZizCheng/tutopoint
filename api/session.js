@@ -25,7 +25,6 @@ router.post('/request', auth.loggedIn, auth.ensureUserIsClient, function(req, re
   });
 });
 router.get('/confirm/:id', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
-  console.log(req.params.id);
   Sessions.findById(req.params.id, function(err, session) {
     if (err) {
       console.log(err);

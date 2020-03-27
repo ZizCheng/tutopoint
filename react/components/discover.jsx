@@ -23,19 +23,14 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount fired");
     discoverAPI.getGuideSchedule(this.props.id).then((data) => {
       let newIntervals = data?.slice();
-      console.log("newIntervals 0", newIntervals);
       for (const interval of newIntervals) {
-        console.log(typeof interval.status != "undefined");
         interval.selected = false;
       }
       newIntervals = newIntervals.filter(interval => {
-        console.log(interval.status);
         return moment() < moment(interval.start) && typeof interval.status != "undefined";
       });
-      console.log("newIntervals 5", newIntervals);
       this.setState({ schedule: newIntervals });
     });
   }
@@ -66,6 +61,7 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   renderButtonText(interval) {
+    console.log(interval);
     if (interval.status == "booked") {
       return "booked";
     }
@@ -102,6 +98,7 @@ class ScheduleWithoutRouter extends React.Component {
                 "button" +
                 (this.state.schedule[row].selected ? " is-primary" : "")
               }
+              disabled={(this.state.schedule[row].status == 'booked')}
               onClick={this.select.bind(this, row)}
             >
               {this.renderButtonText(this.state.schedule[row])}
