@@ -4,41 +4,80 @@
 @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 
 /*
-outer
+outer layout
 */
 .document-container {
-
-}
-.document-wrapper {
-  display: flex;
-  flex-direction: column;
+  padding: 1.5rem;
+  font-family: "Lato", sans-serif;
+  color: #646464;
   border-radius: 25px;
   background-color: white;
   box-shadow: 0 3px 6px 0 #D6D6D6;
-  font-family: "Lato", sans-serif;
+  display: inline-block;
 }
-.document-row {
+.document-list {
+  @media screen and (max-width: 1800px) {
+    width: 1000px;
+  }
+  @media screen and (max-width: 1500px) {
+    width: 800px;
+  }
+  @media screen and (max-width: 1250px) {
+    width: 600px;
+  }
+  @media screen and (max-width: 700px) {
+    width: 400px;
+  }
+}
+.document-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+}
+.document-container-top
+{
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-right: 0.5rem; //must match with document-card-wrapper right padding
+}
+.document-card-wrapper {
+  display: inline-block;
+  padding: 0.5rem;
+  width: 200px;
+}
+
+/*
+top
+*/
+.document-header {
+  font-size: 1.25rem;
+}
+.document-new
+{
+  cursor: pointer;
+  background-color: #F56363;
+  border-radius: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.document-new-plus {
+  font-size: 28px;
+  color: white;
 }
 
 /*
 document card
 */
-.document-card-wrapper {
-  padding: 0.5rem;
-  flex-basis: 160px;
-  flex-grow: 0;
-  flex-shrink: 0;
-}
 .document-card {
   display: flex;
   flex-direction: column;
   border: 1px solid #f9f9f9;
 }
 .quill-viewer {
-  font-size: 0.25rem;
+  font-size: 5px;
   height: 12rem;
   border: none !important;
 }
@@ -52,6 +91,7 @@ document card
 .document-title {
   font-size: 0.75rem;
   font-weight: 700;
+  cursor: pointer;
 }
 .document-card-bottom-bottom {
   display: flex;
@@ -64,4 +104,15 @@ document card
 .document-delete {
   font-size: 0.75rem;
   margin-left: auto;
+  cursor: pointer;
+}
+
+/*
+document edit
+*/
+.document-edit-wrapper {
+  background-color: white;
+}
+#quill-editor {
+  height: 80vh;
 }

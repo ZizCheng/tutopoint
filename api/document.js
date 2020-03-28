@@ -14,12 +14,12 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
+
 router.get('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
   s3.getObject({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename})
     .createReadStream()
     .pipe(res);
 });
-
 router.put('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
   s3.upload({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename, Body: JSON.stringify(req.body.text)}, function (err, data) {
     if (err) {
@@ -61,33 +61,25 @@ router.get('/', auth.loggedIn, function(req,res) {
   res.json(req.user.documents);
 });
 router.post('/', auth.loggedIn, function(req, res) {
-  crypto.randomBytes(32, function(err, buffer) {
-    var aws_filename = buffer.toString("hex");
-    s3.upload({Bucket: "tutopoint-doc-bucket", Key: aws_filename, Body: "[]"}, function (err, data) {
-      if (err) {
-        console.log("Error", err);
-      } if (data) {
-        console.log("Upload Success", data.Location);
-      }
-    });
-
-    var newDoc = new Documents({
-      title: "Untitled Document",
-      date: Date.now(),
-      aws_filename: aws_filename,
-    });
-    newDoc.save(function(err, doc) {
-      req.user.documents.push(doc._id);
-      req.user.markModified('documents');
-      req.user.save();
-      res.send("success");
-    });
-  });
+  res.send(createDocument(req.user, "Untitled Document", [], Date.now()));
 });
 router.put('/', auth.loggedIn, function(req, res) {
+  res.send(createDocument(req.user, req.body.title, req.body.text, Date.now()));
+});
+
+//send to guide of sessionid
+router.post('/:id/send', auth.loggedIn, auth.hasDocument, function(req, res) {
+  Sessions.findById(req.body.sessionid, function(err, session) {
+    cloneDocument(session.createdBy, req.doc)
+  })
+});
+
+//creates document and adds to user with title, text, and date
+//returns document id
+function createDocument(user, title, text, date) {
   crypto.randomBytes(32, function(err, buffer) {
     var aws_filename = buffer.toString("hex");
-    s3.upload({Bucket: "tutopoint-doc-bucket", Key: aws_filename, Body: JSON.stringify(req.body.text)}, function (err, data) {
+    s3.upload({Bucket: "tutopoint-doc-bucket", Key: aws_filename, Body: JSON.stringify(text)}, function (err, data) {
       if (err) {
         console.log("Error", err);
       } if (data) {
@@ -96,18 +88,21 @@ router.put('/', auth.loggedIn, function(req, res) {
     });
 
     var newDoc = new Documents({
-      title: req.body.title,
-      date: Date.now(),
+      title: title,
+      date: date,
       aws_filename: aws_filename,
     });
     newDoc.save(function(err, doc) {
-      req.user.documents.push(doc._id);
-      req.user.markModified('documents');
-      req.user.save();
-      res.send("success");
+      user.documents.push(doc._id);
+      user.markModified('documents');
+      user.save();
+      return doc._id;
     });
   });
-});
-
+}
+//clones document and adds to user
+function cloneDocument(user, document) {
+  return createDocument(user, document.title, document.text, document.date);
+}
 
 module.exports = router;

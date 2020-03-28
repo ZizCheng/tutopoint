@@ -47,6 +47,15 @@ function listDocuments() {
   });
 }
 
+function sendDocument(id, sessionid) {
+  return fetch('/api/document/' + id + '/send', {
+    method: 'POST',
+    body: sessionid,
+  }).then(function(response) {
+    return response.text();
+  });
+}
+
 module.exports = {
   newDocument: newDocument,
   createDocument: createDocument,
@@ -54,4 +63,5 @@ module.exports = {
   updateDocument: updateDocument,
   deleteDocument: deleteDocument,
   listDocuments: listDocuments,
+  sendDocument: sendDocument,
 }

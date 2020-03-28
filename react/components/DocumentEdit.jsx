@@ -38,8 +38,10 @@ class DocumentEditWithoutRouter extends React.Component {
       });
     }
     return (
-      <div className="document-edit-container">
-        <div id="quill-editor"></div>
+      <div className="document-edit-cotnainer">
+        <div className="document-edit-wrapper">
+          <div id="quill-editor"></div>
+        </div>
         <button className="button" onClick={this.saveDocument}>Save</button>
       </div>
     );

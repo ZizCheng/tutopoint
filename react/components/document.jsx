@@ -88,6 +88,7 @@ class Documents extends React.Component {
 
   updateDocumentState() {
     documentAPI.listDocuments().then((documentList) => {
+      console.log(documentList.length);
       for(var document of documentList) {
         //convert JSON date to JS date
         document.date = new Date(document.date);
@@ -121,17 +122,14 @@ class Documents extends React.Component {
       <div className="document-container">
         <div className="document-wrapper">
           <div className="document-container-top">
-            <div className="document-new-container">
-              <div className="document-new" onClick={this.newDocumentClick}>
-                New Document
-              </div>
+            <div className="document-header">Documents</div>
+            <div className="document-new" onClick={this.newDocumentClick}>
+              <span className="document-new-plus">+</span>
             </div>
           </div>
           <div className="document-container-bottom">
-            <div className="document-grid">
-              <div className="document-row">
-                {documentCards}
-              </div>
+            <div className="document-list">
+              {documentCards}
             </div>
           </div>
         </div>

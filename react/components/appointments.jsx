@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
-
+import documentAPI from "../api/session.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+
+import DocumentCompactList from "./DocumentCompactList.jsx";
 
 import { withRouter } from "react-router-dom";
 
@@ -36,6 +38,7 @@ const AppointmentItem = ({
   sessionid,
   confirm,
   cancel,
+  send,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
@@ -136,6 +139,15 @@ const AppointmentItem = ({
             Cancel
           </button>
         )}
+        <button className={"button is-light is-fullwidth"} onClick={() => {
+            send(sessionid);
+          }}
+          disabled={
+            profileStore.getState().__t == "clients" ? "" : "disabled"
+          }
+        >
+          Send Quistionnare
+        </button>
         {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
           <button
             className={"button is-light is-fullwidth"}
@@ -157,11 +169,16 @@ const AppointmentItem = ({
 class Appointments extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isUpcoming: true, profile: profileStore.getState() };
+    this.state = {
+      isUpcoming: true,
+      profile: profileStore.getState(),
+      documentCompactListPopup: '',
+    };
 
     this.handleClick = this.handleClick.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.sendDocument = this.sendDocument.bind(this);
   }
 
   handleClick(bool) {
@@ -201,6 +218,12 @@ class Appointments extends React.Component {
         profileAPI.getProfile()
         .then(() => this.props.history.push('/dashboard'));
       }
+    });
+  }
+
+  sendDocument(sessionid){
+    this.setState({
+      documentCompactListPopup: "<DocumentCompactList />"
     });
   }
 
@@ -304,6 +327,7 @@ class Appointments extends React.Component {
             sessionid={session._id}
             confirm={this.handleConfirm}
             cancel={this.handleCancel}
+            send={this.sendDocument}
             status={sessionStatus}
           />
         );
@@ -345,6 +369,7 @@ class Appointments extends React.Component {
             {pastSession}
           </div>
         </div>
+        {this.state.documentCompactListPopup}
       </div>
     );
   }
