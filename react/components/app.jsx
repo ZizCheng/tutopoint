@@ -58,7 +58,7 @@ class App extends React.Component {
       this.setState({ loaded: true }, function() {
         if (this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden) {
           this.toggleSideBarMobile();
-          intro.setOptions({'overlayOpacity': 0.9});
+          intro.setOption("scrollToElement", true);
           intro.start();
         }
       });

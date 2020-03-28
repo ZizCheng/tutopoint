@@ -1,0 +1,20 @@
+.menu {
+  padding-top: 1.25em;
+}
+.menu-list li {
+  font-weight: bold;
+}
+#profilePicture {
+  padding-right: 1em;
+  align-items: center;
+}
+#paymentSuccess {
+  display: flex;
+  flex-direction: column;
+}
+.introjs-relativePosition > td {
+  position: relative;
+}
+.introjs-showElement > td {
+  z-index: 9999999 !important;
+}
