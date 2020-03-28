@@ -2,6 +2,8 @@ $(document).ready(function() {
   $('.carousel').slick({
     slidesToShow: 3,
     arrows: true,
+    autoplay: true,
+    autoplaySpeed: 1800,
     responsive: [
       {
         breakpoint: 1200,

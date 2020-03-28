@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+
 module.exports = {
   entry: './react/index.jsx',
   mode: 'development',
@@ -8,6 +9,10 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: ['babel-loader'],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.s[ac]ss$/i,

@@ -88,6 +88,10 @@ const Client = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'sessions',
   }],
+  tutorialHidden: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Session = new Schema({
@@ -132,11 +136,15 @@ const Session = new Schema({
 const Document = new Schema({
   title: {
     type: String,
-    required: [true, 'Title is required.'],
+    required: true,
   },
-  text: {
+  date: {
+    type: Date,
+    required: true,
+  },
+  aws_filename: {
     type: String,
-    required: [true, 'Text is required.'],
+    required: true,
   },
 });
 

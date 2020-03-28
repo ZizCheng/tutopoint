@@ -9,6 +9,7 @@ import "./discover.scss";
 import discoverAPI from "../api/discover.js";
 import profileAPI from "../api/profile.js";
 import sessionAPI from "../api/session.js";
+import scheduleAPI from "../api/schedule.js";
 
 import profileStore from "../store/profileStore.js";
 
@@ -22,15 +23,13 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   componentDidMount() {
-    discoverAPI.getGuideSchedule(this.props.id).then(data => {
-      let newIntervals = data?.schedule.slice();
+    discoverAPI.getGuideSchedule(this.props.id).then((data) => {
+      let newIntervals = data?.slice();
       for (const interval of newIntervals) {
-        console.log(typeof interval[2] != "undefined");
-        interval.push({selected: false});
+        interval.selected = false;
       }
-      newIntervals = newIntervals.filter(interval => { 
-        console.log(interval[2]);
-        return moment() < moment(interval[0]) && typeof interval[2] != "undefined";
+      newIntervals = newIntervals.filter(interval => {
+        return moment() < moment(interval.start) && typeof interval.status != "undefined";
       });
       this.setState({ schedule: newIntervals });
     });
@@ -40,15 +39,18 @@ class ScheduleWithoutRouter extends React.Component {
     if (this.state.schedule[intervalIndex].selected == true) {
       const guideID = this.props.id;
       sessionAPI
-        .requestSession(guideID, this.state.schedule[intervalIndex][0])
+        .requestSession(guideID, this.state.schedule[intervalIndex].start)
         .then(response => {
           if (response.message == "ok") {
             profileAPI.getProfile().then(profile => {
               profileStore.dispatch({ type: "Update", data: profile });
               this.props.history.push("/dashboard");
             });
+          }else if(response.error && response.code == 15){
+            this.props.history.push('/balance?balanceerror=true')
           }
         });
+        
     } else {
       let newSchedule = this.state.schedule.slice();
       for (let i = 0; i < this.state.schedule.length; i++) {
@@ -62,46 +64,53 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   renderButtonText(interval) {
-    if (interval[2] == "booked") {
+    console.log(interval);
+    if (interval.status == "booked") {
       return "booked";
     }
-    else if (interval[2] == "available") {
-      return interval.selected ? "Confirm" : "Selected";
+    else if (interval.status == "available") {
+      return interval.selected ? "Confirm" : "Select";
     }
   }
 
   render() {
-    const schedules = this.state.schedule?.map((interval, row) => {
-      const format = "ddd MM/DD HH:mm";
-      const timezones = [
-        moment.tz.guess(),
-        "America/Los_Angeles",
-        "America/New_York",
-        "Asia/Shanghai"
-      ].map((timezone, column) => {
-        return (
-          <td className="monospace" key={row + "" + column}>
-            {moment(interval[0])
-              .tz(timezone)
-              .format(format)}
+    var intervalTableHtml = 'Loading';
+    if(this.state.schedule !== null)
+    {
+      scheduleAPI.stringToDate(this.state.schedule);
+      intervalTableHtml = scheduleAPI.listTimes(this.state.schedule).map((time, row) => {
+        const format = "ddd MM/DD HH:mm";
+        const timezones = [
+          moment.tz.guess(),
+          "America/Los_Angeles",
+          "America/New_York",
+          "Asia/Shanghai"
+        ].map((timezone, column) => {
+          return (
+            <td className="monospace" key={row + "" + column}>
+              {moment(time)
+                .tz(timezone)
+                .format(format)}
+            </td>
+          );
+        });
+        timezones.push(
+          <td key={row + "" + 4}>
+            <button
+              className={
+                "button" +
+                (this.state.schedule[row].selected ? " is-primary" : "")
+              }
+              disabled={(this.state.schedule[row].status == 'booked')}
+              onClick={this.select.bind(this, row)}
+            >
+              {this.renderButtonText(this.state.schedule[row])}
+            </button>
           </td>
         );
+        return <tr>{timezones}</tr>;
       });
-      timezones.push(
-        <td key={row + "" + 4}>
-          <button
-            className={
-              "button" +
-              (this.state.schedule[row].selected ? " is-primary" : "")
-            }
-            onClick={this.select.bind(this, row)}
-          >
-            {this.renderButtonText(this.state.schedule[row])}
-          </button>
-        </td>
-      );
-      return <tr>{timezones}</tr>;
-    });
+    }
     return (
       <div className="table-container">
         <table className="table is-fullwidth">
@@ -114,7 +123,7 @@ class ScheduleWithoutRouter extends React.Component {
               <th className="has-text-grey">Availability</th>
             </tr>
           </thead>
-          <tbody>{schedules}</tbody>
+          <tbody>{intervalTableHtml}</tbody>
         </table>
       </div>
     );
@@ -126,15 +135,17 @@ const Schedule = withRouter(ScheduleWithoutRouter);
 class Discover extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { topGuides: null };
+    this.state = { topGuides: null, currentPage: 1 };
 
     this.handleGuideClicked = this.handleGuideClicked.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.previousPage = this.previousPage.bind(this);
+    this.nextPage = this.nextPage.bind(this);
   }
 
   componentDidMount() {
-    discoverAPI.getGuides().then(guides => {
-      this.setState({ topGuides: guides });
+    discoverAPI.getGuides(this.state.currentPage).then(guides => {
+      this.setState({ topGuides: guides.data, totalGuides: guides.count });
     });
   }
 
@@ -146,6 +157,24 @@ class Discover extends React.Component {
 
   closeModal() {
     this.setState({ focus: false });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if(prevState.currentPage != this.state.currentPage){
+      discoverAPI.getGuides(this.state.currentPage).then(guides => {
+        this.setState({ topGuides: guides.data, totalGuides: guides.count });
+      });
+    }
+  }
+
+  previousPage() {
+    if(this.state.currentPage == 1) return;
+    this.setState({currentPage: this.state.currentPage - 1})
+  }
+
+  nextPage() {
+    if(this.state.currentPage == Math.ceil(this.state.totalGuides / 12)) return;
+    this.setState({currentPage: this.state.currentPage + 1})
   }
 
   render() {
@@ -237,19 +266,28 @@ class Discover extends React.Component {
             ></button>
           </div>
         )}
-        <div id="appointments" className="card">
+        <div id="discover" className="card">
           <header className="card-header">
             <p className="is-size-3 card-header-title is-size-6-touch">
               Discover
             </p>
+            {/* <div className="card-header-icon has-text-white">
+              <p className="button has-text-white is-primary">Filter</p>
+            </div> */}
           </header>
           <div className="discover__guideWrapper card-content is-block-mobile">
             {guides}
           </div>
+          {(this.state.totalGuides  / 12 > 1) && <footer className="card-footer">
+          <nav className="card-footer-item is-centered" role="navigation" aria-label="pagination">
+            <a onClick={this.previousPage} className="pagination-previous">Previous</a>
+            <a onClick={this.nextPage} className="pagination-next">Next page</a>
+          </nav>
+  </footer>}
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default Discover;
+export default withRouter(Discover);

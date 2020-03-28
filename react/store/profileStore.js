@@ -5,9 +5,16 @@ const profileReducer = (state, action) => {
   if (type == 'Initialize') {
     return data;
   } else if (type == 'Update') {
+    state = data;
     return data;
   } else if (type == 'Update Balance') {
-    state.stripe.balance = data.balance;
+     state.stripe.balance = data.balance;
+    return state;
+  } else if (type == 'Update Transactions') {
+    state.transactions = data.transactions;
+    return state;
+  } else if (type == 'Close Tutorial') {
+    state.tutorialHidden = true;
     return state;
   } else {
     return state;

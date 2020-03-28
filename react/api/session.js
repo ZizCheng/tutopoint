@@ -11,8 +11,12 @@ const requestSession = (guideID, date) => {
 const confirm = (id) => {
   return fetch('/api/session/confirm/' + id).then((response) => response.json());
 };
+const cancel = (id) => {
+  return fetch('/api/session/cancel/' + id).then((response) => response.json());
+};
 
 module.exports = {
   requestSession: requestSession,
   confirm: confirm,
+  cancel: cancel,
 };

@@ -1,0 +1,34 @@
+.tile.is-child {
+    border-radius: 25px;
+    padding: 1em;
+}
+
+.table th {
+    color: #4a4a4a;
+}
+
+#profile__referralHistory {
+    .table th {
+        border: none !important;
+    }
+    .table td {
+        border-radius: 25px;
+        background-color: #f2f2f2;
+    }
+}
+
+#QRDisplay {
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top: 0.5em;
+}
+
+#editProfileForm {
+    .field-label {
+        text-align: left;
+    }
+    .button {
+        border-radius: 25px;
+    }
+}

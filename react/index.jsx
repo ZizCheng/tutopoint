@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/app.jsx'
+import {BrowserRouter as Router} from 'react-router-dom';
+import Loading from "./components/loading.jsx";
+const App = React.lazy(() =>  import('./components/app.jsx'));
 
 
 ReactDOM.render(
-  <App/>,
+  <Suspense fallback={<Loading/>}><Router><App/></Router></Suspense>,
   document.getElementById('root')
 );

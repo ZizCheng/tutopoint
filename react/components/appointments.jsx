@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
-
+import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+
+import DocumentCompactList from "./DocumentCompactList.jsx";
 
 import { withRouter } from "react-router-dom";
 
@@ -33,36 +35,33 @@ const AppointmentItem = ({
   guideUniversity,
   guideProfilePic,
   onClick,
-  sessionid, 
+  sessionid,
   confirm,
+  cancel,
+  send,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
-  if (status == "active") {
     useEffect(() => {
       const timer = setTimeout(() => {
-        setTimeLeft(calculateTimeLeft(date))
+        setTimeLeft(calculateTimeLeft(date));
       }, 1000);
 
       return () => clearTimeout(timer);
-    });
+    }, [timeLeft]);
 
-    Object.keys(timeLeft).forEach(interval => {
+    Object.keys(timeLeft).forEach((interval, index) => {
       if (!timeLeft[interval]) {
         return;
       }
 
       timerComponents.push(
-        <span>
+        <span key={index}>
           {timeLeft[interval]} {interval}{" "}
         </span>
       );
     });
-
-  } else {
-    timerComponents = [];
-  }
 
   return (
     <article className={`media ${status}`}>
@@ -80,11 +79,15 @@ const AppointmentItem = ({
       </figure>
       <div className="media-content">
         <div className="content">
-          <p className="is-size-6-mobile is-size-4 has-text-weight-bold">{title}</p>
+          <p className="is-size-6-mobile is-size-4 has-text-weight-bold">
+            {title}
+          </p>
           <p className="is-size-7-mobile is-size-4 has-text-weight-light">
             {guideGrade} at {guideUniversity}
           </p>
-          <p className="is-size-7-mobile is-size-5 has-text-weight-light">{guideMajor}</p>
+          <p className="is-size-7-mobile is-size-5 has-text-weight-light">
+            {guideMajor}
+          </p>
         </div>
       </div>
       <div className="media-right">
@@ -96,13 +99,64 @@ const AppointmentItem = ({
 
         {status == "active" ? (
           <div className="control is-expanded">
-            <button className={"button is-light is-fullwidth"} onClick={() => {onClick(sessionid)}} disabled={Date.now()+300000 > new Date(date).valueOf() ? '' : 'disabled'}>Join</button>
+            <button
+              className={"button is-light is-fullwidth"}
+              onClick={() => {
+                onClick(sessionid);
+              }}
+              disabled={
+                Date.now() + 300000 > new Date(date).valueOf() ? "" : "disabled"
+              }
+            >
+              Join
+            </button>
+            <button
+              className={"button is-light is-fullwidth"}
+              onClick={() => {
+                cancel(sessionid);
+              }}
+              disabled={
+                profileStore.getState().__t == "clients" ? "" : "disabled"
+              }
+            >
+              Cancel
+            </button>
           </div>
         ) : (
-          ""
+          <button
+            className={"button is-light is-fullwidth"}
+            onClick={() => {
+              cancel(sessionid);
+            }}
+            disabled={
+              profileStore.getState().__t == "clients" ? "" : "disabled"
+            }
+          >
+            Cancel
+          </button>
         )}
-        {(profileStore.getState().__t == "guides") && (status == "unconfirmed") && 
-        <button className={"button is-light is-fullwidth"} onClick={() => {confirm(sessionid)}}>Confirm</button>}
+        <button className={"button is-light is-fullwidth"} onClick={() => {
+            send(sessionid);
+          }}
+          disabled={
+            profileStore.getState().__t == "clients" ? "" : "disabled"
+          }
+        >
+          Send Quistionnare
+        </button>
+        {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
+          <button
+            className={"button is-light is-fullwidth"}
+            onClick={() => {
+              confirm(sessionid);
+            }}
+          >
+            Confirm
+          </button>
+        )}
+        {status == "" && (
+          <button className={"button is-light"}>Rebook</button>
+        )}
       </div>
     </article>
   );
@@ -111,10 +165,16 @@ const AppointmentItem = ({
 class Appointments extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isUpcoming: true, profile: profileStore.getState() };
+    this.state = {
+      isUpcoming: true,
+      profile: profileStore.getState(),
+      selectDocumentPopup: '',
+    };
 
     this.handleClick = this.handleClick.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.sendDocument = this.sendDocument.bind(this);
   }
 
   handleClick(bool) {
@@ -122,40 +182,98 @@ class Appointments extends React.Component {
   }
 
   componentDidMount() {
-    profileStore.subscribe(() => {
+    this.unsubscribe = profileStore.subscribe(() => {
       this.setState({ profile: profileStore.getState() });
+    });
+
+
+    //document selection
+    function action(doc_id) {
+      documentAPI.sendDocument(doc_id, sessionid);
+    }
+    function closeModal(e) {
+      document.getElementById("select-document-popup").classList.remove("is-active");
+    }
+    this.setState({
+      selectDocumentPopup: (
+        <div id="select-document-popup" className="modal">
+          <div className="modal-background"></div>
+          <div className="modal-content">
+            <DocumentCompactList action={action} />
+          </div>
+          <button className="modal-close is-large" aria-label="close" onClick={closeModal}>
+          </button>
+        </div>
+      )
     });
   }
 
-  sessionClicked(i){
-    window.location.href = `/session/${i}`
+  componentWillUnmount() {
+    this.unsubscribe()
+}
+
+  sessionClicked(i) {
+    window.location.href = `/session/${i}`;
   }
 
-  handleConfirm(sessionid){
+  handleConfirm(sessionid) {
+    sessionAPI.confirm(sessionid).then(resp => {
+      if (resp?.message == "ok") {
+        // Needs fixing. Timer does not want to end causing hook crash.
+        // window.location.href = "/dashboard";
+        profileAPI.getProfile()
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
+      }
+    });
+  }
 
-    sessionAPI.confirm(sessionid)
-      .then((resp) => {
-        if(resp?.message == "ok"){
-          // Needs fixing. Timer does not want to end causing hook crash.
-          window.location.href="/dashboard"
-        }
-      })
+  handleCancel(sessionid) {
+    sessionAPI.cancel(sessionid).then(resp => {
+      if (resp?.message == "ok") {
+        // Needs fixing. Timer does not want to end causing hook crash.
+        // window.location.href = "/dashboard";
+        profileAPI.getProfile()
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
+      }
+    });
+  }
+
+  sendDocument(sessionid){
+    document.getElementById("select-document-popup").classList.add("is-active");
   }
 
   render() {
-    const pastSession = this.state.profile?.sessions
-      .filter(session => {
+    if (this.props.pastOnly) {
+      let pastSession = this.state.profile?.sessions.filter(session => {
         const sessionDate = new Date(session.date);
-        return Date.now() - 300000 >= sessionDate.valueOf() || session.completed;
-      })
-      .map((session, i) => {
+        return (
+          Date.now() - 300000 >= sessionDate.valueOf() || session.completed
+        );
+      });
+      pastSession = !pastSession ? [] : pastSession;
+      let result = [];
+      const map = new Map();
+      for (const item of pastSession) {
+        if (!map.has(item.createdBy._id)) {
+          map.set(item.createdBy._id, true); // set any value to Map
+          result.push(item);
+        }
+      }
+
+      result = result.map((session, i) => {
         return (
           <AppointmentItem
             key={i}
-            title={session.title}
+            title={session.createdBy.name}
             date={session.date}
             guideName={session.createdBy.name}
-            guideGrade={session.createdBy.guide}
+            guideGrade={session.createdBy.grade}
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
@@ -164,22 +282,56 @@ class Appointments extends React.Component {
         );
       });
 
+      return (
+        <div>
+          <header className="card-header">
+            <p className="is-size-3">Past guides</p>
+          </header>
+          <div style={{marginTop: '0.5em'}}>{result}</div>
+        </div>
+      );
+    }
+
+    let pastSession = this.state.profile?.sessions
+      .filter(session => {
+        const sessionDate = new Date(session.date);
+        return (
+          Date.now() - 300000 >= sessionDate.valueOf() || session.completed
+        );
+      })
+      .map((session, i) => {
+        return (
+          <AppointmentItem
+            key={i}
+            title={session.title}
+            date={session.date}
+            guideName={session.createdBy.name}
+            guideGrade={session.createdBy.grade}
+            guideMajor={session.createdBy.major}
+            guideUniversity={session.createdBy.university}
+            guideProfilePic={session.createdBy.profilePic}
+            status="past"
+          />
+        );
+      });
+
     const activeSession = this.state.profile?.sessions
       .filter(session => {
         const sessionDate = new Date(session.date);
-        return Date.now() - 300000 < sessionDate.valueOf() && !session.cancelled;
+        return (
+          Date.now() - 300000 < sessionDate.valueOf() && !session.cancelled
+        );
       })
       .map((session, i) => {
         const sessionDate = new Date(session.date);
         let sessionStatus;
 
-        if(session.confirmed) {
+        if (session.confirmed) {
           sessionStatus = "confirmed";
-          if(sessionDate > Date.now() - 300000){
+          if (sessionDate > Date.now() - 300000) {
             sessionStatus = "active";
           }
-        }
-        else {
+        } else {
           sessionStatus = "unconfirmed";
         }
         return (
@@ -188,13 +340,15 @@ class Appointments extends React.Component {
             title={session.title}
             date={session.date}
             guideName={session.createdBy.name}
-            guideGrade={session.createdBy.guide}
+            guideGrade={session.createdBy.grade}
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
             onClick={this.sessionClicked}
             sessionid={session._id}
             confirm={this.handleConfirm}
+            cancel={this.handleCancel}
+            send={this.sendDocument}
             status={sessionStatus}
           />
         );
@@ -229,13 +383,14 @@ class Appointments extends React.Component {
           </p>
         </header>
         <div className="card-content">
-          <div className={!this.state.isUpcoming ? "is-hidden" : ''}>
-              {activeSession}
+          <div className={!this.state.isUpcoming ? "is-hidden" : ""}>
+            {activeSession}
           </div>
-          <div className={this.state.isUpcoming ? "is-hidden" : ''}>
-              {pastSession}
+          <div className={this.state.isUpcoming ? "is-hidden" : ""}>
+            {pastSession}
           </div>
         </div>
+        {this.state.selectDocumentPopup}
       </div>
     );
   }

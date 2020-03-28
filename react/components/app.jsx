@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
 import {
   BrowserRouter as Router,
@@ -6,7 +6,8 @@ import {
   Route,
   NavLink,
   Link,
-  Redirect
+  Redirect,
+  withRouter,
 } from "react-router-dom";
 import SVG from "react-inlinesvg";
 
@@ -15,8 +16,12 @@ import profileAPI from "../api/profile.js";
 import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
-import Discover from "./discover.jsx";
+const  Discover = React.lazy(() => import("./discover.jsx"))
+import Documents from "./document.jsx";
+import DocumentEdit from "./DocumentEdit.jsx";
+import Profile from "./profile.jsx";
 import Session from "./session.jsx";
+import Loading from "./loading.jsx";
 
 import profileStore from "../store/profileStore.js";
 
@@ -26,12 +31,17 @@ import emptyProfileIcon from "../data/images/emptyProfilePic.png";
 import tutologo from "../data/images/tutologo.png";
 import checkmark from "../data/images/checkmark.png";
 
+import introJs from "intro.js";
+import "intro.js/introjs.css";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: null, hidden: false };
+    this.state = { profile: null, hidden: false, loaded: false };
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
+    this.closeTutorial = this.closeTutorial.bind(this);
+    this.goToProfile = this.goToProfile.bind(this);
   }
 
   toggleSideBarMobile() {
@@ -42,8 +52,26 @@ class App extends React.Component {
 
   componentDidMount() {
     profileAPI.getProfile().then(profile => {
+      const intro = introJs();
       console.log(profile);
-      profileStore.dispatch({ type: "Initialize", data: profile });
+      profileStore.dispatch({ type: "Update", data: profile });
+      this.setState({ loaded: true }, function() {
+        if (this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden) {
+          this.toggleSideBarMobile();
+          intro.onafterchange(function (element) {
+            window.scroll(0,0);
+          });
+          intro.start();
+          const that = this;
+          intro.oncomplete(function() {
+            that.closeTutorial();
+          });
+          intro.onexit(function() {
+            that.closeTutorial();
+          });
+        }
+      });
+
     });
 
     profileStore.subscribe(() => {
@@ -51,9 +79,26 @@ class App extends React.Component {
     });
   }
 
+
+  closeTutorial() {
+    profileAPI.closeTutorial()
+      .then(resp => {
+        if(resp.error){
+          console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
+        }
+        profileStore.dispatch({type: "Close Tutorial", data: this.state.profile});
+      })
+  }
+
+  goToProfile() {
+    console.log("Go to profile.");
+    this.props.history.push('/profile');
+  }
+
   render() {
     return (
-      <Router>
+      <Suspense fallback={<Loading/>}>
+        {(!this.state.loaded) && <Loading/>}
         <div id="main" className="container is-fluid">
           <nav
             className="navbar is-transparent"
@@ -61,7 +106,7 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a className="navbar-item is-size-4" href="https://tutopoint.com">
+              <a className="navbar-item is-size-4" href="https://tutopoint.com" data-step="1" data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service.">
                 <span className="icon is-large">
                   <img src={tutologo} />
                 </span>
@@ -92,8 +137,8 @@ class App extends React.Component {
                     </NavLink>
                   </div>
                 </div>
-                <div id="profilePicture" className="navbar-brand">
-                  <figure className="image is-48x48">
+                <div id="profilePicture" className="navbar-brand" data-step="6" data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!">
+                  <figure onClick={this.goToProfile} className="image is-48x48">
                     <img
                       className="is-rounded"
                       src={
@@ -110,7 +155,7 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-2 ${
-                this.state.hidden ? "scale-up-ver-top" : "is-hidden-mobile"
+                (this.state.hidden || !this.state.profile?.tutorialHidden) ? "scale-up-ver-top" : "is-hidden-mobile"
               }`}
             >
               <aside className="menu">
@@ -126,18 +171,18 @@ class App extends React.Component {
                     </li>
                   )}
                   <li>
-                    <NavLink activeClassName="is-active" to="/appointments">
+                    <NavLink activeClassName="is-active" to="/appointments" data-step="5" data-intro="Your booked appointments will show up in appointments.">
                       Appointments
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/documents">
+                    <NavLink activeClassName="is-active" to="/documents" data-step="4" data-intro="Before your session, you can write up a questionnaire to send to your guide so they can prepare.">
                       Documents
                     </NavLink>
                   </li>
                   <li>
                     {this.state.profile?.__t == "clients" && (
-                      <NavLink activeClassName="is-active" to="/discover">
+                      <NavLink activeClassName="is-active" to="/discover" data-intro="First, you can find the entire list of our guides in the Discover page." data-step="2">
                         Discover
                       </NavLink>
                     )}
@@ -149,7 +194,7 @@ class App extends React.Component {
                   )}
                   {this.state.profile?.__t == "clients" && (
                     <li>
-                      <NavLink activeClassName="is-active" to="/balance">
+                      <NavLink activeClassName="is-active" to="/balance" data-step="3" data-intro="Refill your balance to at least $15 before you book a session by clicking balance.">
                         Balance{" "}
                         {this.state.profile
                           ? `- $${(this.state.profile.stripe.balance / 100) *
@@ -180,13 +225,20 @@ class App extends React.Component {
                 <Route path="/Appointments">
                   <Appointments />
                 </Route>
-                <Route path="/Documents">
-                  <Home />
+                <Route path="/Profile">
+                  <Profile/>
+                </Route>
+                <Route exact path="/Documents">
+                  <Documents />
+                </Route>
+                <Route path="/Documents/:id">
+                  <DocumentEdit />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
-                  <Route path="/Discover">
+                    <Route path="/Discover">
                     <Discover />
                   </Route>
+
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">
@@ -206,7 +258,7 @@ class App extends React.Component {
             </div>
           </div>
         </div>
-      </Router>
+      </Suspense>
     );
   }
 }
@@ -261,4 +313,4 @@ const PaymentSuccess = () => {
   );
 };
 
-export default App;
+export default withRouter(App);

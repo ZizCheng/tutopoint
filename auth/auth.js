@@ -129,16 +129,15 @@ function mailToken(user) {
         auth: mailAuth,
       });
       const mailOptions = {
-        from: 'tutopointauth@gmail.com',
+        from: 'TutoPoint Accounts <auth@tutopoint.com>',
         to: user.email.toString(),
-        subject: 'NO REPLY Confirm TutoPoint Email Address',
-        text: `Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n`,
+        subject: 'Thank you for registering!',
+        text: 'Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/' + token.token + '\n\n',
       };
       transporter.sendMail(mailOptions, function(err) {
         if (err) {
           reject(err);
         } else {
-          console.log('yippy');
           resolve(user);
         }
       });
@@ -160,16 +159,15 @@ function mailReset(user) {
         auth: mailAuth,
       });
       const mailOptions = {
-        from: 'tutopointauth@gmail.com',
+        from: 'TutoPoint Accounts <auth@tutopoint.com>',
         to: user.email.toString(),
-        subject: 'NO REPLY TutoPoint Password Reset',
-        text: `Hello\n\n Please reset your password at this link: https://tutopoint.com/reset/${token.token}\n\n`,
+        subject: 'Reset your password',
+        text: 'Hello\n\n Please reset your password at this link: https://tutopoint.com/reset/' + token.token + '\n\n',
       };
       transporter.sendMail(mailOptions, function(err) {
         if (err) {
           reject(err);
         } else {
-          console.log('yippy');
           resolve(user);
         }
       });
