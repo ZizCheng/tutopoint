@@ -6,6 +6,7 @@
     ],
     "plugins": [
       "@babel/plugin-transform-runtime",
-      "@loadable/babel-plugin"
+      "@loadable/babel-plugin",
+      "@babel/plugin-transform-modules-commonjs",
     ]
   }

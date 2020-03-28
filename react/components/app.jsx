@@ -31,6 +31,9 @@ import emptyProfileIcon from "../data/images/emptyProfilePic.png";
 import tutologo from "../data/images/tutologo.png";
 import checkmark from "../data/images/checkmark.png";
 
+import introJs from "intro.js";
+import "intro.js/introjs.css";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -49,15 +52,24 @@ class App extends React.Component {
 
   componentDidMount() {
     profileAPI.getProfile().then(profile => {
+      const intro = introJs();
       console.log(profile);
       profileStore.dispatch({ type: "Update", data: profile });
-      this.setState({ loaded: true });
+      this.setState({ loaded: true }, function() {
+        if (this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden) {
+          this.toggleSideBarMobile();
+          intro.setOptions({'overlayOpacity': 0.9});
+          intro.start();
+        }
+      });
+
     });
 
     profileStore.subscribe(() => {
       this.setState({ profile: profileStore.getState() });
     });
   }
+
 
   closeTutorial() {
     profileAPI.closeTutorial()
@@ -79,17 +91,13 @@ class App extends React.Component {
       <Suspense fallback={<Loading/>}>
         {(!this.state.loaded) && <Loading/>}
         <div id="main" className="container is-fluid">
-          {(this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden && <div>
-            Tutorial shit
-            <button onClick={this.closeTutorial}> NO NO NO NO NO HIDE IT </button>
-          </div>)}
           <nav
             className="navbar is-transparent"
             role="navigation"
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a className="navbar-item is-size-4" href="https://tutopoint.com">
+              <a className="navbar-item is-size-4" href="https://tutopoint.com" data-step="1" data-intro="Welcome to TutoPoint!">
                 <span className="icon is-large">
                   <img src={tutologo} />
                 </span>
@@ -120,7 +128,7 @@ class App extends React.Component {
                     </NavLink>
                   </div>
                 </div>
-                <div id="profilePicture" className="navbar-brand">
+                <div id="profilePicture" className="navbar-brand" data-step="6" data-intro="account text">
                   <figure onClick={this.goToProfile} className="image is-48x48">
                     <img
                       className="is-rounded"
@@ -138,7 +146,7 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-2 ${
-                this.state.hidden ? "scale-up-ver-top" : "is-hidden-mobile"
+                (this.state.hidden && !this.state.profile?.tutorialHidden) ? "scale-up-ver-top" : "is-hidden-mobile"
               }`}
             >
               <aside className="menu">
@@ -154,18 +162,18 @@ class App extends React.Component {
                     </li>
                   )}
                   <li>
-                    <NavLink activeClassName="is-active" to="/appointments">
+                    <NavLink activeClassName="is-active" to="/appointments" data-step="5" data-intro="appointments text">
                       Appointments
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/documents">
+                    <NavLink activeClassName="is-active" to="/documents" data-step="4" data-intro="documents text">
                       Documents
                     </NavLink>
                   </li>
                   <li>
                     {this.state.profile?.__t == "clients" && (
-                      <NavLink activeClassName="is-active" to="/discover">
+                      <NavLink activeClassName="is-active" to="/discover" data-intro="Here is where you can see all of TutoPoint's guides" data-step="2">
                         Discover
                       </NavLink>
                     )}
@@ -177,7 +185,7 @@ class App extends React.Component {
                   )}
                   {this.state.profile?.__t == "clients" && (
                     <li>
-                      <NavLink activeClassName="is-active" to="/balance">
+                      <NavLink activeClassName="is-active" to="/balance" data-step="3" data-intro="balance text">
                         Balance{" "}
                         {this.state.profile
                           ? `- $${(this.state.profile.stripe.balance / 100) *
