@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+
 module.exports = {
   entry: './react/index.jsx',
   mode: 'development',
