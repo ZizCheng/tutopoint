@@ -25,13 +25,14 @@ router.post('/pay', function(req, res) {
 
   stripe.charges.create(cardInfo,
       function(err, charge) {
-        console.log(err);
         if (err) res.status(400).json({error: 'Transaction error.'});
         stripe.customers.createBalanceTransaction(
             req.user.stripeCustomerId,
             {amount: -charge.amount, currency: 'usd', description: 'Session refill.'},
-            function(err, customer) {
+            async function(err, customer) {
               if (err) res.status(400).json({error: 'Transaction error.'});
+              const transactions = await stripe.customers.listBalanceTransactions(req.user['stripeCustomerId'], {limit: 10});
+              customer['transactions'] = transactions;
               res.json(customer);
             },
         );

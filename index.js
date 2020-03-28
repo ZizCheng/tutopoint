@@ -36,6 +36,7 @@ const documentAPI = require('./api/document.js');
 const balanceAPI = require('./api/balance.js');
 const transportsAPI = require('./api/transports.js');
 const sessionAPI = require('./api/session.js');
+const referralAPI = require('./api/referral.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -60,7 +61,7 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 
-//deprecated
+// deprecated
 app.use(authRouter);
 app.use('/session', sessionRouter);
 app.use('/schedule', scheduleRouter);
@@ -73,6 +74,7 @@ app.use('/api/document', documentAPI);
 app.use('/api/balance', balanceAPI);
 app.use('/api/transports', transportsAPI.router);
 app.use('/api/session', sessionAPI);
+app.use('/api/referral', referralAPI)
 
 
 app.engine('handlebars', handlebars());
@@ -135,7 +137,6 @@ transportsAPI.initialize();
 // io.on('connection', transportsAPI.handleIO);
 
 
-
 if (process.env.NODE_ENV == 'production') {
   io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
 }
@@ -169,6 +170,20 @@ function chargeUser(io, socket, sessionid, user, count) {
             return;
           }
           const calculatedCost = parseInt(count * 900);
+          const client = session.clients[0];
+          Users.findById(client)
+              .populate('referredBy')
+              .then((user) => {
+                if (user.referredBy) {
+                  stripe.customers.createBalanceTransaction(
+                      user.referredBy.stripeCustomerId,
+                      {amount: -(count * 300), currency: 'usd', description: 'Session refill.'},
+                      async function(err, customer) {
+                        if (err) console.warn('Error paying referrer');
+                      },
+                  );
+                }
+              });
           stripe.transfers.create(
               {
                 amount: calculatedCost,

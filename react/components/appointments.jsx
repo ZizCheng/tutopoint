@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
-
+import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+
+import DocumentCompactList from "./DocumentCompactList.jsx";
 
 import { withRouter } from "react-router-dom";
 
@@ -35,33 +37,31 @@ const AppointmentItem = ({
   onClick,
   sessionid,
   confirm,
+  cancel,
+  send,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
-  if (status == "active") {
     useEffect(() => {
       const timer = setTimeout(() => {
         setTimeLeft(calculateTimeLeft(date));
       }, 1000);
 
       return () => clearTimeout(timer);
-    });
+    }, [timeLeft]);
 
-    Object.keys(timeLeft).forEach(interval => {
+    Object.keys(timeLeft).forEach((interval, index) => {
       if (!timeLeft[interval]) {
         return;
       }
 
       timerComponents.push(
-        <span>
+        <span key={index}>
           {timeLeft[interval]} {interval}{" "}
         </span>
       );
     });
-  } else {
-    timerComponents = [];
-  }
 
   return (
     <article className={`media ${status}`}>
@@ -110,10 +110,40 @@ const AppointmentItem = ({
             >
               Join
             </button>
+            <button
+              className={"button is-light is-fullwidth"}
+              onClick={() => {
+                cancel(sessionid);
+              }}
+              disabled={
+                profileStore.getState().__t == "clients" ? "" : "disabled"
+              }
+            >
+              Cancel
+            </button>
           </div>
         ) : (
-          ""
+          <button
+            className={"button is-light is-fullwidth"}
+            onClick={() => {
+              cancel(sessionid);
+            }}
+            disabled={
+              profileStore.getState().__t == "clients" ? "" : "disabled"
+            }
+          >
+            Cancel
+          </button>
         )}
+        <button className={"button is-light is-fullwidth"} onClick={() => {
+            send(sessionid);
+          }}
+          disabled={
+            profileStore.getState().__t == "clients" ? "" : "disabled"
+          }
+        >
+          Send Quistionnare
+        </button>
         {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
           <button
             className={"button is-light is-fullwidth"}
@@ -135,10 +165,16 @@ const AppointmentItem = ({
 class Appointments extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isUpcoming: true, profile: profileStore.getState() };
+    this.state = {
+      isUpcoming: true,
+      profile: profileStore.getState(),
+      selectDocumentPopup: '',
+    };
 
     this.handleClick = this.handleClick.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+    this.sendDocument = this.sendDocument.bind(this);
   }
 
   handleClick(bool) {
@@ -148,6 +184,27 @@ class Appointments extends React.Component {
   componentDidMount() {
     this.unsubscribe = profileStore.subscribe(() => {
       this.setState({ profile: profileStore.getState() });
+    });
+
+
+    //document selection
+    function action(doc_id) {
+      documentAPI.sendDocument(doc_id, sessionid);
+    }
+    function closeModal(e) {
+      document.getElementById("select-document-popup").classList.remove("is-active");
+    }
+    this.setState({
+      selectDocumentPopup: (
+        <div id="select-document-popup" className="modal">
+          <div className="modal-background"></div>
+          <div className="modal-content">
+            <DocumentCompactList action={action} />
+          </div>
+          <button className="modal-close is-large" aria-label="close" onClick={closeModal}>
+          </button>
+        </div>
+      )
     });
   }
 
@@ -165,9 +222,30 @@ class Appointments extends React.Component {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
         profileAPI.getProfile()
-        .then(() => this.props.history.push('/dashboard'));
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
       }
     });
+  }
+
+  handleCancel(sessionid) {
+    sessionAPI.cancel(sessionid).then(resp => {
+      if (resp?.message == "ok") {
+        // Needs fixing. Timer does not want to end causing hook crash.
+        // window.location.href = "/dashboard";
+        profileAPI.getProfile()
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
+      }
+    });
+  }
+
+  sendDocument(sessionid){
+    document.getElementById("select-document-popup").classList.add("is-active");
   }
 
   render() {
@@ -269,6 +347,8 @@ class Appointments extends React.Component {
             onClick={this.sessionClicked}
             sessionid={session._id}
             confirm={this.handleConfirm}
+            cancel={this.handleCancel}
+            send={this.sendDocument}
             status={sessionStatus}
           />
         );
@@ -310,6 +390,7 @@ class Appointments extends React.Component {
             {pastSession}
           </div>
         </div>
+        {this.state.selectDocumentPopup}
       </div>
     );
   }

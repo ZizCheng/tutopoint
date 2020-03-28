@@ -17,6 +17,7 @@ class Profile extends React.Component {
 
     this.change = this.change.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.requestReferralCode = this.requestReferralCode.bind(this);
   }
 
   componentDidMount() {
@@ -26,7 +27,7 @@ class Profile extends React.Component {
   }
 
   componentWillUnmount() {
-      this.unsubscribe()
+    this.unsubscribe();
   }
 
   change(e) {
@@ -52,6 +53,16 @@ class Profile extends React.Component {
     }
   }
 
+  requestReferralCode() {
+    profileAPI.requestReferralKey().then(msg => {
+      if (msg.message == "ok") {
+        profileAPI.getProfile().then(profile => {
+          profileStore.dispatch({ type: "Initialize", data: profile });
+        });
+      }
+    })
+  }
+
   render() {
     const transactionHistory = this.state.profile?.transactions?.data?.map(
       (transaction, key) => {
@@ -72,7 +83,7 @@ class Profile extends React.Component {
       }
     );
 
-    const referrals = this.state.profile?.referrals.referred?.map(
+    const referrals = this.state.profile?.referrals?.referred?.map(
       (user, key) => {
         return (
           <tr key={key}>
@@ -90,25 +101,71 @@ class Profile extends React.Component {
               <p className="is-size-3">Edit Profile</p>
               <form id="editProfileForm" onSubmit={this.handleSubmit}>
                 <div class="container is-fluid">
-                  <div className="field is-horizontal">
-                    <div className="field-label is-normal">
-                      <label className="label">Name</label>
-                    </div>
-                    <div className="field-body">
-                      <div className="field">
-                        <div className="control">
-                          <input
-                            className="input"
-                            type="text"
-                            name="name"
-                            onChange={this.change}
-                            value={`${this.state.changed.name ||
-                              this.state.profile?.name}`}
-                          />
+                  {this.state.profile?.__t == "clients" && (
+                    <div className="field is-horizontal">
+                      <div className="field-label is-normal">
+                        <label className="label">Name</label>
+                      </div>
+                      <div className="field-body">
+                        <div className="field">
+                          <div className="control">
+                            <input
+                              className="input"
+                              type="text"
+                              name="name"
+                              onChange={this.change}
+                              placeholder={this.state.profile?.name}
+                              value={`${this.state.changed.name || ""}`}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {this.state.profile?.__t == "guides" && (
+                    <React.Fragment>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label className="label">Bio</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              <input
+                                className="input"
+                                type="text"
+                                name="bio"
+                                onChange={this.change}
+                                placeholder={this.state.profile?.bio}
+                              value={`${this.state.changed.bio || ""}`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label className="label">Major</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              <input
+                                className="input"
+                                type="text"
+                                name="major"
+                                onChange={this.change}
+                                placeholder={this.state.profile?.major}
+                              value={`${this.state.changed.major || ""}`}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  )}
+
                   <div className="field is-grouped is-grouped-right">
                     <p className="control is-expanded">
                       <a className="is-size-4" href="/reset">
@@ -126,55 +183,62 @@ class Profile extends React.Component {
                 </div>
               </form>
             </article>
-            <article className="tile is-child has-background-white">
-              <Appointments pastOnly={true} />
-            </article>
+            {this.state.profile?.__t != "guides" && (
+              <article className="tile is-child has-background-white">
+                <Appointments pastOnly={true} />
+              </article>
+            )}
           </div>
           <div className="tile is-vertical">
-            <div className="tile">
-              <div className="tile is-parent">
-                <article className="tile is-child has-background-white">
-                  <p className="is-size-3">Referral Code</p>
-                  <QRCode
-                    id="QRDisplay"
-                    value={`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}
-                  />
-                  <p className="is-size-3 has-text-centered">
-                    Your code:{" "}
-                    <span className="highlight">
-                      {this.state.profile?.referrals.code}
-                    </span>
-                  </p>
-                  <a
-                    style={{
-                      marginLeft: "auto",
-                      marginRight: "auto",
-                      display: "block"
-                    }}
-                    className="is-size-4 has-text-centered"
-                    href={`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}
-                  >{`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}</a>
-                </article>
+            {this.state.profile?.__t == "clients" && (
+              <div className="tile">
+                <div className="tile is-parent">
+                  {this.state.profile?.referrals?.code ? (<article className="tile is-child has-background-white">
+                    <p className="is-size-3">Referral Code</p>
+                    <QRCode
+                      id="QRDisplay"
+                      value={`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}
+                    />
+                    <p className="is-size-3 has-text-centered">
+                      Your code:{" "}
+                      <span className="highlight">
+                        {this.state.profile?.referrals.code}
+                      </span>
+                    </p>
+                    <a
+                      style={{
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        display: "block"
+                      }}
+                      className="is-size-4 has-text-centered"
+                      href={`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}
+                    >{`https://tutopoint.com/signup/${this.state.profile?.referrals.code}`}</a>
+                  </article>) : (<article className="tile is-child has-background-white">
+                    <p className="is-size-3">Referral Code</p>
+                    <button onClick={this.requestReferralCode} className="button is-large" style={{marginLeft: 'auto', marginRight: 'auto', display:'block'}}> Generate Referral Code </button>
+                  </article>)}
+                </div>
+                <div className="tile is-parent">
+                  <article className="tile is-child has-background-white">
+                    <p className="is-size-3">Referral History</p>
+                    <div
+                      id="profile__referralHistory"
+                      className="table-container"
+                    >
+                      <table className="table is-fullwidth">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>{referrals}</tbody>
+                      </table>
+                    </div>
+                  </article>
+                </div>
               </div>
-              <div className="tile is-parent">
-                <article className="tile is-child has-background-white">
-                  <p className="is-size-3">Referral History</p>
-                  <div
-                    id="profile__referralHistory"
-                    className="table-container"
-                  >
-                    <table className="table is-fullwidth">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                        </tr>
-                      </thead>
-                      <tbody>{referrals}</tbody>
-                    </table>
-                  </div>
-                </article>
-              </div>
-            </div>
+            )}
             <div className="tile is-parent">
               <article className="tile is-child has-background-white">
                 <p className="is-size-3">Transaction History</p>
