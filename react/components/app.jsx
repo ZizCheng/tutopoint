@@ -58,7 +58,9 @@ class App extends React.Component {
       this.setState({ loaded: true }, function() {
         if (this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden) {
           this.toggleSideBarMobile();
-          intro.setOption("scrollToElement", true);
+          intro.onafterchange(function (element) {
+            window.scroll(0,0);
+          });
           intro.start();
           const that = this;
           intro.oncomplete(function() {
