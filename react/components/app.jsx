@@ -60,6 +60,13 @@ class App extends React.Component {
           this.toggleSideBarMobile();
           intro.setOption("scrollToElement", true);
           intro.start();
+          const that = this;
+          intro.oncomplete(function() {
+            that.closeTutorial();
+          });
+          intro.onexit(function() {
+            that.closeTutorial();
+          });
         }
       });
 
@@ -97,7 +104,7 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a className="navbar-item is-size-4" href="https://tutopoint.com" data-step="1" data-intro="Welcome to TutoPoint!">
+              <a className="navbar-item is-size-4" href="https://tutopoint.com" data-step="1" data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service.">
                 <span className="icon is-large">
                   <img src={tutologo} />
                 </span>
@@ -128,7 +135,7 @@ class App extends React.Component {
                     </NavLink>
                   </div>
                 </div>
-                <div id="profilePicture" className="navbar-brand" data-step="6" data-intro="account text">
+                <div id="profilePicture" className="navbar-brand" data-step="6" data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!">
                   <figure onClick={this.goToProfile} className="image is-48x48">
                     <img
                       className="is-rounded"
@@ -146,7 +153,7 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-2 ${
-                (this.state.hidden && !this.state.profile?.tutorialHidden) ? "scale-up-ver-top" : "is-hidden-mobile"
+                (this.state.hidden || !this.state.profile?.tutorialHidden) ? "scale-up-ver-top" : "is-hidden-mobile"
               }`}
             >
               <aside className="menu">
@@ -162,18 +169,18 @@ class App extends React.Component {
                     </li>
                   )}
                   <li>
-                    <NavLink activeClassName="is-active" to="/appointments" data-step="5" data-intro="appointments text">
+                    <NavLink activeClassName="is-active" to="/appointments" data-step="5" data-intro="Your booked appointments will show up in appointments.">
                       Appointments
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/documents" data-step="4" data-intro="documents text">
+                    <NavLink activeClassName="is-active" to="/documents" data-step="4" data-intro="Before your session, you can write up a questionnaire to send to your guide so they can prepare.">
                       Documents
                     </NavLink>
                   </li>
                   <li>
                     {this.state.profile?.__t == "clients" && (
-                      <NavLink activeClassName="is-active" to="/discover" data-intro="Here is where you can see all of TutoPoint's guides" data-step="2">
+                      <NavLink activeClassName="is-active" to="/discover" data-intro="First, you can find the entire list of our guides in the Discover page." data-step="2">
                         Discover
                       </NavLink>
                     )}
@@ -185,7 +192,7 @@ class App extends React.Component {
                   )}
                   {this.state.profile?.__t == "clients" && (
                     <li>
-                      <NavLink activeClassName="is-active" to="/balance" data-step="3" data-intro="balance text">
+                      <NavLink activeClassName="is-active" to="/balance" data-step="3" data-intro="Refill your balance to at least $15 before you book a session by clicking balance.">
                         Balance{" "}
                         {this.state.profile
                           ? `- $${(this.state.profile.stripe.balance / 100) *
