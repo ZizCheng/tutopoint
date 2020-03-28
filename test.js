@@ -12,16 +12,13 @@ const s3 = new AWS.S3({
   secretAccessKey: awsS3['secretAccessKey'],
 });
 
-const bucketParams = {
-  Bucket: "tutopoint-doc-bucket",
-};
-const doc0Params = {
-  Bucket: "tutopoint-doc-bucket",
-  Key: "s3_test.txt",
-};
 
-s3.getObject(doc0Params).createReadStream().on('data', function(data) {
-  console.log("Got data:", data.toString());
+s3.deleteObject({
+    Bucket: "tutopoint-doc-bucket",
+    Key: "92c66f1c1eec162921cfe44c32d45b04fb98398e868f1bf8ce546a6a1e45c704",
+  }, function(err, data) {
+     if (err) console.log(err);
+     else     console.log(data);
 });
 
 

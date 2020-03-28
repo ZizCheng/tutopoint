@@ -17,6 +17,8 @@ import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
 const  Discover = React.lazy(() => import("./discover.jsx"))
+import Documents from "./document.jsx";
+import DocumentEdit from "./DocumentEdit.jsx";
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 import Loading from "./loading.jsx";
@@ -68,8 +70,8 @@ class App extends React.Component {
   }
 
   goToProfile() {
-    console.log("Go to profile.")
-    this.props.history.push('/profile')
+    console.log("Go to profile.");
+    this.props.history.push('/profile');
   }
 
   render() {
@@ -209,14 +211,17 @@ class App extends React.Component {
                 <Route path="/Profile">
                   <Profile/>
                 </Route>
-                <Route path="/Documents">
-                  <Home />
+                <Route exact path="/Documents">
+                  <Documents />
+                </Route>
+                <Route path="/Documents/:id">
+                  <DocumentEdit />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
                     <Route path="/Discover">
                     <Discover />
                   </Route>
-                  
+
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">
