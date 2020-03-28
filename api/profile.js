@@ -2,6 +2,8 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
+const Clients = require('../models/model.js').Clients;
+const Guides = require('../models/model.js').Guides;
 const Users = require('../models/model.js').Users;
 const Referrals = require('../models/model.js').Referrals;
 
@@ -34,8 +36,29 @@ router.get('/', async function(req, res) {
   res.json(profile);
 });
 
+router.get('/transactions', async function(req, res) {
+  const profile = req.user.toJSON();
+  const stripe = {};
+  if (profile['__t'] == 'clients') {
+    const stripeData = await stripe.customers.retrieve(profile['stripeCustomerId']);
+    const transactions = await stripe.customers.listBalanceTransactions(profile['stripeCustomerId'], {limit: 10});
+    stripe['stripe'] = stripeData;
+    stripe['transactions'] = transactions;
+  } else {
+    const stripeData = await stripe.accounts.retrieve(profile['stripeAccountId']);
+    const stripeBalance = await stripe.balance.retrieve({stripe_account: profile['stripeAccountId']});
+    stripe['balance'] = stripeBalance.available[0].amount;
+    stripe['stripe'] = stripeData;
+  }
+
+  res.json(stripe);
+});
+
 router.put('/', async function(req, res) {
-  const allowedChanges = {'name': true};
+  let allowedChanges = {'name': true};
+  if (req.user.__t == 'guides') {
+    allowedChanges = {'bio': true, 'major': true, 'grade': true};
+  }
   const data = req.body.data;
   const changes = {};
   if (data) {
@@ -46,8 +69,15 @@ router.put('/', async function(req, res) {
       }
     });
   }
-
-  await Users.findByIdAndUpdate(req.user.id, changes);
+  let userType;
+  if (req.user.__t == 'guides') {
+    userType = Guides;
+  } else if (req.user.__t == 'clients') {
+    userType = Clients;
+  } else {
+    userType = Users;
+  }
+  await userType.findByIdAndUpdate(req.user.id, changes);
 
   res.json({message: 'ok'});
 });

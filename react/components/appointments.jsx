@@ -43,29 +43,25 @@ const AppointmentItem = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
-  if (status == "active") {
     useEffect(() => {
       const timer = setTimeout(() => {
         setTimeLeft(calculateTimeLeft(date));
       }, 1000);
 
       return () => clearTimeout(timer);
-    });
+    }, [timeLeft]);
 
-    Object.keys(timeLeft).forEach(interval => {
+    Object.keys(timeLeft).forEach((interval, index) => {
       if (!timeLeft[interval]) {
         return;
       }
 
       timerComponents.push(
-        <span>
+        <span key={index}>
           {timeLeft[interval]} {interval}{" "}
         </span>
       );
     });
-  } else {
-    timerComponents = [];
-  }
 
   return (
     <article className={`media ${status}`}>
@@ -205,7 +201,10 @@ class Appointments extends React.Component {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
         profileAPI.getProfile()
-        .then(() => this.props.history.push('/dashboard'));
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
       }
     });
   }
@@ -216,7 +215,10 @@ class Appointments extends React.Component {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
         profileAPI.getProfile()
-        .then(() => this.props.history.push('/dashboard'));
+        .then((data) => {
+          profileStore.dispatch({ type: "Update", data: data });
+          this.props.history.push('/dashboard')
+        });
       }
     });
   }

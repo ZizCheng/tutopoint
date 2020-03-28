@@ -88,7 +88,6 @@ class Documents extends React.Component {
 
   updateDocumentState() {
     documentAPI.listDocuments().then((documentList) => {
-      console.log(documentList.length);
       for(var document of documentList) {
         //convert JSON date to JS date
         document.date = new Date(document.date);

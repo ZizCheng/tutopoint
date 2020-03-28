@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Lazy, Suspense } from "react";
 import ReactDOM from "react-dom";
 import {
   BrowserRouter as Router,
@@ -13,14 +13,15 @@ import SVG from "react-inlinesvg";
 
 import profileAPI from "../api/profile.js";
 
+import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
-import Dashboard from "./dashboard.jsx";
-import Discover from "./discover.jsx";
+const  Discover = React.lazy(() => import("./discover.jsx"))
 import Documents from "./document.jsx";
 import DocumentEdit from "./DocumentEdit.jsx";
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
+import Loading from "./loading.jsx";
 
 import profileStore from "../store/profileStore.js";
 
@@ -33,7 +34,7 @@ import checkmark from "../data/images/checkmark.png";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: null, hidden: false };
+    this.state = { profile: null, hidden: false, loaded: false };
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
     this.closeTutorial = this.closeTutorial.bind(this);
@@ -49,7 +50,8 @@ class App extends React.Component {
   componentDidMount() {
     profileAPI.getProfile().then(profile => {
       console.log(profile);
-      profileStore.dispatch({ type: "Initialize", data: profile });
+      profileStore.dispatch({ type: "Update", data: profile });
+      this.setState({ loaded: true });
     });
 
     profileStore.subscribe(() => {
@@ -74,7 +76,8 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <Suspense fallback={<Loading/>}>
+        {(!this.state.loaded) && <Loading/>}
         <div id="main" className="container is-fluid">
           {(this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden && <div>
             Tutorial shit
@@ -238,7 +241,7 @@ class App extends React.Component {
             </div>
           </div>
         </div>
-      </div>
+      </Suspense>
     );
   }
 }

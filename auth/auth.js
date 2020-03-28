@@ -132,7 +132,7 @@ function mailToken(user) {
         from: 'TutoPoint Accounts <auth@tutopoint.com>',
         to: user.email.toString(),
         subject: 'Thank you for registering!',
-        text: 'Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/${token.token}\n\n',
+        text: 'Hello\n\n Please verify your account by clicking the link: https://tutopoint.com/verify/' + token.token + '\n\n',
       };
       transporter.sendMail(mailOptions, function(err) {
         if (err) {
@@ -162,7 +162,7 @@ function mailReset(user) {
         from: 'TutoPoint Accounts <auth@tutopoint.com>',
         to: user.email.toString(),
         subject: 'Reset your password',
-        text: `Hello\n\n Please reset your password at this link: https://tutopoint.com/reset/${token.token}\n\n`,
+        text: 'Hello\n\n Please reset your password at this link: https://tutopoint.com/reset/' + token.token + '\n\n',
       };
       transporter.sendMail(mailOptions, function(err) {
         if (err) {
