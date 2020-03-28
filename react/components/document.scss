@@ -16,6 +16,7 @@ outer layout
   display: inline-block;
 }
 .document-list {
+  width: 1200px;
   @media screen and (max-width: 1800px) {
     width: 1000px;
   }
@@ -115,4 +116,24 @@ document edit
 }
 #quill-editor {
   height: 80vh;
+}
+
+/*
+document compact list
+*/
+.document-compact-entry-container
+{
+  display: flex;
+  padding: 6px;
+  margin: 2px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: "Lato", sans-serif;
+  border-radius: 1000px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+#select-document-popup .modal-content
+{
+  width: 70vw;
 }

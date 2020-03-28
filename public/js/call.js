@@ -265,12 +265,7 @@ window.onload = (event) => {
     endButton.style['display'] = 'none';
     startButton.setAttribute('disabled', '');
 
-    //save notes interval
-    console.log("starting save notes interval");
-    setInterval(function() {
-      console.log("saving notes");
-      saveNotes();
-    }, 3*1000)
+
 
     endButton.addEventListener('click', function() {
       endCall();
@@ -413,6 +408,14 @@ window.onload = (event) => {
       reconnect();
     }
 
+    //save notes interval
+    console.log("starting save notes interval");
+    setInterval(function() {
+      console.log("saving notes");
+      saveNotes();
+    }, 3*1000);
+
+
     intervalProcess = setInterval(() => {
       displayTimer();
     }, 1000);
@@ -482,18 +485,32 @@ window.onload = (event) => {
   //if already saved, updates notes instead
   var notesId;
   function saveNotes() {
-    if(!notesId)
-    {
+    console.log(quill.getContents());
+    if(!notesId) {
+      //createDocument
       fetch('/api/document', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({title: "Untitled Document", text: JSON.stringify(quill.getContents())})
-      })
-        .then((response) => response.text())
+        body: JSON.stringify({
+          title: "Untitled Document",
+          text: quill.getContents()
+        })
+      }).then((response) => response.text())
         .then((doc_id) => {
           notesId = doc_id;
           console.log(doc_id);
         });
+    }
+    else {
+      //updateDocument
+      fetch('/api/document/' + notesId, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          title: "Untitled Document",
+          text: quill.getContents()
+        })
+      });
     }
   }
 };

@@ -7,13 +7,19 @@ import documentAPI from "../api/document.js";
 class DocumentCompactEntry extends React.Component {
   constructor(props) {
     super(props);
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.props.action(this.props.document._id);
   }
 
   render() {
     return (
-      <div className="document-compact-entry-container">
-        <p className="doucment-compact-entry-title">{this.props.document.title}</p>
-        <p className="doucment-compact-entry-date">{this.props.document.date}</p>
+      <div className="document-compact-entry-container" onClick={this.handleClick}>
+        <p className="doucment-compact-entry-title is-6">{this.props.document.title}</p>
+        <p className="doucment-compact-entry-date is-6">{this.props.document.date.toLocaleDateString("en-US")}</p>
       </div>
     )
   }
@@ -28,6 +34,10 @@ takes in 1 property:
 class DocumentCompactList extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      documents: null,
+    }
   }
 
   componentDidMount() {
@@ -37,7 +47,8 @@ class DocumentCompactList extends React.Component {
         document.date = new Date(document.date);
       }
       this.setState({
-        documents: documentList
+        documents: documentList,
+        action: this.props.action ? this.props.action : function() {},
       });
     });
   }
@@ -52,14 +63,12 @@ class DocumentCompactList extends React.Component {
       var compactEntryList = [];
       for(const document of this.state.documents)
       {
-        compactEntryList.push(<DocumentCompactEntry document={document} key={document._id} />);
+        compactEntryList.push(<DocumentCompactEntry document={document} key={document._id} action={this.props.action} />);
       }
 
       return (
-        <div className="document-compact-list-container">
-          <div className="document-compact-list-wrapper">
-            {compactEntryList}
-          </div>
+        <div className="document-compact-list-wrapper">
+          {compactEntryList}
         </div>
       );
     }
