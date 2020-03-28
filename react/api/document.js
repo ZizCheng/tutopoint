@@ -50,7 +50,8 @@ function listDocuments() {
 function sendDocument(id, sessionid) {
   return fetch('/api/document/' + id + '/send', {
     method: 'POST',
-    body: sessionid,
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sessionid: sessionid}),
   }).then(function(response) {
     return response.text();
   });

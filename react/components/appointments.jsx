@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
-import documentAPI from "../api/session.js";
+import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
 
@@ -168,7 +168,7 @@ class Appointments extends React.Component {
     this.state = {
       isUpcoming: true,
       profile: profileStore.getState(),
-      documentCompactListPopup: '',
+      selectDocumentPopup: '',
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -184,6 +184,27 @@ class Appointments extends React.Component {
   componentDidMount() {
     this.unsubscribe = profileStore.subscribe(() => {
       this.setState({ profile: profileStore.getState() });
+    });
+
+
+    //document selection
+    function action(doc_id) {
+      documentAPI.sendDocument(doc_id, sessionid);
+    }
+    function closeModal(e) {
+      document.getElementById("select-document-popup").classList.remove("is-active");
+    }
+    this.setState({
+      selectDocumentPopup: (
+        <div id="select-document-popup" className="modal">
+          <div className="modal-background"></div>
+          <div className="modal-content">
+            <DocumentCompactList action={action} />
+          </div>
+          <button className="modal-close is-large" aria-label="close" onClick={closeModal}>
+          </button>
+        </div>
+      )
     });
   }
 
@@ -224,9 +245,7 @@ class Appointments extends React.Component {
   }
 
   sendDocument(sessionid){
-    this.setState({
-      documentCompactListPopup: "<DocumentCompactList />"
-    });
+    document.getElementById("select-document-popup").classList.add("is-active");
   }
 
   render() {
@@ -371,7 +390,7 @@ class Appointments extends React.Component {
             {pastSession}
           </div>
         </div>
-        {this.state.documentCompactListPopup}
+        {this.state.selectDocumentPopup}
       </div>
     );
   }

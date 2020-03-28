@@ -1,5 +1,6 @@
 const Users = require("../models/model.js").Users;
 const Documents = require("../models/model.js").Documents;
+const Sessions = require('../models/model.js').Sessions;
 
 const crypto = require("crypto");
 
@@ -19,6 +20,7 @@ router.get('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
     .createReadStream()
     .pipe(res);
 });
+
 router.put('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
   s3.upload({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename, Body: JSON.stringify(req.body.text)}, function (err, data) {
     if (err) {
@@ -69,8 +71,12 @@ router.put('/', auth.loggedIn, function(req, res) {
 //send to guide of sessionid
 router.post('/:id/send', auth.loggedIn, auth.hasDocument, function(req, res) {
   Sessions.findById(req.body.sessionid, function(err, session) {
-    cloneDocument(session.createdBy, req.doc)
-  })
+    console.log(req.doc);
+    console.log(session);
+    Users.findById(session.createdBy, function(err, user) {
+      cloneDocument(user, req.doc);
+    });
+  });
 });
 
 //creates document and adds to user with title, text, and date
@@ -101,7 +107,21 @@ function createDocument(user, title, text, date) {
 }
 //clones document and adds to user
 function cloneDocument(user, document) {
-  return createDocument(user, document.title, document.text, document.date);
+  streamToString(s3.getObject({
+    Bucket: "tutopoint-doc-bucket",
+    Key: document.aws_filename
+  }).createReadStream()).then(function(text) {
+    return createDocument(user, document.title, text, document.date);
+  });
+}
+
+function streamToString (stream) {
+  var chunks = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', chunk => chunks.push(chunk))
+    stream.on('error', reject)
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')))
+  })
 }
 
 module.exports = router;
