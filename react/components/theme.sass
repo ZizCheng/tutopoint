@@ -116,3 +116,29 @@ $tabs-link-active-color: $orange;
 
 .media-right
     flex-shrink: 1;
+
+
+.loader 
+    &.is-loading 
+        position: fixed;
+        pointer-events: none;
+        // opacity: 0.5;
+        top: 0;
+        left: 0;
+        background-color: white;
+        height: 100vh;
+        width:  100vw;
+        z-index: 10000;
+
+        &:after 
+            @include loader;
+            position: absolute;
+            top: calc(50% - 2.5em);
+            left: calc(50% - 2.5em);
+            width: 5em;
+            height: 5em;
+            border-width: 0.25em;
+        
+    
+
+    
