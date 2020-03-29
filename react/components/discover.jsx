@@ -86,8 +86,15 @@ class ScheduleWithoutRouter extends React.Component {
           "America/New_York",
           "Asia/Shanghai"
         ].map((timezone, column) => {
+          if (column == 0) {
+            return (
+              <td className="monospace" key={row + "" + column}>
+                {moment(time).tz(timezone).format(format)}
+              </td>
+            )
+          }
           return (
-            <td className="monospace" key={row + "" + column}>
+            <td className="monospace is-hidden-mobile" key={row + "" + column}>
               {moment(time)
                 .tz(timezone)
                 .format(format)}
@@ -117,9 +124,9 @@ class ScheduleWithoutRouter extends React.Component {
           <thead>
             <tr>
               <th className="has-text-grey">Detected Time</th>
-              <th className="has-text-grey">Los Angeles Time</th>
-              <th className="has-text-grey">New York Time</th>
-              <th className="has-text-grey">Beijing Time</th>
+              <th className="has-text-grey is-hidden-mobile">Los Angeles Time</th>
+              <th className="has-text-grey is-hidden-mobile">New York Time</th>
+              <th className="has-text-grey is-hidden-mobile">Beijing Time</th>
               <th className="has-text-grey">Availability</th>
             </tr>
           </thead>
