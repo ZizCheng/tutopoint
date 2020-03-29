@@ -15,13 +15,23 @@ const express = require('express');
 const router = new express.Router();
 const auth = require('../auth/auth.js');
 
+
+router.get('/:id/title', auth.loggedIn, auth.hasDocument, function(req, res) {
+  res.send(req.doc.title);
+});
+
 router.get('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
-  s3.getObject({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename})
-    .createReadStream()
-    .pipe(res);
+  var s3Stream = s3.getObject({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename}).createReadStream()
+  // listen for errors
+  s3Stream.on('error', function(err) {
+    res.json('error');
+  });
+  s3Stream.pipe(res);
 });
 
 router.put('/:id', auth.loggedIn, auth.hasDocument, function(req, res) {
+  req.doc.title = req.body.title;
+  req.doc.save();
   s3.upload({Bucket: "tutopoint-doc-bucket", Key: req.doc.aws_filename, Body: JSON.stringify(req.body.text)}, function (err, data) {
     if (err) {
       console.log("Error", err);

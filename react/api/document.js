@@ -17,17 +17,23 @@ function createDocument(title, text) {
   });
 }
 
+function getDocumentTitle(id) {
+  return fetch('/api/document/' + id + '/title').then(function(response) {
+    return response.text();
+  });
+}
+
 function getDocumentText(id) {
   return fetch('/api/document/' + id).then(function(response) {
     return response.json();
   });
 }
 
-function updateDocument(id, text) {
+function updateDocument(id, text, title) {
   return fetch('/api/document/' + id, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({text: text})
+    body: JSON.stringify({text: text, title: title})
   }).then(function(response) {
     return response.text();
   });
@@ -60,6 +66,7 @@ function sendDocument(id, sessionid) {
 module.exports = {
   newDocument: newDocument,
   createDocument: createDocument,
+  getDocumentTitle: getDocumentTitle,
   getDocumentText: getDocumentText,
   updateDocument: updateDocument,
   deleteDocument: deleteDocument,
