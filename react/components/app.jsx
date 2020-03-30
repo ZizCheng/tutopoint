@@ -222,7 +222,7 @@ class App extends React.Component {
                   </li>
                   {this.state.profile?.__t == "guides" && (
                     <li>
-                      <a>Balance - ${this.state.profile?.balance}</a>
+                      <a>Balance - ${this.state.profile?.balance / 100}</a>
                     </li>
                   )}
                   {this.state.profile?.__t == "clients" && (

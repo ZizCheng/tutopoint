@@ -277,7 +277,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                                 io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Low balance', message: 'You do not have enough credits to continue with this session in 15 minutes!', style: 'is-danger'});
                               }
                               setTimeout(() => {
-                                chargeUser(io, socket, sessionid, user, count+1);
+                                chargeUser(io, socket, sessionid, user, count+4);
                               }, 900000);
                             },
                         );
@@ -394,7 +394,7 @@ io.on('connection', function(socket, req, res) {
             // Charge 5 minutes later.
             setTimeout(() => {
               chargeUser(io, socket, sessionid, socket.request.session.passport.user, 0);
-            }, (2*60*1000));
+            }, (5*60*1000));
           }
         })
         .catch((err) => console.log('Could not find session'));
