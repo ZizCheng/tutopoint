@@ -50,7 +50,7 @@ class ScheduleWithoutRouter extends React.Component {
             this.props.history.push('/balance?balanceerror=true')
           }
         });
-        
+
     } else {
       let newSchedule = this.state.schedule.slice();
       for (let i = 0; i < this.state.schedule.length; i++) {
@@ -124,7 +124,7 @@ class ScheduleWithoutRouter extends React.Component {
           <thead>
             <tr>
               <th className="has-text-grey">Detected Time</th>
-              <th className="has-text-grey is-hidden-mobile">Los Angeles Time</th>
+              <th className="has-text-grey is-hidden-mobile">Seattle Time</th>
               <th className="has-text-grey is-hidden-mobile">New York Time</th>
               <th className="has-text-grey is-hidden-mobile">Beijing Time</th>
               <th className="has-text-grey">Availability</th>
