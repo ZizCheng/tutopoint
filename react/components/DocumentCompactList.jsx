@@ -18,8 +18,8 @@ class DocumentCompactEntry extends React.Component {
   render() {
     return (
       <div className="document-compact-entry-container" onClick={this.handleClick}>
-        <p className="doucment-compact-entry-title is-6">{this.props.document.title}</p>
-        <p className="doucment-compact-entry-date is-6">{this.props.document.date.toLocaleDateString("en-US")}</p>
+        <p className="doucment-compact-entry-title column is-7">{this.props.document.title}</p>
+        <p className="doucment-compact-entry-date column is-5">{this.props.document.date.toLocaleDateString("en-US")}</p>
       </div>
     )
   }
@@ -67,7 +67,11 @@ class DocumentCompactList extends React.Component {
       }
 
       return (
-        <div className="document-compact-list-wrapper">
+        <div className="document-compact-list-container">
+          <div className="document-compact-list-header">
+            <p className="doucment-compact-entry-title column is-7">Title</p>
+            <p className="doucment-compact-entry-date column is-5">Date</p>
+          </div>
           {compactEntryList}
         </div>
       );

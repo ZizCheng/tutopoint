@@ -1,0 +1,7 @@
+.content {
+  margin: 2em;
+}
+.helpList a {
+  color: #f56363 !important;
+  line-height: 2;
+}

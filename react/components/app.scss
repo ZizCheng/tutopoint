@@ -1,10 +1,7 @@
-.menu {
-    padding-top: 1.25em;
-}
-
 .menu-list li {
     font-weight: bold;
 }
+
 
 #profilePicture {
     padding-right: 1em;
@@ -14,6 +11,18 @@
 #paymentSuccess {
     display: flex;
     flex-direction: column;
+}
+@media only screen and (min-width: 768px)  {
+    .navbar {
+        padding-bottom: 1.25em;
+    }
+
+}
+
+@media only screen and (min-width: 1024px) {
+    .menu-list a {
+        padding-left: 0;
+    }
 }
 
 .introjs-relativePosition > td { position: relative; }

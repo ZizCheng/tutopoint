@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap");
+.discover__guideWrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
+}
+#discover__focusedGuide {
+  padding: 1.5em;
+  background-color: #ffffff;
+  border-radius: 25px;
+}
+#discover {
+  border-radius: 24px;
+}
+.profile-image {
+  width: 80%;
+}
+.logo-image {
+  margin-top: 2em;
+}
+.bio-text {
+  margin-top: 2em;
+  font-family: "Lato", sans-serif;
+  font-weight: 700;
+  color: #646464;
+}
+.tabs {
+  margin-top: 4em;
+}
+.monospace {
+  font-family: "Roboto Mono", monospace;
+}
