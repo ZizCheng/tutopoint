@@ -18,7 +18,7 @@ router.get('/list', auth.loggedIn, function(req, res) {
 router.post('/request', auth.loggedIn, auth.ensureUserIsClient, async function(req, res) {
   const stripeData = await stripe.customers.retrieve(req.user['stripeCustomerId']);
   const balance = stripeData.balance * -1 / 100;
-  if (balance < 15) {
+  if (balance < 60) {
     return res.status(401).json({error: 'Not enough money', code: 15});
   } else {
     Guides.findById(req.body.guideId).exec(function(err, guide) {

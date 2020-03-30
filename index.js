@@ -252,7 +252,20 @@ function chargeUser(io, socket, sessionid, user, count) {
                 stripe.customers.retrieve(
                     customerAccount.stripeCustomerId,
                     function(err, customer) {
-                      if (customer.balance <= -1500) {
+                      if (count == 0 && customer.balance <= -6000) {
+                        stripe.customers.createBalanceTransaction(
+                            customerAccount.stripeCustomerId,
+                            {amount: 6000, currency: 'usd', description: 'Session charge.'},
+                            function(err, customerAfterCharge) {
+                              console.log(err);
+                              if (err) return; // Handle when it could not charge.
+                              io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'You have been charged.', message: `You have been charged $60 for this session. You have $${customerAfterCharge.ending_balance / 100 * -1} remaining`, style: 'is-primary'});
+                              setTimeout(() => {
+                                chargeUser(io, socket, sessionid, user, count+1);
+                              }, 3600000);
+                            },
+                        );
+                      } else if (customer.balance <= -1500) {
                         stripe.customers.createBalanceTransaction(
                             customerAccount.stripeCustomerId,
                             {amount: 1500, currency: 'usd', description: 'Session charge.'},
@@ -264,7 +277,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                                 io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Low balance', message: 'You do not have enough credits to continue with this session in 15 minutes!', style: 'is-danger'});
                               }
                               setTimeout(() => {
-                                chargeUser(io, socket, sessionid, user, count+1);
+                                chargeUser(io, socket, sessionid, user, count+4);
                               }, 900000);
                             },
                         );
@@ -381,7 +394,7 @@ io.on('connection', function(socket, req, res) {
             // Charge 5 minutes later.
             setTimeout(() => {
               chargeUser(io, socket, sessionid, socket.request.session.passport.user, 0);
-            }, 300000);
+            }, (5*60*1000));
           }
         })
         .catch((err) => console.log('Could not find session'));

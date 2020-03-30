@@ -7,7 +7,8 @@ import {
   Route,
   NavLink,
   Link,
-  Redirect
+  Redirect,
+  withRouter,
 } from "react-router-dom";
 
 import discoverAPI from '../api/discover.js';
@@ -41,7 +42,10 @@ class Dashboard extends React.Component {
 
   render() {
     const guides = this.state.topGuides?.slice(0, 4).map((guide, i) => {
-        return <DiscoverGuideItem key={i} major={guide.major} name={guide.name} university={guide.university} grade={guide.grade} profilePic={guide.profilePic} backdrop={guide.backdrop}></DiscoverGuideItem>
+        return <DiscoverGuideItem key={i} major={guide.major} name={guide.name} university={guide.university} grade={guide.grade} profilePic={guide.profilePic} backdrop={guide.backdrop}
+        onClick={() => {
+          this.props.history.push("/discover");
+        }}></DiscoverGuideItem>
     })
 
     return (
@@ -60,7 +64,7 @@ class Dashboard extends React.Component {
           </div>
         </div>
         <Router>
-        <Redirect to="/dashboard/upcoming"/> 
+        <Redirect to="/dashboard/upcoming"/>
           <div id="dashboard__bottomPreview" className="columns">
             <div className="column is-half">
               <Appointments/>
@@ -78,4 +82,4 @@ class Dashboard extends React.Component {
     );
   }
 }
-export default Dashboard;
+export default withRouter(Dashboard);

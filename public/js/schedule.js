@@ -97,6 +97,7 @@ function updateTimetable() {
       );
     }
   }
+  $(".timetable-square-booked").off("click");
 }
 
 // TIMETABLE CREATION

@@ -497,8 +497,7 @@ window.onload = (event) => {
         })
       }).then((response) => response.text())
         .then((doc_id) => {
-          notesId = doc_id;
-          console.log(doc_id);
+          notesId = JSON.parse(doc_id);
         });
     }
     else {
