@@ -5,7 +5,7 @@ import "./balance.scss";
 import profileStore from "../store/profileStore.js";
 import balanceAPI from "../api/balance.js";
 import { loadStripe } from "@stripe/stripe-js";
-import QRCode from "qrcode.react";
+import QRCode from 'qrcode.react';
 import {
   CardElement,
   Elements,
@@ -15,116 +15,80 @@ import {
 
 const stripePromise = loadStripe("pk_test_7lBG8gut6VvygbnBDxJHYiK300GhqhqUOC");
 
-const CheckOutForm = React.forwardRef(
-  ({ onFormCompleted, sources, balanceerror }, ref) => {
-    const [count, setCount] = useState(0);
-    const [stripeCardInfo, setStripeCardInfo] = useState("invalid");
-    const [paymentMethod, setPaymentMethod] = useState("NewCard");
-    const stripe = useStripe();
-    const elements = useElements();
+const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror }, ref) => {
+  const [count, setCount] = useState(0);
+  const [stripeCardInfo, setStripeCardInfo] = useState("invalid");
+  const [paymentMethod, setPaymentMethod] = useState('NewCard')
+  const stripe = useStripe();
+  const elements = useElements();
 
-    const handleNext = () => {
-      const amount = document.querySelector("#FormAmount");
-      if (count == 0) {
-        if (amount.value == "") {
-          return;
-        }
-        count >= 2 ? "" : setCount(count + 1);
-      } else if (count == 1) {
-        if (paymentMethod == "NewCard") {
-          stripe
-            .createToken(elements.getElement(CardElement))
-            .then(function(result) {
-              setStripeCardInfo(result);
-              if (result.error) {
-                setCount(1);
-              } else {
-                onFormCompleted({
-                  type: "NewCard",
-                  card: result,
-                  amount: amount.value
-                });
-                count >= 2 ? "" : setCount(count + 1);
-              }
-            });
-        } else if (paymentMethod == "WeChat") {
-          onFormCompleted({ type: "WeChat", amount: amount.value });
-          count >= 2 ? "" : setCount(count + 1);
-        } else {
-          const paymentMethod_el = document.querySelector("#paymentMethod");
-          setStripeCardInfo({ card: sources[paymentMethod_el.selectedIndex] });
-          onFormCompleted({
-            type: "SavedCard",
-            card: sources[paymentMethod_el.selectedIndex],
-            amount: amount.value
-          });
-          count >= 2 ? "" : setCount(count + 1);
-        }
-      } else {
+  const handleNext = () => {
+    const amount = document.querySelector("#FormAmount");
+    if(count == 0){
+      if(amount.value == ''){
+        return
+      }
+      count >= 2 ? "" : setCount(count + 1);
+    }
+    else if (count == 1) {
+      if(paymentMethod == "NewCard"){
+        stripe
+        .createToken(elements.getElement(CardElement))
+        .then(function(result) {
+          setStripeCardInfo(result);
+          if(result.error){
+            setCount(1);
+          } else {
+            onFormCompleted({type: "NewCard", card: result, amount: amount.value});
+            count >= 2 ? "" : setCount(count + 1);
+          }
+        });
+      }
+      else if(paymentMethod == "WeChat"){
+        onFormCompleted({type: "WeChat", amount: amount.value})
         count >= 2 ? "" : setCount(count + 1);
       }
-    };
+      else {
+        const paymentMethod_el = document.querySelector("#paymentMethod");
+        setStripeCardInfo({card: sources[paymentMethod_el.selectedIndex]})
+        onFormCompleted({type:"SavedCard", card: sources[paymentMethod_el.selectedIndex], amount: amount.value})
+        count >= 2 ? "" : setCount(count + 1);
+      }
 
-    const getPaymentOptions = () => {
-      return sources?.map((paymentOption, i) => {
-        return (
-          <option key={i} value={paymentOption.id}>
-            Card ending in {paymentOption.last4}
-          </option>
-        );
-      });
-    };
+    }
+    else {
+      count >= 2 ? "" : setCount(count + 1);
+    }
+  };
 
-    const handleChangePaymentMethod = e => {
-      setPaymentMethod(e.target.value);
-    };
+  const getPaymentOptions = () => {
+    return sources?.map((paymentOption, i) => {
+      return <option key={i} value={paymentOption.id}>Card ending in {paymentOption.last4}</option>;
+    });
+  };
 
-    return (
-      <form id="Balance__FormCheckout" ref={ref}>
-        <div id="Balance__FormContainer" className="container">
-          <BalanceSteps step={count} />
+  const handleChangePaymentMethod = (e) => {
+    setPaymentMethod(e.target.value);
+  }
 
-          <div id="Balance__Form" className={count != 0 ? "is-hidden" : ""}>
-            <div className="field has-addons">
-              <p className="control has-text-grey-light">
-                Select Amount to Add
-              </p>
-              <div className="control">
-                <input
-                  id="FormAmount"
-                  className="input"
-                  type="number"
-                  name="amount"
-                  placeholder="Amount in USD"
-                />
-              </div>
-              <p
-                class={`footnote ${
-                  balanceerror ? "shake-horizontal highlight" : null
-                }`}
-              >
-                *Sessions are $15 for 15 minutes. You need at least $15 in your
-                balance to book a session.
-              </p>
+
+  return (
+    <form id="Balance__FormCheckout" ref={ref}>
+      <div id="Balance__FormContainer" className="container">
+        <BalanceSteps step={count} />
+
+        <div id="Balance__Form" className={count != 0 ? "is-hidden" : ""}>
+          <div className="field has-addons">
+            <p className="control has-text-grey-light">Select Amount to Add</p>
+            <div className="control">
+              <input
+                id="FormAmount"
+                className="input"
+                type="number"
+                name="amount"
+                placeholder="Amount in USD"
+              />
             </div>
-<<<<<<< HEAD
-          </div>
-          <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
-            <div className="field has-addons">
-              <p className="control has-text-grey-light is-hidden-touch">
-                Select Payment Method
-              </p>
-              <div className="select is-rounded is-light">
-                <select
-                  defaultValue={"NewCard"}
-                  id="paymentMethod"
-                  className="has-text-gray"
-                  onChange={handleChangePaymentMethod}
-                >
-                  {getPaymentOptions()}
-                  <option value="WeChat">WeChat</option>
-                  <option value="NewCard">New Card</option>
-=======
             <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $60/hour. You need at least $60 in your
             balance to book a session.</p>
           </div>
@@ -137,37 +101,8 @@ const CheckOutForm = React.forwardRef(
                 {getPaymentOptions()}
                 <option value="WeChat">WeChat</option>
                 <option value="NewCard">New Card</option>
->>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
                 </select>
-              </div>
             </div>
-<<<<<<< HEAD
-            <div
-              className={`field has-addons ${
-                paymentMethod != "NewCard" ? "is-hidden" : ""
-              }`}
-            >
-              <p className="control has-text-grey-light">Name</p>
-              <div className="control">
-                <input
-                  className="input"
-                  type="text"
-                  name="name"
-                  placeholder="Jane Doe"
-                  required
-                />
-              </div>
-            </div>
-            <div
-              className={`field has-addons ${
-                paymentMethod != "NewCard" ? "is-hidden" : ""
-              }`}
-            >
-              <p className="control has-text-grey-light">Card</p>
-              <div className="control">
-                <CardElement />
-              </div>
-=======
           </div>
           <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
             <p className="control has-text-grey-light">Name On Card:</p>
@@ -185,63 +120,20 @@ const CheckOutForm = React.forwardRef(
             <p className="control has-text-grey-light">Card Number:</p>
             <div className="control">
               <CardElement />
->>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
             </div>
           </div>
-          <div id="Balance__Form" className={count != 2 ? "is-hidden" : ""}>
-            <div className="field has-addons Balance__FormConfirmation">
-              <p className="control has-text-grey-light">Payment Method</p>
-              <a
-                onClick={() => {
-                  setCount(1);
-                  onFormCompleted(null);
-                }}
-                className="control is-primary highlight has-text-weight-light"
-              >
-                change
-              </a>
-            </div>
-            <div className="field has-addons Balance__FormConfirmation">
-              <p className="control has-text-grey-light has-text-weight-light">
-                {paymentMethod != "WeChat"
-                  ? `Debit ending in ${stripeCardInfo?.card?.last4 ||
-                      stripeCardInfo?.token?.card?.last4}`
-                  : `WeChat`}
-              </p>
-            </div>
+        </div>
+        <div id="Balance__Form" className={count != 2 ? "is-hidden" : ""}>
+          <div className="field has-addons Balance__FormConfirmation">
+            <p className="control has-text-grey-light">Payment Method</p>
+            <a onClick={() => {setCount(1); onFormCompleted(null);}}className="control is-primary highlight has-text-weight-light">change</a>
           </div>
-          <div id="Balance__Control" className="field is-grouped">
-            <p className="control">
-              <a
-                onClick={() => {
-                  count <= 0 ? "" : setCount(count - 1);
-                  onFormCompleted(null);
-                }}
-                className="button is-primary"
-                disabled={count == 0 ? "disabled" : ""}
-              >
-                Previous
-              </a>
-            </p>
-            <p className="control">
-              <a
-                onClick={() => {
-                  handleNext();
-                }}
-                className="button is-primary"
-                disabled={count == 2 ? "disabled" : ""}
-              >
-                Continue
-              </a>
+          <div className="field has-addons Balance__FormConfirmation">
+            <p className="control has-text-grey-light has-text-weight-light">
+              {paymentMethod != "WeChat" ? (`Debit ending in ${stripeCardInfo?.card?.last4 || stripeCardInfo?.token?.card?.last4}`) : (`WeChat`)}
             </p>
           </div>
         </div>
-<<<<<<< HEAD
-      </form>
-    );
-  }
-);
-=======
         <div id="Balance__Control" className="field is-grouped">
           <p className="control">
             <a
@@ -271,26 +163,14 @@ const CheckOutForm = React.forwardRef(
     </form>
   );
 });
->>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
 
 class Balance extends React.Component {
   constructor(props) {
     super(props);
     const search = props.location.search;
     const params = new URLSearchParams(search);
-<<<<<<< HEAD
-    const balance = Boolean(params.get("balanceerror")) ? true : false;
-    this.state = {
-      step: 0,
-      profile: profileStore.getState(),
-      summary: null,
-      wechat: false,
-      balanceerror: balance
-    };
-=======
     const balance= Boolean(params.get('balanceerror')) ? true : false;
     this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false, balanceerror: balance};
->>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
     this.formRef = React.createRef();
 
     this.formComplete = this.formComplete.bind(this);
@@ -299,7 +179,7 @@ class Balance extends React.Component {
   }
 
   formComplete(result) {
-    this.setState({ summary: result });
+    this.setState({summary: result});
   }
 
   componentDidMount() {
@@ -327,42 +207,39 @@ class Balance extends React.Component {
         }
         
       });
-      that.props.history.push("/success");
-    });
   }
 
-  pollSource(src, that, timeout = 300000, interval = 500, start = null) {
-    const endStates = ["pending", "canceled", "failed", "consumed"];
-    start = start ? start : Date.now();
-    stripePromise.then(stripe => {
-      stripe
-        .retrieveSource({
-          id: src.id,
-          client_secret: src.client_secret
-        })
-        .then(function(result) {
-          if (
-            endStates.includes(result.source.status) &&
-            Date.now() < start + timeout
-          ) {
-            // Not done yet. Let's wait and check again.
-            setTimeout(function() {
-              that.pollSource(src, that, timeout, interval, start);
+  pollSource(src, that, timeout = 300000, interval = 500, start = null){
+    const endStates = ['pending', 'canceled', 'failed', 'consumed'];
+    start = start ? start : Date.now()
+    stripePromise
+      .then(stripe => {
+        stripe
+      .retrieveSource({
+        id: src.id,
+        client_secret: src.client_secret,
+      })
+      .then(function(result) {
+        if (endStates.includes(result.source.status) && Date.now() < start + timeout) {
+          // Not done yet. Let's wait and check again.
+           setTimeout(function(){
+             that.pollSource(src, that, timeout, interval, start)
             }, 3000);
+        } else {
+
+          if (endStates.includes(result.source.status)) {
+            // Status has not changed yet. Let's time out.
+            console.log(result.source.status)
+            console.warn(new Error('Polling timed out.'));
           } else {
-            if (endStates.includes(result.source.status)) {
-              // Status has not changed yet. Let's time out.
-              console.log(result.source.status);
-              console.warn(new Error("Polling timed out."));
-            } else {
-              that.handlePaymentSource(result.source, that);
-            }
+            that.handlePaymentSource(result.source, that);
           }
-        });
-    });
+        }
+      });
+      })
   }
 
-  confirmPay() {
+  confirmPay(){
     const that = this;
     if(this.state.summary.type == "WeChat"){
       stripePromise
@@ -403,65 +280,29 @@ class Balance extends React.Component {
           that.props.history.push('/success');
         }
       });
-    } else if (this.state.summary.type == "SavedCard") {
-      balanceAPI
-        .pay(this.state.summary.card.id, this.state.summary.amount, true)
-        .then(data => {
-          profileStore.dispatch({
-            type: "Update Balance",
-            data: { balance: data.ending_balance }
-          });
-          profileStore.dispatch({
-            type: "Update Transactions",
-            data: { transactions: data.transactions }
-          });
-          that.props.history.push("/success");
-        });
-    } else if (this.state.summary.type == "NewCard") {
-      balanceAPI
-        .pay(this.state.summary.card.token.id, this.state.summary.amount)
-        .then(data => {
-          profileStore.dispatch({
-            type: "Update Balance",
-            data: { balance: data.ending_balance }
-          });
-          profileStore.dispatch({
-            type: "Update Transactions",
-            data: { transactions: data.transactions }
-          });
-          that.props.history.push("/success");
-        });
     }
+
+
   }
 
   closeWeChatHandler() {
-    this.setState({ wechat: false });
+    this.setState({wechat: false});
   }
 
   render() {
     return (
       <div id="Balance" className="container is-fluid">
-        {this.state.wechat && (
-          <div className="overlay">
-            <div className="overlay-center">
-              <button
-                onClick={this.closeWeChatHandler}
-                class="modal-close is-large"
-              ></button>
-              <div className="card">
-                <div className="card-content">
-                  <QRCode value={this.state.wechat_qrcode} />
-                </div>
-              </div>
+        {this.state.wechat && (<div className="overlay"><div className="overlay-center">
+          <button onClick={this.closeWeChatHandler}class="modal-close is-large"></button>
+          <div className="card">
+            <div className="card-content">
+            <QRCode value={this.state.wechat_qrcode} />
             </div>
           </div>
-        )}
+          </div>
+          </div>)}
         <div className="columns">
-          <div
-            className={`column is-three-quarters ${
-              !this.state.summary ? "" : "is-hidden-touch"
-            }`}
-          >
+          <div className={`column is-three-quarters ${!this.state.summary ? '' : 'is-hidden-touch'}`}>
             <div id="Balance__PaymentFormCard" className="card">
               <header className="card-header">
                 <p className="is-size-3 card-header-title">Add Money</p>
@@ -478,9 +319,7 @@ class Balance extends React.Component {
               </div>
             </div>
           </div>
-          <div
-            className={`column ${this.state.summary ? "" : "is-hidden-touch"}`}
-          >
+          <div className={`column ${this.state.summary ? '' : 'is-hidden-touch'}`}>
             <div id="Balance__Summary" className="card">
               <header className="card-header">
                 <p className="is-size-3 card-header-title">Order Summary</p>
@@ -510,6 +349,7 @@ class Balance extends React.Component {
               </p>
             </div>)}
               </div>
+
             </div>
           </div>
         </div>
@@ -536,9 +376,7 @@ const BalanceSteps = ({ step }) => {
   });
 
   return (
-    <ul className="steps has-content-centered has-gaps is-short">
-      {stepElements}
-    </ul>
+    <ul className="steps has-content-centered has-gaps is-short">{stepElements}</ul>
   );
 };
 
