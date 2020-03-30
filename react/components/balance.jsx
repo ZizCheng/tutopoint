@@ -95,7 +95,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
         </div>
         <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
           <div className="field has-addons">
-            <p className="control has-text-grey-light is-hidden-touch">Select Payment Method</p>
+            <p className="control has-text-grey-light">Select Payment Method:</p>
             <div className="select is-rounded is-light">
               <select defaultValue={"NewCard"} id='paymentMethod' className="has-text-gray" onChange={handleChangePaymentMethod}>
                 {getPaymentOptions()}
@@ -105,7 +105,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
             </div>
           </div>
           <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
-            <p className="control has-text-grey-light">Name</p>
+            <p className="control has-text-grey-light">Name On Card:</p>
             <div className="control">
               <input
                 className="input"
@@ -117,7 +117,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
             </div>
           </div>
           <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
-            <p className="control has-text-grey-light">Card</p>
+            <p className="control has-text-grey-light">Card Number:</p>
             <div className="control">
               <CardElement />
             </div>
@@ -153,7 +153,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
                 handleNext();
               }}
               className="button is-primary"
-              disabled={count == 2 ? "disabled" : ""}
+              disabled={(count == 2 || stripeCardInfo != 'invalid') ? "disabled" : ""}
             >
               Continue
             </a>
@@ -197,9 +197,15 @@ class Balance extends React.Component {
   handlePaymentSource(src, that){
     balanceAPI.pay(src.id, this.state.summary.amount)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
-        that.props.history.push('/success');
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
+        
       });
   }
 
@@ -252,17 +258,27 @@ class Balance extends React.Component {
     else if(this.state.summary.type == "SavedCard"){
       balanceAPI.pay(this.state.summary.card.id, this.state.summary.amount, true)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
-        that.props.history.push('/success');
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
       });
     }
     else if(this.state.summary.type == "NewCard"){
       balanceAPI.pay(this.state.summary.card.token.id, this.state.summary.amount)
       .then((data) => {
-        profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-        profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
-        that.props.history.push('/success');
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
       });
     }
 
@@ -320,7 +336,7 @@ class Balance extends React.Component {
               <p className="control">
                 <a
                 onClick={() => {
-                  this.setState({summary: null})
+                  this.setState({summary: null});
                 }}
                 className="button is-light">
                   Previous
