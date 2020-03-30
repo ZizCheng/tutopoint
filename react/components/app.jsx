@@ -7,7 +7,7 @@ import {
   NavLink,
   Link,
   Redirect,
-  withRouter,
+  withRouter
 } from "react-router-dom";
 import SVG from "react-inlinesvg";
 
@@ -16,7 +16,7 @@ import profileAPI from "../api/profile.js";
 import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
-const  Discover = React.lazy(() => import("./discover.jsx"))
+const Discover = React.lazy(() => import("./discover.jsx"));
 import Documents from "./document.jsx";
 import DocumentEdit from "./DocumentEdit.jsx";
 import Profile from "./profile.jsx";
@@ -56,10 +56,13 @@ class App extends React.Component {
       console.log(profile);
       profileStore.dispatch({ type: "Update", data: profile });
       this.setState({ loaded: true }, function() {
-        if (this.state.profile?.__t == "clients" && !this.state.profile?.tutorialHidden) {
+        if (
+          this.state.profile?.__t == "clients" &&
+          !this.state.profile?.tutorialHidden
+        ) {
           this.toggleSideBarMobile();
-          intro.onafterchange(function (element) {
-            window.scroll(0,0);
+          intro.onafterchange(function(element) {
+            window.scroll(0, 0);
           });
           intro.start();
           const that = this;
@@ -71,7 +74,6 @@ class App extends React.Component {
           });
         }
       });
-
     });
 
     profileStore.subscribe(() => {
@@ -79,26 +81,29 @@ class App extends React.Component {
     });
   }
 
-
   closeTutorial() {
-    profileAPI.closeTutorial()
-      .then(resp => {
-        if(resp.error){
-          console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
-        }
-        profileStore.dispatch({type: "Close Tutorial", data: this.state.profile});
-      })
+    profileAPI.closeTutorial().then(resp => {
+      if (resp.error) {
+        console.log(
+          "Error occurred when closing the tutorial page. Internet connection may be down!"
+        );
+      }
+      profileStore.dispatch({
+        type: "Close Tutorial",
+        data: this.state.profile
+      });
+    });
   }
 
   goToProfile() {
     console.log("Go to profile.");
-    this.props.history.push('/profile');
+    this.props.history.push("/profile");
   }
 
   render() {
     return (
-      <Suspense fallback={<Loading/>}>
-        {(!this.state.loaded) && <Loading/>}
+      <Suspense fallback={<Loading />}>
+        {!this.state.loaded && <Loading />}
         <div id="main" className="container is-fluid">
           <nav
             className="navbar is-transparent"
@@ -106,7 +111,12 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a className="navbar-item is-size-4" href="https://tutopoint.com" data-step="1" data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service.">
+              <a
+                className="navbar-item is-size-4"
+                href="https://tutopoint.com"
+                data-step="1"
+                data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service."
+              >
                 <span className="icon is-large">
                   <img src={tutologo} />
                 </span>
@@ -137,7 +147,12 @@ class App extends React.Component {
                     </NavLink>
                   </div>
                 </div>
-                <div id="profilePicture" className="navbar-brand" data-step="6" data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!">
+                <div
+                  id="profilePicture"
+                  className="navbar-brand"
+                  data-step="6"
+                  data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!"
+                >
                   <figure onClick={this.goToProfile} className="image is-48x48">
                     <img
                       className="is-rounded"
@@ -155,7 +170,9 @@ class App extends React.Component {
           <div className="columns">
             <div
               className={`column is-2 ${
-                (this.state.hidden || !this.state.profile?.tutorialHidden) ? "scale-up-ver-top" : "is-hidden-mobile"
+                this.state.hidden || !this.state.profile?.tutorialHidden
+                  ? "scale-up-ver-top"
+                  : "is-hidden-mobile"
               }`}
             >
               <aside className="menu">
@@ -171,18 +188,33 @@ class App extends React.Component {
                     </li>
                   )}
                   <li>
-                    <NavLink activeClassName="is-active" to="/appointments" data-step="5" data-intro="Your booked appointments will show up in appointments.">
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/appointments"
+                      data-step="5"
+                      data-intro="Your booked appointments will show up in appointments."
+                    >
                       Appointments
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/documents" data-step="4" data-intro="Before your session, you can write up a questionnaire to send to your guide so they can prepare.">
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/documents"
+                      data-step="4"
+                      data-intro="Before your session, you can write up a questionnaire to send to your guide so they can prepare."
+                    >
                       Documents
                     </NavLink>
                   </li>
                   <li>
                     {this.state.profile?.__t == "clients" && (
-                      <NavLink activeClassName="is-active" to="/discover" data-intro="First, you can find the entire list of our guides in the Discover page." data-step="2">
+                      <NavLink
+                        activeClassName="is-active"
+                        to="/discover"
+                        data-intro="First, you can find the entire list of our guides in the Discover page."
+                        data-step="2"
+                      >
                         Discover
                       </NavLink>
                     )}
@@ -194,7 +226,12 @@ class App extends React.Component {
                   )}
                   {this.state.profile?.__t == "clients" && (
                     <li>
-                      <NavLink activeClassName="is-active" to="/balance" data-step="3" data-intro="Refill your balance to at least $15 before you book a session by clicking balance.">
+                      <NavLink
+                        activeClassName="is-active"
+                        to="/balance"
+                        data-step="3"
+                        data-intro="Refill your balance to at least $15 before you book a session by clicking balance."
+                      >
                         Balance{" "}
                         {this.state.profile
                           ? `- $${(this.state.profile.stripe.balance / 100) *
@@ -226,7 +263,7 @@ class App extends React.Component {
                   <Appointments />
                 </Route>
                 <Route path="/Profile">
-                  <Profile/>
+                  <Profile />
                 </Route>
                 <Route exact path="/Documents">
                   <Documents />
@@ -235,10 +272,9 @@ class App extends React.Component {
                   <DocumentEdit />
                 </Route>
                 {this.state.profile?.__t == "clients" && (
-                    <Route path="/Discover">
+                  <Route path="/Discover">
                     <Discover />
                   </Route>
-
                 )}
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/Balance">
@@ -250,6 +286,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/success">
                   <PaymentSuccess />
+                </Route>
+                <Route path="/fail">
+                  <PaymentFailed />
                 </Route>
                 {/* <Route path="/session/:id">
                   <Session />
@@ -309,6 +348,41 @@ const PaymentSuccess = () => {
       >
         Back to Dashboard
       </Link>
+    </div>
+  );
+};
+
+const PaymentFailed = () => {
+  const profile = profileStore.getState();
+
+  return (
+    <div
+      id="paymentFailed"
+      style={{ marginTop: "15vh", display: "flex", flexDirection: "column" }}
+    >
+      <h1 className="has-font-weight-bold is-size-1 has-text-centered">
+        Your card has been declined.
+      </h1>
+      <div class="field is-grouped is-grouped-centered">
+        <p class="control">
+          <Link
+            className="button has-text-centered is-primary"
+            style={{ marginLeft: "auto", marginRight: "auto" }}
+            to="/dashboard"
+          >
+            Back to Dashboard
+          </Link>
+        </p>
+        <p class="control">
+          <Link
+            className="button has-text-centered is-primary"
+            style={{ marginLeft: "auto", marginRight: "auto" }}
+            to="/balance"
+          >
+            Try Again
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
