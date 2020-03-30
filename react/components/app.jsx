@@ -361,7 +361,7 @@ const PaymentFailed = () => {
       style={{ marginTop: "15vh", display: "flex", flexDirection: "column" }}
     >
       <h1 className="has-font-weight-bold is-size-1 has-text-centered">
-        Your card has been declined.
+        Oops, something went wrong with your payment.
       </h1>
       <div class="field is-grouped is-grouped-centered">
         <p class="control">

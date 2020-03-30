@@ -13,7 +13,8 @@ import {
   useElements
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe("pk_test_7lBG8gut6VvygbnBDxJHYiK300GhqhqUOC");
+import stripeImport from '../../secret.js';
+const stripePromise = loadStripe(stripeImport.stripe.pk_key);
 
 const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror }, ref) => {
   const [count, setCount] = useState(0);
@@ -205,7 +206,7 @@ class Balance extends React.Component {
           profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
           that.props.history.push('/success');
         }
-        
+
       });
   }
 
