@@ -89,7 +89,8 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
                 placeholder="Amount in USD"
               />
             </div>
-            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $15 for 15 minutes. You need at least $15 in your balance to book a session.</p>
+            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $60/hour. You need at least $60 in your
+            balance to book a session.</p>
           </div>
         </div>
         <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
@@ -168,7 +169,7 @@ class Balance extends React.Component {
     super(props);
     const search = props.location.search;
     const params = new URLSearchParams(search);
-    const balance= Boolean(params.get('balanceerror')) ? true : false; 
+    const balance= Boolean(params.get('balanceerror')) ? true : false;
     this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false, balanceerror: balance};
     this.formRef = React.createRef();
 
