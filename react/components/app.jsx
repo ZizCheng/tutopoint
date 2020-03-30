@@ -151,7 +151,7 @@ class App extends React.Component {
                 <div
                   id="profilePicture"
                   className="navbar-brand"
-                  data-step="6"
+                  data-step="7"
                   data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!"
                 >
                   <figure onClick={this.goToProfile} className="image is-48x48">
@@ -248,13 +248,18 @@ class App extends React.Component {
                       </li>
                     )}
                   <li>
-                    <NavLink activeClassName="is-active" to="/logout">
-                      Log Out
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/help"
+                      data-intro="You can always read more about how TutoPoint works here with our help page."
+                      data-step="6"
+                    >
+                      How it Works
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/help">
-                      How it Works
+                    <NavLink activeClassName="is-active" to="/logout">
+                      Log Out
                     </NavLink>
                   </li>
                 </ul>
