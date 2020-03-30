@@ -22,6 +22,7 @@ import DocumentEdit from "./DocumentEdit.jsx";
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 import Loading from "./loading.jsx";
+import Help from "./help.jsx";
 
 import profileStore from "../store/profileStore.js";
 
@@ -251,6 +252,11 @@ class App extends React.Component {
                       Log Out
                     </NavLink>
                   </li>
+                  <li>
+                    <NavLink activeClassName="is-active" to="/help">
+                      How it Works
+                    </NavLink>
+                  </li>
                 </ul>
               </aside>
             </div>
@@ -283,6 +289,9 @@ class App extends React.Component {
                 )}
                 <Route path="/Logout">
                   <Logout />
+                </Route>
+                <Route path="/help">
+                  <Help />
                 </Route>
                 <Route path="/success">
                   <PaymentSuccess />
