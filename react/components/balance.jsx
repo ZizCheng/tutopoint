@@ -107,6 +107,7 @@ const CheckOutForm = React.forwardRef(
                 balance to book a session.
               </p>
             </div>
+<<<<<<< HEAD
           </div>
           <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
             <div className="field has-addons">
@@ -123,9 +124,24 @@ const CheckOutForm = React.forwardRef(
                   {getPaymentOptions()}
                   <option value="WeChat">WeChat</option>
                   <option value="NewCard">New Card</option>
+=======
+            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $60/hour. You need at least $60 in your
+            balance to book a session.</p>
+          </div>
+        </div>
+        <div id="Balance__Form" className={count != 1 ? "is-hidden" : ""}>
+          <div className="field has-addons">
+            <p className="control has-text-grey-light">Select Payment Method:</p>
+            <div className="select is-rounded is-light">
+              <select defaultValue={"NewCard"} id='paymentMethod' className="has-text-gray" onChange={handleChangePaymentMethod}>
+                {getPaymentOptions()}
+                <option value="WeChat">WeChat</option>
+                <option value="NewCard">New Card</option>
+>>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
                 </select>
               </div>
             </div>
+<<<<<<< HEAD
             <div
               className={`field has-addons ${
                 paymentMethod != "NewCard" ? "is-hidden" : ""
@@ -151,6 +167,25 @@ const CheckOutForm = React.forwardRef(
               <div className="control">
                 <CardElement />
               </div>
+=======
+          </div>
+          <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
+            <p className="control has-text-grey-light">Name On Card:</p>
+            <div className="control">
+              <input
+                className="input"
+                type="text"
+                name="name"
+                placeholder="Jane Doe"
+                required
+              />
+            </div>
+          </div>
+          <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
+            <p className="control has-text-grey-light">Card Number:</p>
+            <div className="control">
+              <CardElement />
+>>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
             </div>
           </div>
           <div id="Balance__Form" className={count != 2 ? "is-hidden" : ""}>
@@ -201,16 +236,49 @@ const CheckOutForm = React.forwardRef(
             </p>
           </div>
         </div>
+<<<<<<< HEAD
       </form>
     );
   }
 );
+=======
+        <div id="Balance__Control" className="field is-grouped">
+          <p className="control">
+            <a
+              onClick={() => {
+                count <= 0 ? "" : setCount(count - 1);
+                onFormCompleted(null)
+              }}
+              className="button is-primary"
+              disabled={count == 0 ? "disabled" : ""}
+            >
+              Previous
+            </a>
+          </p>
+          <p className="control">
+            <a
+              onClick={() => {
+                handleNext();
+              }}
+              className="button is-primary"
+              disabled={(count == 2 || stripeCardInfo != 'invalid') ? "disabled" : ""}
+            >
+              Continue
+            </a>
+          </p>
+        </div>
+      </div>
+    </form>
+  );
+});
+>>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
 
 class Balance extends React.Component {
   constructor(props) {
     super(props);
     const search = props.location.search;
     const params = new URLSearchParams(search);
+<<<<<<< HEAD
     const balance = Boolean(params.get("balanceerror")) ? true : false;
     this.state = {
       step: 0,
@@ -219,6 +287,10 @@ class Balance extends React.Component {
       wechat: false,
       balanceerror: balance
     };
+=======
+    const balance= Boolean(params.get('balanceerror')) ? true : false;
+    this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false, balanceerror: balance};
+>>>>>>> 28bd5e931a86c3b65d23fe349ef031c535f3c708
     this.formRef = React.createRef();
 
     this.formComplete = this.formComplete.bind(this);
@@ -242,15 +314,18 @@ class Balance extends React.Component {
     this.setState({ step: desiredStep });
   }
 
-  handlePaymentSource(src, that) {
-    balanceAPI.pay(src.id, this.state.summary.amount).then(data => {
-      profileStore.dispatch({
-        type: "Update Balance",
-        data: { balance: data.ending_balance }
-      });
-      profileStore.dispatch({
-        type: "Update Transactions",
-        data: { transactions: data.transactions }
+  handlePaymentSource(src, that){
+    balanceAPI.pay(src.id, this.state.summary.amount)
+      .then((data) => {
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
+        
       });
       that.props.history.push("/success");
     });
@@ -289,21 +364,44 @@ class Balance extends React.Component {
 
   confirmPay() {
     const that = this;
-    if (this.state.summary.type == "WeChat") {
-      stripePromise.then(stripe => {
-        stripe
-          .createSource({
-            type: "wechat",
-            amount: this.state.summary.amount * 100,
-            currency: "usd"
-          })
-          .then(function(result) {
-            that.setState({
-              wechat: true,
-              wechat_qrcode: result.source.wechat["qr_code_url"]
-            });
-            that.pollSource(result.source, that);
-          });
+    if(this.state.summary.type == "WeChat"){
+      stripePromise
+      .then(stripe => {
+        stripe.createSource({
+          type: 'wechat',
+          amount: this.state.summary.amount*100,
+          currency: 'usd',
+        })
+        .then(function(result) {
+          that.setState({wechat: true, wechat_qrcode: result.source.wechat["qr_code_url"]})
+          that.pollSource(result.source, that)
+        });
+      })
+    }
+    else if(this.state.summary.type == "SavedCard"){
+      balanceAPI.pay(this.state.summary.card.id, this.state.summary.amount, true)
+      .then((data) => {
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
+      });
+    }
+    else if(this.state.summary.type == "NewCard"){
+      balanceAPI.pay(this.state.summary.card.token.id, this.state.summary.amount)
+      .then((data) => {
+        if(data.error){
+          console.log(data.error);
+          return that.props.history.push('/fail');
+        } else {
+          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          that.props.history.push('/success');
+        }
       });
     } else if (this.state.summary.type == "SavedCard") {
       balanceAPI
@@ -388,43 +486,29 @@ class Balance extends React.Component {
                 <p className="is-size-3 card-header-title">Order Summary</p>
               </header>
               <div className="card-content">
-                {this.state.summary?.amount && (
-                  <div className="Balance__SummaryContainer">
-                    <p>Item(s):</p>
-                    <p>${this.state.summary?.amount} of Tuto Credit</p>
-                    <p>Total: ${this.state.summary?.amount}</p>
-                  </div>
-                )}
-                {this.state.summary?.amount && (
-                  <a
-                    onClick={this.confirmPay}
-                    className="button is-primary has-text-centered is-hidden-touch"
-                  >
-                    <span>Place Order</span>
-                  </a>
-                )}
-                {this.state.summary?.amount && (
-                  <div className="field is-grouped is-grouped-centered is-hidden-desktop">
-                    <p className="control">
-                      <a
-                        onClick={() => {
-                          this.setState({ summary: null });
-                        }}
-                        className="button is-light"
-                      >
-                        Previous
-                      </a>
-                    </p>
-                    <p className="control">
-                      <a
-                        onClick={this.confirmPay}
-                        className="button is-primary"
-                      >
-                        Place Order
-                      </a>
-                    </p>
-                  </div>
-                )}
+              {this.state.summary?.amount && (<div className="Balance__SummaryContainer">
+                  <p>Item(s):</p>
+                  <p>${this.state.summary?.amount} of Tuto Credit</p>
+                  <p>Total: ${this.state.summary?.amount}</p>
+              </div>)}
+              {this.state.summary?.amount && (<a onClick={this.confirmPay} className="button is-primary has-text-centered is-hidden-touch"><span>Place Order</span></a>)}
+              {this.state.summary?.amount &&
+              (<div className="field is-grouped is-grouped-centered is-hidden-desktop">
+              <p className="control">
+                <a
+                onClick={() => {
+                  this.setState({summary: null});
+                }}
+                className="button is-light">
+                  Previous
+                </a>
+              </p>
+              <p className="control">
+                <a onClick={this.confirmPay} className="button is-primary">
+                  Place Order
+                </a>
+              </p>
+            </div>)}
               </div>
             </div>
           </div>

@@ -94,6 +94,9 @@ document card
   font-weight: 700;
   cursor: pointer;
 }
+.document-title:hover {
+  color: #F56363;
+}
 .document-card-bottom-bottom {
   display: flex;
   flex-direction: row;
@@ -121,17 +124,34 @@ document edit
 /*
 document compact list
 */
+.document-compact-list-container {
+  background-color: white;
+  padding: 32px;
+  border-radius: 16px;
+}
+.document-compact-list-header {
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: flex;
+  padding: 0 16px; //horizontal padding must match .document-compact-entry-container padding + margin
+}
 .document-compact-entry-container
 {
   display: flex;
-  padding: 6px;
-  margin: 2px;
-  font-size: 0.75rem;
+  padding: 6px 10px;
+  margin: 6px;
+  font-size: 14px;
   font-weight: 700;
   font-family: "Lato", sans-serif;
   border-radius: 1000px;
-  background-color: #f9f9f9;
+  background-color: #f2f2f2;
   cursor: pointer;
+}
+.document-compact-entry-container:hover {
+  color: #F56363;
+}
+.document-compact-list-container .column {
+  padding: 0;
 }
 #select-document-popup .modal-content
 {

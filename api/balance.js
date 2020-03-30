@@ -25,7 +25,9 @@ router.post('/pay', function(req, res) {
 
   stripe.charges.create(cardInfo,
       function(err, charge) {
-        if (err) res.status(400).json({error: 'Transaction error.'});
+        if (err) {
+          return res.status(402).json({error: err.type});
+        }
         stripe.customers.createBalanceTransaction(
             req.user.stripeCustomerId,
             {amount: -charge.amount, currency: 'usd', description: 'Session refill.'},
