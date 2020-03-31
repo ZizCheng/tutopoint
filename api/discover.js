@@ -35,33 +35,30 @@ discover.get('/page/:pagenumber', async function(req, res) {
 });
 
 discover.get('/:id', function(req, res) {
-  stripe.customers.retrieve(req.user.stripeCustomerId, function(err, customer) {
-    Guides.findOne({_id: req.params.id})
-        .select(
-            '_id name university major grade university profilePic backdrop schedule logo bio',
-        )
-        .slice('schedule', [0, 10])
-        .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
-        .catch((err) => {
-          console.log(err);
-          res.send('Internal Server Error.');
-        });
-  });
+  Guides.findOne({_id: req.params.id})
+      .select(
+          '_id name university major grade university profilePic backdrop logo bio',
+      )
+      .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
+      .catch((err) => {
+        console.log(err);
+        res.send('Internal Server Error.');
+      });
 });
 
 discover.get('/:id/schedule', async function(req, res) {
-  console.log("/:id/schedule recieved request");
+  console.log('/:id/schedule recieved request');
   try {
     const guides = await Guides
         .findById(req.params.id)
         .select('schedule');
 
-    //only get dates that are at most 1 hour behind present
+    // only get dates that are at most 1 hour behind present
     const filteredSchedule = guides.schedule.filter((schedule) => {
       return schedule.end > Date.now();
     });
 
-    console.log("filteredSchedule: " + filteredSchedule);
+    console.log('filteredSchedule: ' + filteredSchedule);
     res.json(filteredSchedule);
   } catch (err) {
     res.status(400).json({message: 'Invalid Guide ID'});

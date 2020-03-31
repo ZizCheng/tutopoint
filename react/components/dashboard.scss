@@ -8,11 +8,10 @@
 
 .dashboard__discoverGuideCarousel {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
 }
 
 .dashboard__discoverGuide_Item {
-  flex-basis: 27rem;
   margin-top: 12px;
   margin-left: 12px;
 
