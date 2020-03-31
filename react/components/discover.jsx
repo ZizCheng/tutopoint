@@ -206,29 +206,33 @@ class Discover extends React.Component {
             <div className="modal-content">
               <div id="discover__focusedGuide" className="card">
                 <div className="columns profile-modal">
-                  <div className="column is-one-quarter">
+                  <div className="column picture-wrapper">
                     <div className="profile-image">
-                      <figure className="image is-1by1">
-                        <img
-                          src={
-                            typeof this.state.focusedGuide?.profilePic !==
-                            "undefined"
-                              ? this.state.focusedGuide.profilePic
-                              : "https://bulma.io/images/placeholders/96x96.png"
-                          }
-                          alt="Placeholder image"
-                        />
-                      </figure>
-                      <figure className="image is-1by1 logo-image">
-                        <img
-                          src={
-                            typeof this.state.focusedGuide?.logo !== "undefined"
-                              ? this.state.focusedGuide.logo
-                              : "https://bulma.io/images/placeholders/96x96.png"
-                          }
-                          alt="Placeholder image"
-                        />
-                      </figure>
+                      <div className="image-wrapper">
+                        <figure className="image is-1by1">
+                          <img
+                            src={
+                              typeof this.state.focusedGuide?.profilePic !==
+                              "undefined"
+                                ? this.state.focusedGuide.profilePic
+                                : "https://bulma.io/images/placeholders/96x96.png"
+                            }
+                            alt="Placeholder image"
+                          />
+                        </figure>
+                      </div>
+                      <div className="image-wrapper">
+                        <figure className="image is-1by1 logo-image">
+                          <img
+                            src={
+                              typeof this.state.focusedGuide?.logo !== "undefined"
+                                ? this.state.focusedGuide.logo
+                                : "https://bulma.io/images/placeholders/96x96.png"
+                            }
+                            alt="Placeholder image"
+                          />
+                        </figure>
+                      </div>
                     </div>
                   </div>
                   <div className="column">
