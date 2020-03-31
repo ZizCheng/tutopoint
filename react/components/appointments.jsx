@@ -39,6 +39,7 @@ const AppointmentItem = ({
   confirm,
   cancel,
   send,
+  updateParentSessionId,
   status
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
@@ -136,6 +137,7 @@ const AppointmentItem = ({
           </button>
         )}
         <button className={"button is-light is-fullwidth"} onClick={() => {
+            updateParentSessionId(sessionid);
             send(sessionid);
           }}
           disabled={
@@ -169,11 +171,14 @@ class Appointments extends React.Component {
       isUpcoming: true,
       profile: profileStore.getState(),
       selectDocumentPopup: '',
+      selectedSessionId: null,
     };
 
     this.handleClick = this.handleClick.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.updateSessionId = this.updateSessionId.bind(this);
+    this.action = this.action.bind(this);
     this.sendDocument = this.sendDocument.bind(this);
   }
 
@@ -187,10 +192,7 @@ class Appointments extends React.Component {
     });
 
 
-    //document selection
-    function action(doc_id) {
-      documentAPI.sendDocument(doc_id, sessionid);
-    }
+
     function closeModal(e) {
       document.getElementById("select-document-popup").classList.remove("is-active");
     }
@@ -199,7 +201,7 @@ class Appointments extends React.Component {
         <div id="select-document-popup" className="modal">
           <div className="modal-background"></div>
           <div className="modal-content">
-            <DocumentCompactList action={action} />
+            <DocumentCompactList action={this.action} />
           </div>
           <button className="modal-close is-large" aria-label="close" onClick={closeModal}>
           </button>
@@ -210,7 +212,7 @@ class Appointments extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe()
-}
+  }
 
   sessionClicked(i) {
     window.location.href = `/session/${i}`;
@@ -246,6 +248,17 @@ class Appointments extends React.Component {
 
   sendDocument(sessionid){
     document.getElementById("select-document-popup").classList.add("is-active");
+  }
+  //document selection
+  action(doc_id) {
+    console.log(this.state.selectedSessionId);
+    documentAPI.sendDocument(doc_id, this.state.selectedSessionId);
+  }
+  updateSessionId(sessionid) {
+    console.log(sessionid);
+    this.setState({
+      selectedSessionId: sessionid
+    }, console.log("update state finsih", this.state));
   }
 
   render() {
@@ -349,6 +362,7 @@ class Appointments extends React.Component {
             confirm={this.handleConfirm}
             cancel={this.handleCancel}
             send={this.sendDocument}
+            updateParentSessionId={this.updateSessionId}
             status={sessionStatus}
           />
         );
