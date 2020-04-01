@@ -23,6 +23,7 @@ import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
+import PostCall from "./PostCall.jsx";
 
 import profileStore from "../store/profileStore.js";
 
@@ -307,6 +308,9 @@ class App extends React.Component {
                 {/* <Route path="/session/:id">
                   <Session />
                 </Route> */}
+                <Route path="/postcall">
+                  <PostCall />
+                </Route>
               </Switch>
             </div>
           </div>
