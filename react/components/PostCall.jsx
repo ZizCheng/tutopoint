@@ -1,11 +1,35 @@
+/*
+Sample usage in app.jsx (for now), at /postcall
+
+pass in props:
+rating: the average rating of the guide, as a decimal
+submit: a function with parameters (rating, review) that is called when submitted
+    rating is -1 by default and review is blank by default. This is not filtered out.
+    Tell jason how you want to handle partial or fully empty responses
+reportSubmit: function with parameters (reportText) that is called when report submit button is clicked
+recommendSubmit: function with parameters (recommendEmail) that is called when recommend submit button is clicked
+
+*/
+
 import React from "react";
 import ReactDOM from "react-dom";
+
+import StarRatings from 'react-star-ratings';
 
 import "./PostCall.scss";
 
 class PostCall extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      rating: -1,
+    }
+
+    this.submit = this.submit.bind(this);
+    this.reportSubmit = this.reportSubmit.bind(this);
+    this.recommendSubmit = this.recommendSubmit.bind(this);
+    this.changeRating = this.changeRating.bind(this);
   }
 
   toggleReportModal() {
@@ -21,6 +45,26 @@ class PostCall extends React.Component {
       document.getElementById("recommend-modal").classList.remove("is-active")
     }
     else document.getElementById("recommend-modal").classList.add("is-active");
+  }
+
+  changeRating(newRating, name) {
+    this.setState({
+      rating: newRating
+    });
+  }
+
+  submit() {
+    var rating = this.state.rating;
+    var review = document.getElementById("review-textarea").value;
+    this.props.submit(rating, review);
+  }
+  reportSubmit() {
+    var reportText = document.getElementById("report-textarea").value;
+    this.props.reportSubmit(reportText);
+  }
+  recommendSubmit() {
+    var recommendEmail = document.getElementById("recommend-email").value;
+    this.props.recommendSubmit(report);
   }
 
   componentDidMount() {
@@ -42,11 +86,15 @@ class PostCall extends React.Component {
         <div className="postcall-bottom">
           <div className="postcall-action-wrapper">
             <div className="postcall-star-wrapper">
-              <div className="postcall-star postcall-star-1"><i className="fas fa-star"></i></div>
-              <div className="postcall-star postcall-star-2"><i className="fas fa-star"></i></div>
-              <div className="postcall-star postcall-star-3"><i className="fas fa-star"></i></div>
-              <div className="postcall-star postcall-star-4"><i className="fas fa-star"></i></div>
-              <div className="postcall-star postcall-star-5"><i className="fas fa-star"></i></div>
+              <StarRatings
+                starRatedColor="blue"
+                rating={this.state.rating}
+                changeRating={this.changeRating}
+                numberOfStars={5}
+                name='rating'
+                starDimension="32px"
+                starRatedColor="rgb(230, 67, 47)"
+              />
             </div>
             <div className="postcall-buttons-wrapper">
               <button className="postcall-report-button button is-outlined" onClick={this.toggleReportModal}>Report</button>
@@ -54,27 +102,29 @@ class PostCall extends React.Component {
             </div>
           </div>
           <div className="postcall-review-wrapper">
-            <textarea className="textarea" placeholder="Type your review here."></textarea>
+            <textarea id="review-textarea" className="textarea" placeholder="Type your review here."></textarea>
           </div>
-          <button className="postcall-submit-button button is-primary">Submit Review</button>
+          <button className="postcall-submit-button button is-primary" onClick={this.submit}>Submit Review</button>
           <div className="is-divider" data-content="or"></div>
           <button className="postcall-back-button button is-dark">Back to Dashboard</button>
         </div>
+
         <div id="report-modal" className="modal">
           <div className="modal-background"  onClick={this.toggleReportModal}></div>
           <div className="modal-content">
             <h1 className="title">Report User</h1>
             <p>Sorry about that!</p>
-            <textarea className="textarea" placeholder="Tell us what went wrong."></textarea>
-            <button className="submit-button button is-primary">Submit</button>
+            <textarea id="report-textarea" className="textarea" placeholder="Tell us what went wrong."></textarea>
+            <button className="submit-button button is-primary" onClick={this.reportSubmit}>Submit</button>
           </div>
           <button className="modal-close is-large" aria-label="close" onClick={this.toggleReportModal}></button>
         </div>
         <div id="recommend-modal" className="modal">
           <div className="modal-background"  onClick={this.toggleRecommendModal}></div>
           <div className="modal-content">
-            <p>Email:</p><input className="recommend-email" type="email" />
+            <p>Email:</p><input id="recommend-email" className="recommend-email" type="email" />
           </div>
+          <button className="submit-button button is-primary" onClick={this.recommendSubmit}>Submit</button>
           <button className="modal-close is-large" aria-label="close"  onClick={this.toggleRecommendModal}></button>
         </div>
       </div>
