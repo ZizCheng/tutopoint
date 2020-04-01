@@ -12,6 +12,12 @@ const redisAdapter = require('socket.io-redis');
 
 const secret = require('./secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
+const nodemailer = require('nodemailer');
+const mailAuth = require('./secret.js').mailAuth;
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: mailAuth,
+});
 
 const databaseCredentials = require('./secret.js').databaseCredentials;
 
@@ -242,7 +248,27 @@ function chargeUser(io, socket, sessionid, user, count) {
                       },
                   );
                 };
-                console.log('transfer complete');
+                const email = client.email;
+                const name = client.name;
+                const mailOptions = {
+                  from: 'TutoPoint Receipt <payments@tutopoint.com>',
+                  to: email,
+                  subject: '[TutoPoint] Post Session Receipt',
+                  text: 'Hello ' + name + ', thank you for your business!\n\n ' +
+                   'You have been charged $' + (count * 15) + ' for your ' + (count * 15) + ' session with ' + session.createdBy.name + '.\n' +
+                   'If you enjoyed your session and/or found it helpful, you can rebook another session with your past guide(s) in your profile page at https://tutopoint.com/profile .' +
+                   '\nIn the rare occasion that the service provided was not up to our standards or you have a question regarding your session, please email support@tutopoint.com, we will reply within 2 business days.' +
+                   '\n\nOnce again, thank you for your support. Wishing you the best,' +
+                   '\nTutoPoint LLC',
+                };
+                transporter.sendMail(mailOptions, function(error, info) {
+                  if (error) {
+                    console.log(error);
+                    reject(error);
+                  } else {
+                    console.log('Email sent1');
+                  }
+                });
               },
           );
           return;

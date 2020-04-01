@@ -3,8 +3,8 @@ const discover = new express.Router();
 const auth = require('../auth/auth.js');
 const Guides = require('../models/model.js').Guides;
 
-// discover.use(auth.loggedIn);
-// discover.use(auth.ensureUserIsClient);
+discover.use(auth.loggedIn);
+discover.use(auth.ensureUserIsClient);
 
 discover.get('/page/:pagenumber', async function(req, res) {
   const pagenumber = parseInt(req.params.pagenumber);
@@ -17,9 +17,9 @@ discover.get('/page/:pagenumber', async function(req, res) {
   const query = await Guides.aggregate([
     {
       $facet: {
-        stage1: [{$group: {_id: null, count: {$sum: 1}}}],
+        stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0}}],
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0}}],
       },
     },
     {$unwind: '$stage1'},
