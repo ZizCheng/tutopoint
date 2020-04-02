@@ -64,6 +64,9 @@ const AppointmentItem = ({
     );
   });
 
+  const dateFormatter = new Intl.DateTimeFormat('en-us', { month: "2-digit" , year: "2-digit", day: "2-digit", hour: 'numeric' });
+  const formattedDate = dateFormatter.format(new Date(date));
+
   return (
     <article className={`media ${status}`}>
       <div className="media-left">
@@ -92,9 +95,7 @@ const AppointmentItem = ({
         </div>
       </div>
       <div className="media-right">
-        {timerComponents.length ? (
-          <p className="is-size-6 has-text-right">{timerComponents}</p>
-        ) : null}
+        <p className="is-size-6 has-text-right">{formattedDate}</p>
 
         <p className="is-size-6 has-text-right is-capitalized">{status}</p>
 
