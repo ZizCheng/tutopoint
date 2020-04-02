@@ -14,7 +14,8 @@ button {
   background: none !important;
 }
 //css
-.postcall-wrapper {
+.postcall-wrapper
+{
   font-family: "Lato", sans-serif;
   display: flex;
   flex-direction: column;
@@ -24,19 +25,23 @@ button {
 .postcall-picture-wrapper .image {
   margin: 0 auto;
 }
-.postcall-text-wrapper {
+.postcall-text-wrapper
+{
   font-size: 2rem;
   line-height: 1.2;
   font-weight: 700;
   margin: 0 auto;
   text-align: center;
 }
+
 .postcall-bottom {
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
 }
-.postcall-action-wrapper {
+
+.postcall-action-wrapper
+{
   display: flex;
   flex-direction: row;
   justify-content: space-between;;

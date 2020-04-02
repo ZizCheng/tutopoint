@@ -131,7 +131,7 @@ function newSquare(row, col) {
   const squareEle = document.createElement("td");
   $(squareEle)
     .addClass(
-      "timetable-cell timetable-square timetable-square-" + row + "-" + col
+      "timetable-cell timetable-square has-background-center has-single-background timetable-square-" + row + "-" + col
     )
     .data("row", row)
     .data("col", col)

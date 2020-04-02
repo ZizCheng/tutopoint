@@ -26,10 +26,10 @@ class PostCall extends React.Component {
       rating: -1,
     }
 
-    this.submit = this.submit.bind(this);
-    this.reportSubmit = this.reportSubmit.bind(this);
-    this.recommendSubmit = this.recommendSubmit.bind(this);
     this.changeRating = this.changeRating.bind(this);
+    this.submit = this.submit.bind(this);
+    this.recommendSubmit = this.recommendSubmit.bind(this);
+    this.reportSubmit = this.reportSubmit.bind(this);
   }
 
   toggleReportModal() {
@@ -73,6 +73,7 @@ class PostCall extends React.Component {
 
   render() {
     return (
+
       <div className="postcall-wrapper">
         <div className="postcall-picture-wrapper">
           <figure className="image is-128x128">
@@ -87,15 +88,16 @@ class PostCall extends React.Component {
           <div className="postcall-action-wrapper">
             <div className="postcall-star-wrapper">
               <StarRatings
-                starRatedColor="blue"
                 rating={this.state.rating}
                 changeRating={this.changeRating}
-                numberOfStars={5}
-                name='rating'
                 starDimension="32px"
                 starRatedColor="rgb(230, 67, 47)"
+                numberOfStars={5}
+                name='rating'
+                starRatedColor="blue"
               />
             </div>
+
             <div className="postcall-buttons-wrapper">
               <button className="postcall-report-button button is-outlined" onClick={this.toggleReportModal}>Report</button>
               <button className="postcall-recommend-button button is-primary is-outlined" onClick={this.toggleRecommendModal}>Recommend</button>
@@ -125,9 +127,10 @@ class PostCall extends React.Component {
             <p>Email:</p><input id="recommend-email" className="recommend-email" type="email" />
           </div>
           <button className="submit-button button is-primary" onClick={this.recommendSubmit}>Submit</button>
-          <button className="modal-close is-large" aria-label="close"  onClick={this.toggleRecommendModal}></button>
+          <button className="modal-close is-large" onClick={this.toggleRecommendModal} aria-label="close"></button>
         </div>
       </div>
+
     );
   }
 }
