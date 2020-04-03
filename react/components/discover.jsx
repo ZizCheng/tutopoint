@@ -1,7 +1,9 @@
-import React from "react";
+import React, {useEffect} from "react";
 import ReactDOM from "react-dom";
 
 import DiscoverGuideItem from "./DiscoverGuideItem.jsx";
+import StarRatings from 'react-star-ratings';
+import Loading from "./loading.jsx";
 
 import { withRouter } from "react-router-dom";
 
@@ -11,9 +13,43 @@ import profileAPI from "../api/profile.js";
 import sessionAPI from "../api/session.js";
 import scheduleAPI from "../api/schedule.js";
 
+
 import profileStore from "../store/profileStore.js";
 
 import moment from "moment-timezone";
+
+
+const average = (nums) =>  {
+  if(nums == null) return -1;
+  if(nums.length == 0) return -1;
+  return nums.reduce((a, b) => (a + b)) / nums.length;
+}
+
+const Reviews = ({id}) => {
+  const [reviews, setReviews] = React.useState(null)
+  useEffect(() => {
+    discoverAPI.getGuideReviews(id).then((data) => {
+      setReviews(data);
+    })
+  }, [])
+
+  let reviewElements;
+  if(reviews != null){
+    reviewElements = reviews.map((comment, i) => {
+      return (<div key={i} className="Reviews__comment">
+        <h1 className="is-size-4">Anonymous said:</h1>
+        <p className="is-size-6">{comment}</p>
+      </div>)
+    })
+  }
+
+
+  return (
+    <div>
+      {reviews ? <div className="Reviews">{reviewElements}</div> : <h1>Loading...</h1>}
+    </div>
+  )
+}
 
 class ScheduleWithoutRouter extends React.Component {
   constructor(props) {
@@ -144,7 +180,7 @@ const Schedule = withRouter(ScheduleWithoutRouter);
 class Discover extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { topGuides: null, currentPage: 1 };
+    this.state = { topGuides: null, currentPage: 1, view: "Schedule" };
     this.params = new URLSearchParams(props.location.search);
 
     this.handleGuideClicked = this.handleGuideClicked.bind(this);
@@ -170,7 +206,7 @@ class Discover extends React.Component {
   handleGuideClicked(i) {
     const currentGuide = this.state.topGuides[i];
 
-    this.setState({ focus: true, focusedGuide: currentGuide });
+    this.setState({ focus: true, focusedGuide: currentGuide, view: "Schedule" });
   }
 
   closeModal() {
@@ -180,7 +216,7 @@ class Discover extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.currentPage != this.state.currentPage) {
       discoverAPI.getGuides(this.state.currentPage).then(guides => {
-        this.setState({ topGuides: guides.data, totalGuides: guides.count });
+        this.setState({ topGuides: guides.data, totalGuides: guides.count});
       });
     }
   }
@@ -256,6 +292,14 @@ class Discover extends React.Component {
                     <h1 className="is-size-3 has-text-weight-bold">
                       {this.state.focusedGuide.name}
                     </h1>
+                    <StarRatings
+                        rating={average(this.state.focusedGuide.ratings)}
+                        starDimension="32px"
+                        starRatedColor="rgb(230, 67, 47)"
+                        numberOfStars={5}
+                        name='rating'
+                        starRatedColor="blue"
+                      />
                     <h2 className="is-size-4 highlight">
                       {this.state.focusedGuide.university},{" "}
                       {this.state.focusedGuide.grade} in{" "}
@@ -268,17 +312,22 @@ class Discover extends React.Component {
                     </p>
                     <div className="tabs">
                       <ul>
-                        <li className="is-active">
+                        <li onClick={() => {
+                          this.setState({view: "Schedule"})
+                        }} className={(this.state.view == "Schedule") && "is-active"}>
                           <a>Schedule</a>
                         </li>
-                        <li>
+                        <li onClick={() => {
+                          this.setState({view: "Reviews"})
+                        }} className={(this.state.view == "Reviews") && "is-active"}>
                           <a>Reviews</a>
                         </li>
                       </ul>
                     </div>
 
                     {/* schedule */}
-                    <Schedule id={this.state.focusedGuide._id} />
+                    {this.state.view == "Schedule" ? <Schedule id={this.state.focusedGuide._id} /> : <Reviews id={this.state.focusedGuide._id}/>}
+                    
                   </div>
                 </div>
               </div>

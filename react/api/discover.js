@@ -10,8 +10,13 @@ const getGuideSchedule = (id) => {
   return fetch('/api/discover/' + id + '/schedule').then((response) => response.json());
 };
 
+const getGuideReviews = (id) => {
+  return fetch('/api/discover/' + id + '/reviews').then((response) => response.json());
+}
+
 module.exports = {
   getGuides: getGuides,
   getGuide: getGuide,
   getGuideSchedule: getGuideSchedule,
+  getGuideReviews: getGuideReviews,
 };

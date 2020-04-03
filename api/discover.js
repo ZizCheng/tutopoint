@@ -19,7 +19,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
       $facet: {
         stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0}}],
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0, 'comments': 0}}],
       },
     },
     {$unwind: '$stage1'},
@@ -37,12 +37,24 @@ discover.get('/page/:pagenumber', async function(req, res) {
 discover.get('/:id', function(req, res) {
   Guides.findOne({_id: req.params.id})
       .select(
-          '_id name university major grade university profilePic backdrop logo bio',
+          '_id name university major grade university profilePic backdrop logo bio ratings',
       )
       .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
       .catch((err) => {
         console.log(err);
         res.send('Internal Server Error.');
+      });
+});
+
+discover.get('/:id/reviews', function(req, res) {
+  Guides.findOne({_id: req.params.id})
+      .select(
+          '_id comments',
+      )
+      .then((guide) => res.json(JSON.parse(JSON.stringify(guide.comments))))
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json({error: "Invalid guide"});
       });
 });
 
