@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+//override styles
+.is-divider:after {
+  background: #F9F9F9 !important;
+  margin: 0;
+}
+button {
+  justify-content: center !important;
+  border-radius: 8px;
+}
+.is-outlined {
+  background: none !important;
+}
+//css
+.postcall-wrapper
+{
+  font-family: "Lato", sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin: 0 auto;
+}
+.postcall-picture-wrapper .image {
+  margin: 0 auto;
+}
+.postcall-text-wrapper
+{
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.postcall-bottom {
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.postcall-action-wrapper
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;;
+  margin-bottom: 0.5rem;
+}
+.postcall-star-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+.postcall-buttons-wrapper button {
+  width: 120px;
+  font-size: 12px;
+  margin-left: 1rem;
+}
+.textarea::placeholder {
+  font-size: 75%;
+}
+.postcall-submit-button, .postcall-back-button, .submit-button {
+  width: 250px;
+  font-size: 1.25rem;
+  margin: 1rem auto;
+  padding: 1rem 0;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 32px;
+  padding: 32px;
+  width: 40vw;
+}
+#recommend-modal .modal-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.recommend-email {
+  margin-left: 1rem;
+  border-radius: 3px;
+  border: 1px solid lightgray;
+}
