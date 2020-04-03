@@ -15,23 +15,26 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import {Link} from 'react-router-dom';
+import {withRouter} from 'react-router';
 import StarRatings from 'react-star-ratings';
 
 import "./PostCall.scss";
-import reviewAPI from "../api/review.js";
+import reviewAPI from "../api/postcall.js";
+import sessionAPI from "../api/session.js";
 
 class PostCall extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      rating: -1, guideName: null, guideID: null
+      rating: -1, guideName: null, guideID: null, profilePic: null
     }
 
     this.changeRating = this.changeRating.bind(this);
     this.submit = this.submit.bind(this);
     this.recommendSubmit = this.recommendSubmit.bind(this);
     this.reportSubmit = this.reportSubmit.bind(this);
+    this.goDashboard = this.goDashboard.bind(this);
   }
 
   toggleReportModal() {
@@ -49,6 +52,7 @@ class PostCall extends React.Component {
     else document.getElementById("recommend-modal").classList.add("is-active");
   }
   goDashboard() {
+    reviewAPI.newReview(this.state.guideID, null, 0);
     window.location.href="/dashboard";
   }
 
@@ -67,32 +71,36 @@ class PostCall extends React.Component {
   reportSubmit() {
     var reportText = document.getElementById("report-textarea").value;
     reviewAPI.report(this.state.guideID, reportText);
-    toggleReportModal();
+    this.toggleReportModal();
     document.getElementById("report-button").setAttribute('disabled', 'true');
   }
   recommendSubmit() {
     var recommendEmail = document.getElementById("recommend-email").value;
     reviewAPI.refer(recommendEmail);
-    toggleRecommendModal();
+    this.toggleRecommendModal();
     document.getElementById("invite-button").setAttribute('disabled', 'true');
   }
 
   componentDidMount() {
-
+    sessionAPI.info(this.props.match.params.id)
+      .then((session) => {
+        this.setState({guideName: session.createdBy.name, guideID: session.createdBy._id, profilePic: session.createdBy.profilePic})
+      })
+      .catch((err) => console.log(err));
   }
-  
+
   render() {
     return (
 
       <div className="postcall-wrapper">
         <div className="postcall-picture-wrapper">
           <figure className="image is-128x128">
-            <img className="is-rounded" src="https://bulma.io/images/placeholders/128x128.png" />
+            <img className="is-rounded" src={this.state.profilePic} />
           </figure>
         </div>
         <div className="postcall-text-wrapper">
           Thanks for using TutoPoint!<br />
-          Please rate your session with Ziz Cheng
+          Please rate your session with {this.state.guideName}
         </div>
         <div className="postcall-bottom">
           <div className="postcall-action-wrapper">
@@ -136,7 +144,7 @@ class PostCall extends React.Component {
           <div className="modal-background"  onClick={this.toggleRecommendModal}></div>
           <div className="modal-content">
             <h1 className="title">Refer a friend!</h1>
-            <p>Would your friends like {}? Fill in an email below and we will send them an invite. You receive credit every time they have a session!</p>
+            <p>Would your friends like {this.state.guideName}? Fill in an email below and we will send them an invite. You receive credit every time they have a session!</p>
             <p>Email:</p><input className="recommend-email" id="recommend-email" type="email" />
             <button className="submit-button button is-primary" onClick={this.recommendSubmit}>Invite</button>
           </div>
@@ -149,4 +157,4 @@ class PostCall extends React.Component {
   }
 }
 
-export default PostCall;
+export default withRouter(PostCall);
