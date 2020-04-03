@@ -289,7 +289,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                               if (err) return; // Handle when it could not charge.
                               io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'You have been charged.', message: `You have been charged $60 for this session. You have $${customerAfterCharge.ending_balance / 100 * -1} remaining`, style: 'is-primary'});
                               setTimeout(() => {
-                                chargeUser(io, socket, sessionid, user, count+1);
+                                chargeUser(io, socket, sessionid, user, count+4);
                               }, 3600000);
                             },
                         );
@@ -305,7 +305,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                                 io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'Low balance', message: 'You do not have enough credits to continue with this session in 15 minutes!', style: 'is-danger'});
                               }
                               setTimeout(() => {
-                                chargeUser(io, socket, sessionid, user, count+4);
+                                chargeUser(io, socket, sessionid, user, count+1);
                               }, 900000);
                             },
                         );
