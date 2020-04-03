@@ -103,7 +103,6 @@
 .timetable-table
 {
   width: 100%;
-  table-layout: fixed;
 }
 .timetable-day-label
 {

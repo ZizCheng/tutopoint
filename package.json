@@ -49,6 +49,7 @@
     "react-dom": "^16.13.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
+    "react-star-ratings": "^2.3.0",
     "sendmail": "^1.6.1",
     "simple-peer": "^9.6.2",
     "socket.io": "^2.3.0",

@@ -22,7 +22,7 @@ review.post('/:id/newreview', function(req, res) {
             guide.comments.push(req.body.review);
             guide.markModified('comments');
           }
-          if (req.body.star != 0) {
+          if (req.body.star != -1) {
             guide.ratings.push(req.body.star);
             guide.markModified('ratings');
           }
