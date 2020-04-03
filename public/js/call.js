@@ -17,7 +17,7 @@ window.onload = (event) => {
     endCall();
     //save notes
 
-    window.location = '/session/postcall';
+    window.location = `/postcall/${sessionid}`;
   });
   socket.on('guideConnected', function() {
     pushNotification('Good news', 'Guide has connected!', 'is-success', 30000);

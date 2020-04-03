@@ -14,9 +14,13 @@ const confirm = (id) => {
 const cancel = (id) => {
   return fetch('/api/session/cancel/' + id).then((response) => response.json());
 };
+const info = (id) => {
+  return fetch('/api/session/' + id).then((response) => response.json());
+};
 
 module.exports = {
   requestSession: requestSession,
   confirm: confirm,
   cancel: cancel,
+  info: info,
 };

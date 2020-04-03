@@ -3,8 +3,8 @@ const discover = new express.Router();
 const auth = require('../auth/auth.js');
 const Guides = require('../models/model.js').Guides;
 
-// discover.use(auth.loggedIn);
-// discover.use(auth.ensureUserIsClient);
+discover.use(auth.loggedIn);
+discover.use(auth.ensureUserIsClient);
 
 discover.get('/page/:pagenumber', async function(req, res) {
   const pagenumber = parseInt(req.params.pagenumber);
@@ -17,9 +17,9 @@ discover.get('/page/:pagenumber', async function(req, res) {
   const query = await Guides.aggregate([
     {
       $facet: {
-        stage1: [{$group: {_id: null, count: {$sum: 1}}}],
+        stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0}}],
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0, 'comments': 0}}],
       },
     },
     {$unwind: '$stage1'},
@@ -35,33 +35,42 @@ discover.get('/page/:pagenumber', async function(req, res) {
 });
 
 discover.get('/:id', function(req, res) {
-  stripe.customers.retrieve(req.user.stripeCustomerId, function(err, customer) {
-    Guides.findOne({_id: req.params.id})
-        .select(
-            '_id name university major grade university profilePic backdrop schedule logo bio',
-        )
-        .slice('schedule', [0, 10])
-        .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
-        .catch((err) => {
-          console.log(err);
-          res.send('Internal Server Error.');
-        });
-  });
+  Guides.findOne({_id: req.params.id})
+      .select(
+          '_id name university major grade university profilePic backdrop logo bio ratings',
+      )
+      .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
+      .catch((err) => {
+        console.log(err);
+        res.send('Internal Server Error.');
+      });
+});
+
+discover.get('/:id/reviews', function(req, res) {
+  Guides.findOne({_id: req.params.id})
+      .select(
+          '_id comments',
+      )
+      .then((guide) => res.json(JSON.parse(JSON.stringify(guide.comments))))
+      .catch((err) => {
+        console.log(err);
+        res.status(400).json({error: "Invalid guide"});
+      });
 });
 
 discover.get('/:id/schedule', async function(req, res) {
-  console.log("/:id/schedule recieved request");
+  console.log('/:id/schedule recieved request');
   try {
     const guides = await Guides
         .findById(req.params.id)
         .select('schedule');
 
-    //only get dates that are at most 1 hour behind present
+    // only get dates that are at most 1 hour behind present
     const filteredSchedule = guides.schedule.filter((schedule) => {
       return schedule.end > Date.now();
     });
 
-    console.log("filteredSchedule: " + filteredSchedule);
+    console.log('filteredSchedule: ' + filteredSchedule);
     res.json(filteredSchedule);
   } catch (err) {
     res.status(400).json({message: 'Invalid Guide ID'});

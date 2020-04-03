@@ -43,9 +43,6 @@ $primary: $orange;
 $grey-light: $light-gray;
 
 
-//modal
-$modal-content-width: 1500px;
-
 //tabs
 $tabs-link-active-border-bottom-color: $orange;
 $tabs-link-active-color: $orange;
@@ -55,7 +52,7 @@ $tabs-link-active-color: $orange;
 
 .active
     background-color: $orange;
-    & p 
+    & p
         color: $white;
 
 .inactive
@@ -98,6 +95,7 @@ $tabs-link-active-color: $orange;
 @import "../../node_modules/bulma/sass/elements/table.sass";
 @import "../../node_modules/bulma/sass/components/pagination.sass";
 @import "../../node_modules/bulma/sass/grid/tiles.sass";
+@import "../../node_modules/bulma-divider";
 
 +touch
     .container.is-fluid
@@ -118,8 +116,8 @@ $tabs-link-active-color: $orange;
     flex-shrink: 1;
 
 
-.loader 
-    &.is-loading 
+.loader
+    &.is-loading
         position: fixed;
         pointer-events: none;
         // opacity: 0.5;
@@ -130,7 +128,7 @@ $tabs-link-active-color: $orange;
         width:  100vw;
         z-index: 10000;
 
-        &:after 
+        &:after
             @include loader;
             position: absolute;
             top: calc(50% - 2.5em);
@@ -138,7 +136,3 @@ $tabs-link-active-color: $orange;
             width: 5em;
             height: 5em;
             border-width: 0.25em;
-        
-    
-
-    
