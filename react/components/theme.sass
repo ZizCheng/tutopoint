@@ -55,7 +55,7 @@ $tabs-link-active-color: $orange;
 
 .active
     background-color: $orange;
-    & p 
+    & p
         color: $white;
 
 .inactive
@@ -118,8 +118,8 @@ $tabs-link-active-color: $orange;
     flex-shrink: 1;
 
 
-.loader 
-    &.is-loading 
+.loader
+    &.is-loading
         position: fixed;
         pointer-events: none;
         // opacity: 0.5;
@@ -130,7 +130,7 @@ $tabs-link-active-color: $orange;
         width:  100vw;
         z-index: 10000;
 
-        &:after 
+        &:after
             @include loader;
             position: absolute;
             top: calc(50% - 2.5em);
@@ -138,7 +138,3 @@ $tabs-link-active-color: $orange;
             width: 5em;
             height: 5em;
             border-width: 0.25em;
-        
-    
-
-    

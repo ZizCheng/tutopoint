@@ -17,8 +17,8 @@
 .profile-image {
   width: 80%;
 }
-.logo-image {
-  margin-top: 2em;
+.image-wrapper:first-of-type {
+  margin-bottom: 2rem;
 }
 .bio-text {
   margin-top: 2em;
@@ -33,3 +33,19 @@
   font-family: "Roboto Mono", monospace;
 }
 
+.modal-content {
+  width: 90vw;
+}
+.picture-wrapper {
+  flex: none;
+  width: 25%;
+}
+
+@media screen and (max-width: 768px) {
+  .picture-wrapper {
+    width: 100%;
+  }
+  .logo-image {
+    margin-top: 0;
+  }
+}

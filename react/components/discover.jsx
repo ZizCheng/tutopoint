@@ -23,13 +23,16 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   componentDidMount() {
-    discoverAPI.getGuideSchedule(this.props.id).then((data) => {
+    discoverAPI.getGuideSchedule(this.props.id).then(data => {
       let newIntervals = data?.slice();
       for (const interval of newIntervals) {
         interval.selected = false;
       }
       newIntervals = newIntervals.filter(interval => {
-        return moment() < moment(interval.start) && typeof interval.status != "undefined";
+        return (
+          moment() < moment(interval.start) &&
+          typeof interval.status != "undefined"
+        );
       });
       this.setState({ schedule: newIntervals });
     });
@@ -46,11 +49,10 @@ class ScheduleWithoutRouter extends React.Component {
               profileStore.dispatch({ type: "Update", data: profile });
               this.props.history.push("/dashboard");
             });
-          }else if(response.error && response.code == 15){
-            this.props.history.push('/balance?balanceerror=true')
+          } else if (response.error && response.code == 15) {
+            this.props.history.push("/balance?balanceerror=true");
           }
         });
-
     } else {
       let newSchedule = this.state.schedule.slice();
       for (let i = 0; i < this.state.schedule.length; i++) {
@@ -67,54 +69,58 @@ class ScheduleWithoutRouter extends React.Component {
     console.log(interval);
     if (interval.status == "booked") {
       return "booked";
-    }
-    else if (interval.status == "available") {
+    } else if (interval.status == "available") {
       return interval.selected ? "Confirm" : "Select";
     }
   }
 
   render() {
-    var intervalTableHtml = 'Loading';
-    if(this.state.schedule !== null)
-    {
+    var intervalTableHtml = "Loading";
+    if (this.state.schedule !== null) {
       scheduleAPI.stringToDate(this.state.schedule);
-      intervalTableHtml = scheduleAPI.listTimes(this.state.schedule).map((time, row) => {
-        const format = "ddd MM/DD HH:mm";
-        const timezones = [
-          moment.tz.guess(),
-          "America/Los_Angeles",
-        ].map((timezone, column) => {
-          if (column == 0) {
-            return (
-              <td className="monospace" key={row + "" + column}>
-                {moment(time).tz(timezone).format(format)}
-              </td>
-            )
-          }
-          return (
-            <td className="monospace is-hidden-mobile" key={row + "" + column}>
-              {moment(time)
-                .tz(timezone)
-                .format(format)}
+      intervalTableHtml = scheduleAPI
+        .listTimes(this.state.schedule)
+        .map((time, row) => {
+          const format = "ddd MM/DD HH:mm";
+          const timezones = [moment.tz.guess(), "America/Los_Angeles"].map(
+            (timezone, column) => {
+              if (column == 0) {
+                return (
+                  <td className="monospace" key={row + "" + column}>
+                    {moment(time)
+                      .tz(timezone)
+                      .format(format)}
+                  </td>
+                );
+              }
+              return (
+                <td
+                  className="monospace is-hidden-mobile"
+                  key={row + "" + column}
+                >
+                  {moment(time)
+                    .tz(timezone)
+                    .format(format)}
+                </td>
+              );
+            }
+          );
+          timezones.push(
+            <td key={row + "" + 4}>
+              <button
+                className={
+                  "button" +
+                  (this.state.schedule[row].selected ? " is-primary" : "")
+                }
+                disabled={this.state.schedule[row].status == "booked"}
+                onClick={this.select.bind(this, row)}
+              >
+                {this.renderButtonText(this.state.schedule[row])}
+              </button>
             </td>
           );
+          return <tr>{timezones}</tr>;
         });
-        timezones.push(
-          <td key={row + "" + 4}>
-            <button
-              className={
-                "button" +
-                (this.state.schedule[row].selected ? " is-primary" : "")
-              }
-              disabled={(this.state.schedule[row].status == 'booked')}
-              onClick={this.select.bind(this, row)}
-            >
-              {this.renderButtonText(this.state.schedule[row])}
-            </button>
-          </td>
-        );
-        return <tr>{timezones}</tr>;
-      });
     }
     return (
       <div className="table-container">
@@ -139,6 +145,7 @@ class Discover extends React.Component {
   constructor(props) {
     super(props);
     this.state = { topGuides: null, currentPage: 1 };
+    this.params = new URLSearchParams(props.location.search);
 
     this.handleGuideClicked = this.handleGuideClicked.bind(this);
     this.closeModal = this.closeModal.bind(this);
@@ -147,6 +154,14 @@ class Discover extends React.Component {
   }
 
   componentDidMount() {
+    const guideid = this.params.get("guide");
+    console.log('guide id', guideid)
+    if (guideid) {
+      discoverAPI.getGuide(guideid).then(guide => {
+        this.setState({ focus: true, focusedGuide: guide });
+      });
+    }
+
     discoverAPI.getGuides(this.state.currentPage).then(guides => {
       this.setState({ topGuides: guides.data, totalGuides: guides.count });
     });
@@ -163,7 +178,7 @@ class Discover extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if(prevState.currentPage != this.state.currentPage){
+    if (prevState.currentPage != this.state.currentPage) {
       discoverAPI.getGuides(this.state.currentPage).then(guides => {
         this.setState({ topGuides: guides.data, totalGuides: guides.count });
       });
@@ -171,13 +186,14 @@ class Discover extends React.Component {
   }
 
   previousPage() {
-    if(this.state.currentPage == 1) return;
-    this.setState({currentPage: this.state.currentPage - 1})
+    if (this.state.currentPage == 1) return;
+    this.setState({ currentPage: this.state.currentPage - 1 });
   }
 
   nextPage() {
-    if(this.state.currentPage == Math.ceil(this.state.totalGuides / 12)) return;
-    this.setState({currentPage: this.state.currentPage + 1})
+    if (this.state.currentPage == Math.ceil(this.state.totalGuides / 12))
+      return;
+    this.setState({ currentPage: this.state.currentPage + 1 });
   }
 
   render() {
@@ -206,29 +222,34 @@ class Discover extends React.Component {
             <div className="modal-content">
               <div id="discover__focusedGuide" className="card">
                 <div className="columns profile-modal">
-                  <div className="column is-one-quarter">
+                  <div className="column picture-wrapper">
                     <div className="profile-image">
-                      <figure className="image is-1by1">
-                        <img
-                          src={
-                            typeof this.state.focusedGuide?.profilePic !==
-                            "undefined"
-                              ? this.state.focusedGuide.profilePic
-                              : "https://bulma.io/images/placeholders/96x96.png"
-                          }
-                          alt="Placeholder image"
-                        />
-                      </figure>
-                      <figure className="image is-1by1 logo-image">
-                        <img
-                          src={
-                            typeof this.state.focusedGuide?.logo !== "undefined"
-                              ? this.state.focusedGuide.logo
-                              : "https://bulma.io/images/placeholders/96x96.png"
-                          }
-                          alt="Placeholder image"
-                        />
-                      </figure>
+                      <div className="image-wrapper">
+                        <figure className="image is-1by1">
+                          <img
+                            src={
+                              typeof this.state.focusedGuide?.profilePic !==
+                              "undefined"
+                                ? this.state.focusedGuide.profilePic
+                                : "https://bulma.io/images/placeholders/96x96.png"
+                            }
+                            alt="Placeholder image"
+                          />
+                        </figure>
+                      </div>
+                      <div className="image-wrapper">
+                        <figure className="image is-1by1 logo-image">
+                          <img
+                            src={
+                              typeof this.state.focusedGuide?.logo !==
+                              "undefined"
+                                ? this.state.focusedGuide.logo
+                                : "https://bulma.io/images/placeholders/96x96.png"
+                            }
+                            alt="Placeholder image"
+                          />
+                        </figure>
+                      </div>
                     </div>
                   </div>
                   <div className="column">
@@ -281,12 +302,22 @@ class Discover extends React.Component {
           <div className="discover__guideWrapper card-content is-block-mobile">
             {guides}
           </div>
-          {(this.state.totalGuides  / 12 > 1) && <footer className="card-footer">
-          <nav className="card-footer-item is-centered" role="navigation" aria-label="pagination">
-            <a onClick={this.previousPage} className="pagination-previous">Previous</a>
-            <a onClick={this.nextPage} className="pagination-next">Next page</a>
-          </nav>
-  </footer>}
+          {this.state.totalGuides / 12 > 1 && (
+            <footer className="card-footer">
+              <nav
+                className="card-footer-item is-centered"
+                role="navigation"
+                aria-label="pagination"
+              >
+                <a onClick={this.previousPage} className="pagination-previous">
+                  Previous
+                </a>
+                <a onClick={this.nextPage} className="pagination-next">
+                  Next page
+                </a>
+              </nav>
+            </footer>
+          )}
         </div>
       </React.Fragment>
     );

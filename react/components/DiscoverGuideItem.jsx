@@ -15,19 +15,19 @@ const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdro
         <div className="card-content">
           <div className="media">
             <div className="media-left">
-              <figure className="image is-96x96">
+              <figure className="image is-64x64">
                 <img
                   className="is-rounded"
-                  src={profilePic ? profilePic : "https://bulma.io/images/placeholders/96x96.png"}
+                  src={profilePic ? profilePic : "https://bulma.io/images/placeholders/64x64.png"}
                   alt="Placeholder image"
                 />
               </figure>
             </div>
             <div className="media-content">
-              <p className="is-size-6 has-text-weight-bold">
+              <p className="is-size-7 has-text-weight-bold">
                 {name} at <span className="highlight">{university}</span>
               </p>
-              <p className="is-size-6 has-text-weight-bold">
+              <p className="is-size-7 has-text-weight-bold">
                 {grade} at <span className="highlight">{major}</span>
               </p>
             </div>
