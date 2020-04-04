@@ -43,6 +43,7 @@ const balanceAPI = require('./api/balance.js');
 const transportsAPI = require('./api/transports.js');
 const sessionAPI = require('./api/session.js');
 const referralAPI = require('./api/referral.js');
+const postcallAPI = require('./api/postcall.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -80,7 +81,8 @@ app.use('/api/document', documentAPI);
 app.use('/api/balance', balanceAPI);
 app.use('/api/transports', transportsAPI.router);
 app.use('/api/session', sessionAPI);
-app.use('/api/referral', referralAPI)
+app.use('/api/referral', referralAPI);
+app.use('/api/postcall', postcallAPI);
 
 
 app.engine('handlebars', handlebars());

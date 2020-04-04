@@ -308,20 +308,11 @@ class App extends React.Component {
                 {/* <Route path="/session/:id">
                   <Session />
                 </Route> */}
-                <Route path="/postcall">
-                  <PostCall
-                    rating={4.233}
-                    submit={function(rating, review) {
-                      console.log(rating + " " + review);
-                    }}
-                    reportSubmit={function(reportText) {
-                      console.log("report received: " + reportText);
-                    }}
-                    recommendSubmit={function(recommendEmail) {
-                      console.log("recommend received: " + recommendEmail);
-                    }}
-                  />
-                </Route>
+                {this.state.profile?.__t == "clients" && (
+                  <Route path="/postcall/:id">
+                    <PostCall />
+                  </Route>
+                )}
               </Switch>
             </div>
           </div>
