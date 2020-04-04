@@ -253,6 +253,7 @@ class Appointments extends React.Component {
   action(doc_id) {
     console.log(this.state.selectedSessionId);
     documentAPI.sendDocument(doc_id, this.state.selectedSessionId);
+    document.getElementById("select-document-popup").classList.remove("is-active");
   }
   updateSessionId(sessionid) {
     console.log(sessionid);
