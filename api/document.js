@@ -118,7 +118,7 @@ function cloneDocument(user, document, title = document.title) {
   }, (err, data) => {if(err) console.log(err)});
   var newDoc = new Documents({
     title: title,
-    date: document.date,
+    date: Date.now(),
     aws_filename: new_aws_filename,
   });
   user.documents.push(newDoc._id);

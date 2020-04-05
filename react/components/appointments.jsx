@@ -329,7 +329,7 @@ class Appointments extends React.Component {
         );
       });
 
-    const activeSession = this.state.profile?.sessions
+    var activeSession = this.state.profile?.sessions
       .filter(session => {
         const sessionDate = new Date(session.date);
         return (
@@ -368,6 +368,16 @@ class Appointments extends React.Component {
           />
         );
       });
+    console.log(activeSession);
+    if(!activeSession || activeSession.length === 0)
+    {
+        activeSession = (
+          <div className="appointments-no-upcoming-wrapper">
+            You have no upcoming appointments.<br></br>
+          <a className="appointments-book-now" href="/discover">Book one now.</a>
+          </div>
+        )
+    }
 
     return (
       <div id="appointments" className="card">

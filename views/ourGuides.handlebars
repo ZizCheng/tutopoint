@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Guides</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel="stylesheet" href="/css/bulma-0.6.2.css">
@@ -13,8 +14,8 @@
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
   <link rel="stylesheet" href="/css/index.css">
   <style>
-          #discoverSection {
-          margin-top: 1.5em;
+      #discoverSection {
+        margin-top: 1.5em;
       }
       .profiles-container {
         display: flex;
@@ -43,19 +44,19 @@
       .no-margin-bottom {
           margin-bottom: .5em !important;
       }
-      @media screen and (max-width: 1500px) {
+      @media only screen and (max-width: 1500px) {
         .profile {
           width: 33%;
         }
       }
-      @media screen and (max-width: 950px) {
+      @media only screen and (max-width: 950px) {
         .profile {
           width: 50%;
         }
       }
-      @media screen and (max-width: 600px) {
+      @media only screen and (max-width: 600px) {
         .profile {
-          width: 90% !important;
+          width: 90%;
         }
       }
 
@@ -159,7 +160,6 @@
       </div>
   </div>
   <div class="custom-container">
-
       <!--nav bar-->
       <nav class="navbar" role="navigation" aria-label="main navigation">
           <div class="navbar-brand">
@@ -167,15 +167,16 @@
                   <img src="/images/logo.png">
               </a>
 
-              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                  data-target="navbarBasicExample">
+              <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                  aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
               </a>
           </div>
 
-          <div id="navbarBasicExample" class="navbar-menu is-active">
+          <div id="dropdownMenu" class="navbar-menu">
+
               <div class="navbar-end">
                   <div class="navbar-item">
                       <a class="nav-link" href="/guides">
@@ -205,8 +206,6 @@
               </div>
           </div>
       </nav>
-
-
   </div>
 
 
@@ -271,7 +270,7 @@
       searchType.addEventListener('change', function() {
         var ev = new Event('keyup');
         searchBar.dispatchEvent(ev);
-      })
+      });
       searchBar.addEventListener('keyup', function(){
         const queryType = searchType.value.toLowerCase();
         const profiles = document.getElementsByClassName('profile')
@@ -285,7 +284,8 @@
             currentEl.classList.remove('is-hidden')
           }
         }
-      })
+      });
+
   </script>
 </body>
 </html>
