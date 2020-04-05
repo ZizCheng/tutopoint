@@ -7,11 +7,25 @@
     min-height: 50rem;
 }
 
-#appointments .media {  
+#appointments .media {
     padding: 1.25em;
     border-radius: 24px;
     align-items: center;
 }
+
+
+.appointments-no-upcoming-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  text-align: center;
+}
+.appointments-book-now {
+  color: #F56363;
+}
+
 
 .content {
     margin: 0px !important;

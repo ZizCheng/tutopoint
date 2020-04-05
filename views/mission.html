@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel="stylesheet" href="/css/bulma.css">
@@ -111,7 +112,6 @@
       </div>
   </div>
   <div class="custom-container">
-
       <!--nav bar-->
       <nav class="navbar" role="navigation" aria-label="main navigation">
           <div class="navbar-brand">
@@ -119,15 +119,16 @@
                   <img src="/images/logo.png">
               </a>
 
-              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                  data-target="navbarBasicExample">
+              <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                  aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
               </a>
           </div>
 
-          <div id="navbarBasicExample" class="navbar-menu is-active">
+          <div id="dropdownMenu" class="navbar-menu">
+
               <div class="navbar-end">
                   <div class="navbar-item">
                       <a class="nav-link" href="/guides">
@@ -157,25 +158,24 @@
               </div>
           </div>
       </nav>
-
-
   </div>
 
   <section>
-    <div class="container ">
+    <div class="container mission-text-wrapper">
       <h1 id="mission" class="is-size-1 has-text-centered has-text-weight-bold has-text-grey-darker"
         style="margin-top: 1em; margin-bottom: 1em;"> Our mission </h1>
-      <p class="has-text-justified is-size-5"> TutoPoint’s mission is to bridge the gap between college and high school
+      <p class="is-size-5"> TutoPoint’s mission is to bridge the gap between college and high school
         students. What actually happens inside the classrooms, the dorms, and the cafeterias of top American universities
-        remains largely unknown to prospective students. That is why our guides are 100% current, real time college
+        remains largely unknown to prospective students.
+        <br><br>That is why our guides are 100% current, real time college
         students. Sessions with our guides help open the once closed doors of prestigious American universities and
         allows clients to peek into what life is like as a college student. In fact, some of the sessions scheduled with
         our guides take place in between their classes!
-        <br> Our guides span all top American Universities (Harvard, Yale, Princeton, etc) and study a wide range of
+        <br><br> Our guides span all top American Universities (Harvard, Yale, Princeton, etc) and study a wide range of
         popular majors (Computer Science, Business, Biology, Economics, etc). Beyond college consulting and
         questions about applying to these prestigious universities, our sessions offer a warm, welcoming and completely
         stress-free environment to engage in conversation about all aspects of college life.
-        <br> At TutoPoint, you will feel at home at your dream university before you even arrive. </p>
+        <br><br> At TutoPoint, you will feel at home at your dream university before you even arrive. </p>
     </div>
   </section>
   <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>

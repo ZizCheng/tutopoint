@@ -78,7 +78,7 @@ router.put('/', auth.loggedIn, function(req, res) {
 router.post('/:id/send', auth.loggedIn, auth.hasDocument, function(req, res) {
   Sessions.findById(req.body.sessionid, function(err, session) {
     Users.findById(session.createdBy, function(err, user) {
-      cloneDocument(user, req.doc);
+      cloneDocument(user, req.doc, "Questions from " + req.user.name);
     });
   });
 });
@@ -107,13 +107,26 @@ function createDocument(user, title, text, date) {
   return newDoc._id;
 }
 //clones document and adds to user
-function cloneDocument(user, document) {
-  streamToString(s3.getObject({
+function cloneDocument(user, document, title = document.title) {
+  var buffer = crypto.randomBytes(32);
+  var new_aws_filename = buffer.toString("hex");
+
+  s3.copyObject({
     Bucket: "tutopoint-doc-bucket",
-    Key: document.aws_filename
-  }).createReadStream()).then(function(text) {
-    return createDocument(user, document.title, text, document.date);
+    CopySource: "/tutopoint-doc-bucket/" + document.aws_filename,
+    Key: new_aws_filename,
+  }, (err, data) => {if(err) console.log(err)});
+  var newDoc = new Documents({
+    title: title,
+    date: Date.now(),
+    aws_filename: new_aws_filename,
   });
+  user.documents.push(newDoc._id);
+  user.markModified('documents');
+  user.save();
+  newDoc.save();
+
+  return newDoc._id;
 }
 
 function streamToString (stream) {
