@@ -44,64 +44,65 @@ const AppointmentItem = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setTimeLeft(calculateTimeLeft(date));
-      }, 1000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(calculateTimeLeft(date));
+    }, 1000);
 
-      return () => clearTimeout(timer);
-    }, [timeLeft]);
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
 
-    Object.keys(timeLeft).forEach((interval, index) => {
-      if (!timeLeft[interval]) {
-        return;
-      }
+  Object.keys(timeLeft).forEach((interval, index) => {
+    if (!timeLeft[interval]) {
+      return;
+    }
 
-      timerComponents.push(
-        <span key={index}>
-          {timeLeft[interval]} {interval}{" "}
-        </span>
-      );
-    });
+    timerComponents.push(
+      <span key={index}>
+        {timeLeft[interval]} {interval}{" "}
+      </span>
+    );
+  });
+
+  const dateFormatter = new Intl.DateTimeFormat('en-us', { month: "2-digit" , year: "2-digit", day: "2-digit", hour: 'numeric' });
+  const formattedDate = dateFormatter.format(new Date(date));
 
   return (
     <article className={`media ${status}`}>
-      <figure className="media-left">
-        <p className="image is-128x128 is-hidden-touch">
+      <div className="media-left">
+        <figure className="image is-64x64 is-hidden-touch">
           <img
             className="is-rounded"
             src={
               guideProfilePic
                 ? guideProfilePic
-                : "https://bulma.io/images/placeholders/128x128.png"
+                : "https://bulma.io/images/placeholders/64x64.png"
             }
           />
-        </p>
-      </figure>
+        </figure>
+      </div>
       <div className="media-content">
         <div className="content">
-          <p className="is-size-6-mobile is-size-4 has-text-weight-bold">
+          <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">
             {title}
           </p>
-          <p className="is-size-7-mobile is-size-4 has-text-weight-light">
+          <p className="is-size-7-widescreen is-size-6 has-text-weight-light">
             {guideGrade} at {guideUniversity}
           </p>
-          <p className="is-size-7-mobile is-size-5 has-text-weight-light">
+          <p className="is-size-7-widescreen is-size-7 has-text-weight-light">
             {guideMajor}
           </p>
         </div>
       </div>
       <div className="media-right">
-        {timerComponents.length ? (
-          <p className="is-size-6 has-text-right">{timerComponents}</p>
-        ) : null}
+        <p className="is-size-6 has-text-right">{formattedDate}</p>
 
         <p className="is-size-6 has-text-right is-capitalized">{status}</p>
 
         {status == "active" ? (
           <div className="control is-expanded">
             <button
-              className={"button is-light is-fullwidth"}
+              className={"button is-light is-fullwidth is-small"}
               onClick={() => {
                 onClick(sessionid);
               }}
@@ -111,8 +112,12 @@ const AppointmentItem = ({
             >
               Join
             </button>
+          </div>
+        ) : null}
+        {(profileStore.getState().__t == "clients" && status != "past") && (
+          <div className="control is-expanded">
             <button
-              className={"button is-light is-fullwidth"}
+              className={"button is-light is-fullwidth is-small"}
               onClick={() => {
                 cancel(sessionid);
               }}
@@ -122,30 +127,21 @@ const AppointmentItem = ({
             >
               Cancel
             </button>
+            <button
+              className={"button is-light is-fullwidth is-small"}
+              onClick={() => {
+                updateParentSessionId(sessionid);
+                send(sessionid);
+              }}
+              disabled={
+                profileStore.getState().__t == "clients" ? "" : "disabled"
+              }
+            >
+              Send questionnaire
+            </button>
           </div>
-        ) : (
-          <button
-            className={"button is-light is-fullwidth"}
-            onClick={() => {
-              cancel(sessionid);
-            }}
-            disabled={
-              profileStore.getState().__t == "clients" ? "" : "disabled"
-            }
-          >
-            Cancel
-          </button>
         )}
-        <button className={"button is-light is-fullwidth"} onClick={() => {
-            updateParentSessionId(sessionid);
-            send(sessionid);
-          }}
-          disabled={
-            profileStore.getState().__t == "clients" ? "" : "disabled"
-          }
-        >
-          Send Quistionnare
-        </button>
+
         {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
           <button
             className={"button is-light is-fullwidth"}
@@ -156,9 +152,7 @@ const AppointmentItem = ({
             Confirm
           </button>
         )}
-        {status == "" && (
-          <button className={"button is-light"}>Rebook</button>
-        )}
+        {status == "" && <button className={"button is-light"}>Rebook</button>}
       </div>
     </article>
   );
@@ -170,8 +164,8 @@ class Appointments extends React.Component {
     this.state = {
       isUpcoming: true,
       profile: profileStore.getState(),
-      selectDocumentPopup: '',
-      selectedSessionId: null,
+      selectDocumentPopup: "",
+      selectedSessionId: null
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -191,10 +185,10 @@ class Appointments extends React.Component {
       this.setState({ profile: profileStore.getState() });
     });
 
-
-
     function closeModal(e) {
-      document.getElementById("select-document-popup").classList.remove("is-active");
+      document
+        .getElementById("select-document-popup")
+        .classList.remove("is-active");
     }
     this.setState({
       selectDocumentPopup: (
@@ -203,15 +197,18 @@ class Appointments extends React.Component {
           <div className="modal-content">
             <DocumentCompactList action={this.action} />
           </div>
-          <button className="modal-close is-large" aria-label="close" onClick={closeModal}>
-          </button>
+          <button
+            className="modal-close is-large"
+            aria-label="close"
+            onClick={closeModal}
+          ></button>
         </div>
       )
     });
   }
 
   componentWillUnmount() {
-    this.unsubscribe()
+    this.unsubscribe();
   }
 
   sessionClicked(i) {
@@ -223,10 +220,9 @@ class Appointments extends React.Component {
       if (resp?.message == "ok") {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
-        profileAPI.getProfile()
-        .then((data) => {
+        profileAPI.getProfile().then(data => {
           profileStore.dispatch({ type: "Update", data: data });
-          this.props.history.push('/dashboard')
+          this.props.history.push("/dashboard");
         });
       }
     });
@@ -237,16 +233,15 @@ class Appointments extends React.Component {
       if (resp?.message == "ok") {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
-        profileAPI.getProfile()
-        .then((data) => {
+        profileAPI.getProfile().then(data => {
           profileStore.dispatch({ type: "Update", data: data });
-          this.props.history.push('/dashboard')
+          this.props.history.push("/dashboard");
         });
       }
     });
   }
 
-  sendDocument(sessionid){
+  sendDocument(sessionid) {
     document.getElementById("select-document-popup").classList.add("is-active");
   }
   //document selection
@@ -257,9 +252,12 @@ class Appointments extends React.Component {
   }
   updateSessionId(sessionid) {
     console.log(sessionid);
-    this.setState({
-      selectedSessionId: sessionid
-    }, console.log("update state finsih", this.state));
+    this.setState(
+      {
+        selectedSessionId: sessionid
+      },
+      console.log("update state finsih", this.state)
+    );
   }
 
   render() {
@@ -301,7 +299,7 @@ class Appointments extends React.Component {
           <header className="card-header">
             <p className="is-size-3">Past guides</p>
           </header>
-          <div style={{marginTop: '0.5em'}}>{result}</div>
+          <div style={{ marginTop: "0.5em" }}>{result}</div>
         </div>
       );
     }

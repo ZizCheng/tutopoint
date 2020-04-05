@@ -10,6 +10,7 @@
 #appointments .media {
     padding: 1.25em;
     border-radius: 24px;
+    align-items: center;
 }
 
 
@@ -23,4 +24,9 @@
 }
 .appointments-book-now {
   color: #F56363;
+}
+
+
+.content {
+    margin: 0px !important;
 }

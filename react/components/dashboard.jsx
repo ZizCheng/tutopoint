@@ -45,7 +45,7 @@ class Dashboard extends React.Component {
     const guides = this.state.topGuides?.slice(0, 4).map((guide, i) => {
         return <DiscoverGuideItem key={i} major={guide.major} name={guide.name} university={guide.university} grade={guide.grade} profilePic={guide.profilePic} backdrop={guide.backdrop}
         onClick={() => {
-          this.props.history.push("/discover");
+          this.props.history.push(`/discover/?guide=${guide._id}`);
         }}></DiscoverGuideItem>
     })
 
