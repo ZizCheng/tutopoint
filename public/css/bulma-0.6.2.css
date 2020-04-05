@@ -439,9 +439,15 @@ table th {
   text-align: center !important;
 }
 
+
+
 @media screen and (max-width: 768px) {
   .has-text-centered-mobile {
     text-align: center !important;
+  }
+  .has-mobile-reverse-flex {
+    flex-direction: column-reverse;
+    display: flex;
   }
 }
 
@@ -8065,6 +8071,12 @@ label.panel-block:hover {
   padding: 0.75rem;
 }
 
+.column.has-flex-0 {
+  -webkit-box-flex: 0;
+      -ms-flex: none;
+          flex: none;
+}
+
 .columns.is-mobile > .column.is-narrow {
   -webkit-box-flex: 0;
       -ms-flex: none;
@@ -9545,6 +9557,7 @@ label.panel-block:hover {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  display: flex !important;
 }
 
 .columns.is-gapless {

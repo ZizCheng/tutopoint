@@ -3,9 +3,10 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/bulma-0.6.2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
   <link rel="stylesheet" href="/css/aboutUs.css">
   <link rel="stylesheet" href="/css/navbar.css">
@@ -111,7 +112,6 @@
       </div>
   </div>
   <div class="custom-container">
-
       <!--nav bar-->
       <nav class="navbar" role="navigation" aria-label="main navigation">
           <div class="navbar-brand">
@@ -119,15 +119,16 @@
                   <img src="/images/logo.png">
               </a>
 
-              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                  data-target="navbarBasicExample">
+              <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                  aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
               </a>
           </div>
 
-          <div id="navbarBasicExample" class="navbar-menu is-active">
+          <div id="dropdownMenu" class="navbar-menu">
+
               <div class="navbar-end">
                   <div class="navbar-item">
                       <a class="nav-link" href="/guides">
@@ -157,16 +158,10 @@
               </div>
           </div>
       </nav>
-
-
   </div>
 
 
-
-  <div id="about" class="image is-3by1 big-banner"
-    style="margin-bottom: 1em;"></div>
-
-  <div class="container ">
+  <div class="container">
     <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> About Us </p>
     <p class="is-size-4 about-text"> TutoPoint is a digital college consulting platform
        designed to make your life easier. We take a innovative and fresh style of college consulting
@@ -183,7 +178,7 @@
           you in because they got themselves in. Read more about<span> <a href="/mission"> our mission. </a> </span> </p>
     </div>
   </div>
-  <div class="main-panel columns">
+  <div class="main-panel columns has-mobile-reverse-flex">
     <div class="column is-two-thirds">
       <p class="is-size-4" style="vertical-align: middle;"> The sessions that take place through TutoPoint are 100%
         digital. Finding, booking, scheduling, and meeting with your guide is all done with the click of a few buttons,
@@ -203,7 +198,7 @@
         the guide during your time speaking with them, starting with only $60/hour!  </p>
     </div>
   </div>
-  <div class="main-panel columns">
+  <div class="main-panel columns has-mobile-reverse-flex">
     <div class="column is-two-thirds">
       <p class="is-size-4" style="vertical-align: middle;"> The most modern college consulting experience featuring
         video call, screen share, shared documents, and much, much more. You can now seamlessly integrate anything you
@@ -213,7 +208,7 @@
       <img src="/images/digital2.png">
     </div>
   </div>
-  <div class="container ">
+  <div class="container what-are-you-waiting-for-container">
     <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> What are you waiting for? </p>
     <p class="is-size-4 has-text-centered" style="margin: 0px 0px 30px 0px;"> The future lies ahead!
       <span> <a onclick="show('registerModal')"> Register Now </a> </span></p>
