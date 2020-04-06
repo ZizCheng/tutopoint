@@ -16,6 +16,7 @@ import profileStore from "../store/profileStore.js";
 
 import Appointments from './appointments.jsx'
 import DiscoverGuideItem from './DiscoverGuideItem.jsx';
+import DocumentCompactList from './DocumentCompactList.jsx';
 
 
 class Dashboard extends React.Component {
@@ -67,13 +68,18 @@ class Dashboard extends React.Component {
         <Redirect to="/dashboard/upcoming"/>
           <div id="dashboard__bottomPreview" className="columns">
             <div className="column is-half">
-              <Appointments/>
+              <Appointments existingHistory={this.props.history}/>
             </div>
             <div className="column is-half">
               <div id="dashboard__previewAppointments" className="card">
                 <header className="card-header">
                   <p className="is-size-3 card-header-title is-size-6-touch">Your Documents</p>
                 </header>
+                <DocumentCompactList
+                  action={function(doc_id) {
+                    window.location.href = "/documents/" + doc_id;
+                  }}
+                />
               </div>
             </div>
           </div>

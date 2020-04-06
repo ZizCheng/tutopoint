@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { NavLink } from 'react-router-dom';
+
+
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
 import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+import createModal from "./createModal.jsx";
+
 
 import DocumentCompactList from "./DocumentCompactList.jsx";
 
@@ -119,7 +124,8 @@ const AppointmentItem = ({
             <button
               className={"button is-light is-fullwidth is-small"}
               onClick={() => {
-                cancel(sessionid);
+
+                createModal("Are you sure you want to cancel?", () => {cancel(sessionid)});
               }}
               disabled={
                 profileStore.getState().__t == "clients" ? "" : "disabled"
@@ -248,6 +254,7 @@ class Appointments extends React.Component {
   action(doc_id) {
     console.log(this.state.selectedSessionId);
     documentAPI.sendDocument(doc_id, this.state.selectedSessionId);
+    document.getElementById("select-document-popup").classList.remove("is-active");
   }
   updateSessionId(sessionid) {
     console.log(sessionid);
@@ -326,7 +333,7 @@ class Appointments extends React.Component {
         );
       });
 
-    const activeSession = this.state.profile?.sessions
+    var activeSession = this.state.profile?.sessions
       .filter(session => {
         const sessionDate = new Date(session.date);
         return (
@@ -365,6 +372,20 @@ class Appointments extends React.Component {
           />
         );
       });
+    if(!activeSession || activeSession.length === 0)
+    {
+        activeSession = (
+          <div className="appointments-no-upcoming-wrapper">
+            You have no upcoming appointments.<br></br>
+          {(this.state.profile?.__t == "clients" && (<a className="appointments-book-now" onClick={() => {
+            if(this.props.existingHistory){
+              return this.props.existingHistory.push('/discover');
+            }
+            this.props.history.push('/discover');
+          }}>Book one now.</a>))}
+          </div>
+        )
+    }
 
     return (
       <div id="appointments" className="card">

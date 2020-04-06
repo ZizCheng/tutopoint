@@ -53,7 +53,7 @@ class PostCall extends React.Component {
   }
   goDashboard() {
     reviewAPI.newReview(this.state.guideID, null, 0);
-    window.location.href="/dashboard";
+    this.props.history.push('/dashboard');
   }
 
   changeRating(newRating, name) {
@@ -65,9 +65,14 @@ class PostCall extends React.Component {
   submit() {
     var rating = this.state.rating;
     var review = document.getElementById("review-textarea").value;
+<<<<<<< HEAD
     reviewAPI.newReview(this.state.guideID, review, rating).then(() => {
       window.location.href="/dashboard";
     });
+=======
+    reviewAPI.newReview(this.state.guideID, review, rating);
+    this.props.history.push('/dashboard');
+>>>>>>> 894f753801dec4ad9b8c394a630cdbaf87981b2e
   }
   reportSubmit() {
     var reportText = document.getElementById("report-textarea").value;

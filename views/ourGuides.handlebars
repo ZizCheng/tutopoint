@@ -3,9 +3,10 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Guides</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/bulma-0.6.2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
   <link rel="stylesheet" href="/css/aboutUs.css">
   <link rel="stylesheet" href="/css/navbar.css">
@@ -13,10 +14,19 @@
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
   <link rel="stylesheet" href="/css/index.css">
   <style>
-          #discoverSection {
-          margin-top: 1.5em;
+      #discoverSection {
+        margin-top: 1.5em;
       }
-      .profilePicture {
+      .profiles-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .profile {
+        width: 25%;
+      }
+      .profile-picture-wrapper {
           position: absolute !important;
           top: 45%;
           left: 50%;
@@ -34,6 +44,22 @@
       .no-margin-bottom {
           margin-bottom: .5em !important;
       }
+      @media only screen and (max-width: 1500px) {
+        .profile {
+          width: 33%;
+        }
+      }
+      @media only screen and (max-width: 950px) {
+        .profile {
+          width: 50%;
+        }
+      }
+      @media only screen and (max-width: 600px) {
+        .profile {
+          width: 90%;
+        }
+      }
+
   </style>
 </head>
 <body>
@@ -134,7 +160,6 @@
       </div>
   </div>
   <div class="custom-container">
-
       <!--nav bar-->
       <nav class="navbar" role="navigation" aria-label="main navigation">
           <div class="navbar-brand">
@@ -142,15 +167,16 @@
                   <img src="/images/logo.png">
               </a>
 
-              <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-                  data-target="navbarBasicExample">
+              <a id="dropdownButton" onClick="toggleDropdown()" role="button" class="navbar-burger burger"
+                  aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
                   <span aria-hidden="true"></span>
               </a>
           </div>
 
-          <div id="navbarBasicExample" class="navbar-menu is-active">
+          <div id="dropdownMenu" class="navbar-menu">
+
               <div class="navbar-end">
                   <div class="navbar-item">
                       <a class="nav-link" href="/guides">
@@ -180,24 +206,22 @@
               </div>
           </div>
       </nav>
-
-
   </div>
 
 
   <section id="discoverSection">
       <div class="container">
+        <div class="profiles-container">
           {{#each guideChunks}}
-          <div class="columns is-centered">
             {{#each this}}
-            <div class="profile column is-one-quarter" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
+            <div class="profile column has-flex-0" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
               <div class="card">
                 <div class="card-image">
                   <figure class="backdrop image is-2by1">
                     <img src="{{this.backdrop}}">
                   </figure>
-                  <figure class="profilePicture image is-128x128">
-                    <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+                  <figure class="profile-picture-wrapper image is-128x128">
+                    <img class="profile-picture is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
                   </figure>
                   <div class="rating">
                     <span class="icon has-text-danger">
@@ -221,10 +245,20 @@
               </div>
             </div>
             {{/each}}
-            </div>
           {{/each}}
+        </div>
     </div>
     </section>
+
+    <footer class="footer" style="padding-bottom: 1em !important;">
+        <div class="content has-text-centered">
+            <p>
+                Have any questions? Email <span> <a href="mailto:support@tutopoint.com?subject=About%20Tutopoint"
+                        target="_top">support@tutopoint.com</a> </span>.
+            </p>
+            <p> Made with love by Jason, Lucas, Titor, and Ziz. </p>
+        </div>
+    </footer>
 
 
   <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -236,7 +270,7 @@
       searchType.addEventListener('change', function() {
         var ev = new Event('keyup');
         searchBar.dispatchEvent(ev);
-      })
+      });
       searchBar.addEventListener('keyup', function(){
         const queryType = searchType.value.toLowerCase();
         const profiles = document.getElementsByClassName('profile')
@@ -250,16 +284,8 @@
             currentEl.classList.remove('is-hidden')
           }
         }
-      })
+      });
+
   </script>
 </body>
-<footer class="footer" style="padding-bottom: 1em !important;">
-    <div class="content has-text-centered">
-        <p>
-            Have any questions? Email <span> <a href="mailto:support@tutopoint.com?subject=About%20Tutopoint"
-                    target="_top">support@tutopoint.com</a> </span>.
-        </p>
-        <p> Made with love by Jason, Lucas, Titor, and Ziz. </p>
-    </div>
-</footer>
 </html>
