@@ -17,14 +17,13 @@ import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
 const Discover = React.lazy(() => import("./discover.jsx"));
-import Documents from "./document.jsx";
-import DocumentEdit from "./DocumentEdit.jsx";
+const Documents = React.lazy(() => import ("./document.jsx")); 
+const DocumentEdit = React.lazy(() => import("./DocumentEdit.jsx"));
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
 import PostCall from "./PostCall.jsx";
-
 import profileStore from "../store/profileStore.js";
 
 import "./theme.sass";
