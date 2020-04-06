@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { NavLink } from 'react-router-dom';
+
+
 import "./appointments.scss";
 import sessionAPI from "../api/session.js";
 import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
 import profileStore from "../store/profileStore.js";
+import createModal from "./createModal.jsx";
+
 
 import DocumentCompactList from "./DocumentCompactList.jsx";
 
@@ -366,13 +371,17 @@ class Appointments extends React.Component {
           />
         );
       });
-    console.log(activeSession);
     if(!activeSession || activeSession.length === 0)
     {
         activeSession = (
           <div className="appointments-no-upcoming-wrapper">
             You have no upcoming appointments.<br></br>
-          <a className="appointments-book-now" href="/discover">Book one now.</a>
+          {(this.state.profile?.__t == "clients" && (<a className="appointments-book-now" onClick={() => {
+            if(this.props.existingHistory){
+              return this.props.existingHistory.push('/discover');
+            }
+            this.props.history.push('/discover');
+          }}>Book one now.</a>))}
           </div>
         )
     }

@@ -68,7 +68,7 @@ class Dashboard extends React.Component {
         <Redirect to="/dashboard/upcoming"/>
           <div id="dashboard__bottomPreview" className="columns">
             <div className="column is-half">
-              <Appointments/>
+              <Appointments existingHistory={this.props.history}/>
             </div>
             <div className="column is-half">
               <div id="dashboard__previewAppointments" className="card">
