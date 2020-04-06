@@ -119,7 +119,7 @@ const AppointmentItem = ({
             <button
               className={"button is-light is-fullwidth is-small"}
               onClick={() => {
-                cancel(sessionid);
+                createModal("Are you sure you want to cancel the session with "+guideName+" on "+formattedDate+"? This action is irreversible.", () => {cancel(sessionid)});
               }}
               disabled={
                 profileStore.getState().__t == "clients" ? "" : "disabled"
@@ -146,7 +146,7 @@ const AppointmentItem = ({
           <button
             className={"button is-light is-fullwidth"}
             onClick={() => {
-              confirm(sessionid);
+              createModal("Are you sure you want to confirm this session? This action is irreversible.", () => {confirm(sessionid)});
             }}
           >
             Confirm
