@@ -48,8 +48,8 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    hot: false,
-    inline: false,
+    hot: true,
+    inline: true,
   },
   watch: true,
 };

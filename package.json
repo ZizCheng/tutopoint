@@ -9,6 +9,9 @@
     "app": "nodemon index.js",
     "build": "webpack --config './webpack.production.config.js'"
   },
+  "nodemonConfig": {
+    "ignore": ["react/*", "dist/*"]
+  },
   "author": "tutopoint, llc.",
   "license": "ISC",
   "dependencies": {

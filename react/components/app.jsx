@@ -106,6 +106,9 @@ class App extends React.Component {
       <Suspense fallback={<Loading />}>
         {!this.state.loaded && <Loading />}
         <div id="main" className="container is-fluid">
+          <button onClick={() => {
+            this.props.history.push('/session/5e478faf827b5e1ba040cbb4')
+          }}>Redirect to test session!</button>
           <nav
             className="navbar is-transparent"
             role="navigation"
@@ -304,9 +307,9 @@ class App extends React.Component {
                 <Route path="/fail">
                   <PaymentFailed />
                 </Route>
-                {/* <Route path="/session/:id">
+                <Route path="/session/:id">
                   <Session />
-                </Route> */}
+                </Route>
                 {this.state.profile?.__t == "clients" && (
                   <Route path="/postcall/:id">
                     <PostCall />
