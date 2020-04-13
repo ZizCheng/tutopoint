@@ -266,7 +266,6 @@ function chargeUser(io, socket, sessionid, user, count) {
                 transporter.sendMail(mailOptions, function(error, info) {
                   if (error) {
                     console.log(error);
-                    reject(error);
                   } else {
                     console.log('Email sent1');
                   }
