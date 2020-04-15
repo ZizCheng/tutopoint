@@ -8,6 +8,8 @@ const auth = require('./auth/auth.js');
 const handlebars = require('express-handlebars');
 const expressSession = require('express-session');
 const io = require('socket.io')(http);
+const redis = require('redis').createClient();
+const subscriber = require('redis').createClient();
 const redisAdapter = require('socket.io-redis');
 
 const secret = require('./secret.js').stripe;
@@ -145,55 +147,79 @@ if (process.env.NODE_ENV == 'production') {
   io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
 }
 
-const tempSession = {};
 
 io.use(function(socket, next) {
   // Wrap the express middleware
   session(socket.request, {}, next);
 });
 
+const refreshTTL = 60*1;
+
 async function sendInfo(socket, sessionid, userid) {
-  // What room info should look like right now!
-  // data room = {
-  //   clientPresent :: Boolean,
-  //   clientJoined :: Date,
-  //   lastSeenClient :: Date,
-  //   guidePresent :: Boolean,
-  //   guideJoined :: Date,
-  //   lastSeenGuide :: Date,
-  //   callStart :: Date, default: null,
-  //   callLastPing :: Date,
-  // }
+  const tempSession = {};
   const info = {};
 
   try {
     const session = await Sessions.findById(sessionid);
-    if (!tempSession[sessionid]) {
-      tempSession[sessionid] = {};
-    }
 
-    const room = tempSession[sessionid];
+    redis.get(sessionid, function(err, reply) {
+      let room = tempSession[sessionid];
+      if (reply != null) {
+        room = JSON.parse(reply);
+      } else {
+        room = {};
+      }
+      if (session.createdBy._id == userid) {
+        currentDate = new Date(Date.now());
+        room['guideid'] = userid;
+        room['guidePresent'] = true;
+        room['guideJoined'] = currentDate;
+      }
+      if (session.clients.includes(userid)) {
+        currentDate = new Date(Date.now());
+        room['clientid'] = userid;
+        room['clientPresent'] = true;
+        room['clientJoined'] = currentDate;
+        room['lastSeenClient'] = currentDate;
+      }
 
-    if (session.createdBy._id == userid) {
-      currentDate = new Date(Date.now());
-      room['guidePresent'] = true;
-      room['guideJoined'] = currentDate;
-      room['lastSeenClient'] = currentDate;
-    }
-    if (session.clients.includes(userid)) {
-      currentDate = new Date(Date.now());
-      room['clientPresent'] = true;
-      room['clientJoined'] = currentDate;
-      room['lastSeenClient'] = currentDate;
-    }
 
+      info['roomInfo'] = room;
 
-    info['roomInfo'] = room;
-
-    socket.emit('info', info);
+      redis
+          .multi()
+          .set(sessionid, JSON.stringify(room))
+          .setex(`shadow:${sessionid}`, (refreshTTL), '')
+          .exec(function(err, reply) {
+            if (err) return console.log(err);
+            socket.emit('info', info);
+          });
+    });
   } catch (e) {
     console.log(e);
   }
+}
+
+function refreshUser(sessionid, userid) {
+  console.log('got refreshed');
+  redis.get(sessionid, function(err, rep) {
+    if (err) return err;
+    if (!rep) return;
+
+    const room = JSON.parse(rep);
+    const currentDate = new Date(Date.now());
+    if (room['clientid'] == userid) {
+      room['lastSeenClient'] = currentDate;
+    } else if (room['guideid'] == userid) {
+      return;
+    }
+
+    redis
+        .multi()
+        .set(sessionid, JSON.stringify(room))
+        .setex(`shadow:${sessionid}`, refreshTTL, '')
+        .exec();
+  });
 }
 
 io.on('connection', function(socket, req, res) {
@@ -207,19 +233,54 @@ io.on('connection', function(socket, req, res) {
   // Join's session room.
   socket.join(sessionid);
 
-  // TODO: Fucking get on this shit when we wake up okay!
   sendInfo(socket, sessionid, userid);
 
-  io.on('disconnect', function() {
+  socket.on('disconnect', function() {
+    console.log('A user has disconnected');
+
     // Send an event that the client has disconnected, as well as set clientJoined to false and last seen. Set a timeout in 5 minutes to check if client is there.
-    const room = tempSession['sessionid'];
+    redis.get(sessionid, function(err, data) {
+      if (err) return console.log(err);
+      if (!data) return;
 
-    if (room) {
-      room['clientPresent'] = false;
-      room['lastSeenClient'] = new Date(Date.now());
+      const room = JSON.parse(data);
+      const currentDate = new Date(Date.now());
+      if (room['clientid'] == userid) {
+        room['clientPresent'] = false;
+        room['lastSeenClient'] = currentDate;
+      } else if (room['guideid'] == userid) {
+        room['guidePresent'] = false;
+      }
 
-      socket.to(sessionid).emit('event', {type: 'disconnect', user: userid});
-    }
+      redis.set(sessionid, JSON.stringify(room), function(err, r) {
+        if (err) return console.log(err);
+        socket.to(sessionid).emit('event', {type: 'disconnect', user: userid});
+      });
+    });
+  });
+
+  socket.on('callStart', function() {
+    redis.exists(sessionid, function(err, r) {
+      if (err) return console.log(err);
+      if (!r) return;
+      redis.get(sessionid, function(err, data) {
+        if (err) return console.log(err);
+        const room = JSON.parse(data);
+        refreshUser(sessionid, userid);
+        if (room && !room['callStart']) {
+          const currentDate = new Date(Date.now());
+          console.log('call started on', room);
+          room['callStart'] = currentDate;
+          redis.set(sessionid, JSON.stringify(room));
+        }
+      });
+    });
+  });
+
+  socket.on('refresh', function() {
+    // TODO Refresh the client / guide as well
+    console.log('Session will be refreshed again in 15 minutes to check');
+    refreshUser(sessionid, userid);
   });
 
   socket.on('offer', function(offer) {
@@ -228,7 +289,129 @@ io.on('connection', function(socket, req, res) {
   });
 
   socket.on('replyOffer', function(offer) {
+    console.log('Replied offer');
     socket.to(sessionid).broadcast.emit('answer', offer);
   });
 });
 
+function payClient(clientstripeid, amount, message) {
+  return new Promise((resolve, reject) => {
+    stripe.customers.createBalanceTransaction(clientstripeid,
+        {amount: -(amount), currency: 'usd', description: message},
+        function(err, _) {
+          if (err) return reject();
+          resolve();
+        },
+    );
+  });
+}
+
+function payGuide(guidestripeaccount, amount) {
+  const paymentInfo =
+    {amount: amount,
+      currency: 'usd',
+      destination: guidestripeaccount,
+    };
+  stripe.transfers.create(paymentInfo)
+      .then(() => {
+      // Success
+
+      })
+      .catch((err) => {
+      // Failure
+        const topupInfo = {amount: amount*2, currency: 'usd', description: `Topup`, statement_descriptor: 'Top-up'};
+        stripe.topup(topupInfo)
+            .then(() => {
+              // Attempt to charge again
+              stripe.transfers.create(paymentInfo)
+                  .then(() => {
+                    // Success
+                  })
+                  .catch(() => {
+                    const failedPayment = new FailedPayments({
+                      guideId: session.createdBy,
+                      sessionId: session._id,
+                      count: count,
+
+                    });
+                    failedPayment.save()
+                        .then(() => {
+                          console.log(`Transfer payment for ${session.createdBy} has failed.`);
+                        });
+                  });
+            })
+            .catch(() => {
+              const failedPayment = new FailedPayments({
+                guideId: session.createdBy,
+                sessionId: session._id,
+                count: count,
+
+              });
+              failedPayment.save()
+                  .then(() => {
+                    console.log(`Transfer payment for ${session.createdBy} has failed.`);
+                  });
+            });
+      });
+}
+
+async function sessionCharge(sessionid) {
+  const trialTime = 10; // 10 minutes.
+  const hour = 40;
+  const per15rate = 15;
+  Sessions.findById(sessionid)
+      .then((session) => {
+        if (!session.completed) {
+          session.completed = true;
+        }
+
+        session.save();
+        redis.get(sessionid, function(err, reply) {
+          if (err) return console.log(err);
+          if (!reply) return;
+
+          const room = JSON.parse(reply);
+          const callStart = new Date(room['callStart']);
+          const callEnd = new Date(room['callEnd']);
+
+          
+
+        });
+      })
+      .catch((e) => console.log('Session doesn\'t exist!'));
+}
+
+subscriber.subscribe('__keyevent@0__:expired');
+
+subscriber.on('message', function(_channel, message) {
+  const noActivityTimeout = 1000*60*5;
+  const sessionid = message.split(':')[1];
+
+  redis.get(sessionid, function(err, data) {
+    if (err) return console.log(err);
+    if (!data) return;
+
+    const room = JSON.parse(data);
+    const callStart = new Date(room['callStart']);
+    const lastSeenClient = new Date(room['lastSeenClient']);
+
+    if (!callStart) {
+      // Ignore, session will be deleted.
+    }
+
+    if (room['callEnd']) {
+      // Caller has already pressed end.
+    }
+    // Calculate room activity based on client
+    else if ((Date.now() - lastSeenClient.valueOf()) > noActivityTimeout && !room['guidePresent']) {
+      console.log(Date.now() - lastSeenClient.valueOf());
+      console.log('No activity in this cut');
+    } else {
+      console.log('ping activity');
+
+      io.to(sessionid).emit('activityPing');
+
+      redis.setex(`shadow:${sessionid}`, refreshTTL, '');
+    }
+  });
+});

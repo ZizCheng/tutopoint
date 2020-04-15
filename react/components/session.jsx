@@ -15,10 +15,10 @@ class Session extends React.Component {
       profile: profileStore.getState(),
       sessionid: props.match.params.id,
     };
-    this.initializePeer = this.initializePeer.bind(this)
+    this.initializePeer = this.initializePeer.bind(this);
     this.initializeQuill = this.initializeQuill.bind(this);
     this.replyOffer = this.replyOffer.bind(this);
-  
+    this.startCall = this.startCall.bind(this);
   }
   initializeQuill() {
     this.quill = new quilljs("#editor", {
@@ -42,95 +42,167 @@ class Session extends React.Component {
 
 
     */
+
+    const that = this;
     const p = new simplePeer({
       initiator: true,
       trickle: false,
-    }) 
+      stream: this.state.stream,
+    });
 
-    p.on('signal', offer => {
-      socket.emit('offer', offer);
-    })
+    p.on("signal", (offer) => {
+      socket.emit("offer", offer);
+    });
 
-    p.on('connect', function(){
-      console.log('both users hav econnected!!!!!');
-    })
+    p.on("connect", function () {
+      console.log("initializer connected");
+      that.startCall();
+    });
 
-    this.setState({peer: p});
+    p.on("stream", function (stream) {
+      console.log("got stream");
+      that.getUserMedia();
+
+      const remote = document.getElementById("remote");
+      remote.srcObject = stream;
+      remote.play();
+    });
+
+    p.on("error", (err) => console.log(err));
+
+    that.setState({ peer: p });
 
     return;
   }
 
   replyOffer(socket, data) {
-    const p  = new simplePeer({
+    const that = this;
+
+    if (this.state.peer) {
+      this.state.peer.signal(data);
+
+      return;
+    }
+
+    const p = new simplePeer({
       initiator: false,
       trickle: false,
-    })
+      stream: this.state.stream,
+    });
 
-    p.on('signal', offer => {
-      socket.emit('replyOffer', offer);
-    })
+    p.on("signal", (offer) => {
+      socket.emit("replyOffer", offer);
+    });
 
-    p.on('connect', function(){
-      console.log('both users hav econnected!!!!!');
-    })
+    p.on("connect", function () {
+      console.log("noninit connected");
+      that.startCall();
+      that.getUserMedia();
+    });
+
+    p.on("stream", function (stream) {
+      console.log("got stream");
+
+      const remote = document.getElementById("remote");
+      remote.srcObject = stream;
+      remote.play();
+    });
+
+    p.on("error", (err) => console.log(err));
 
     p.signal(data);
 
-    this.setState({peer: p});
+    that.setState({ peer: p });
 
     return;
   }
 
-  getUserMedia() {
-    // ask for video
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((vidSrc) => {
-        const localVideo = document.getElementById("local");
-        localVideo.srcObject = vidSrc;
-        localVideo.play();
-      })
-      .catch((err) => {
-        console.log("video was not found.");
-      });
+  startCall(){
+    this.state.socket.emit('callStart');
+    this.state.socket.emit('ping');
+    this.poll = setTimeout(() => {
+      console.log("pinging");
+      this.state.socket.emit('ping')
+    }, 2 * 60 * 1000);
+  }
+ getUserMedia() { 
+  return new Promise((resolve, reject) => {
 
-    // ask for audio.
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((audioSrc) => {
-        // Handle audio src. Send it to RTC.
-      })
-      .catch((err) => {
-        //  No audio src has been found once user has been connected so to other caller that there is no audio found.
-      });
+      // ask for video
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((vidSrc) => {
+          const localVideo = document.getElementById("local");
+          localVideo.srcObject = vidSrc;
+          localVideo.play();
+          this.setState({stream: vidSrc}, () => {
+            resolve()
+          })
+        })
+        .catch((err) => {
+          console.log("video was not found.");
+          reject();
+        });
+
+      // // ask for audio.
+      // navigator.mediaDevices
+      //   .getUserMedia({ audio: true })
+      //   .then((audioSrc) => {
+      //     // Handle audio src. Send it to RTC.
+      //     this.state.peer.addStream(audioSrc);
+      //   })
+      //   .catch((err) => {
+      //     //  No audio src has been found once user has been connected so to other caller that there is no audio found.
+      //   });
+    });
   }
 
   async componentDidMount() {
     const that = this;
+
+    await this.getUserMedia();
+
     this.initializeQuill();
     const socket = io(window.location.origin, {
       query: `session=${this.state.sessionid}`,
     });
-    socket.on("connect", function(){
+    socket.on("connect", function () {
       console.log(`Connection successful`);
-    })
+    });
     socket.on("info", function (data) {
       console.log(data);
-      if(data?.roomInfo?.clientPresent && data?.roomInfo?.guidePresent){
+      if (data?.roomInfo?.clientPresent && data?.roomInfo?.guidePresent) {
         that.initializePeer(socket);
       }
     });
-    socket.on('gotOffer', function(data){
-      console.log('receive an offer');
+    socket.on("activityPing", () => socket.emit("refresh"));
+    socket.on("gotOffer", function (data) {
+      console.log("receive an offer");
       that.replyOffer(socket, data);
+    });
+    socket.on("event", function(data){
+      console.log(data)
+      if(data.type == "disconnect"){
+        that.setState({peer: null})
+        document.getElementById('remote').srcObject = null;
+      }
     })
-    socket.on('answer', offer => {
-    // replyOfferTODO: Connect first before asking for video source.
-      console.log('got answer', this.state.peer);
-      
+    socket.on("answer", (offer) => {
+      // replyOfferTODO: Connect first before asking for video source.
+      console.log("got answer", this.state.peer);
+
       this.state.peer.signal(offer);
     });
-    this.getUserMedia();
+    this.setState({socket: socket})
+  }
+
+  componentWillUnmount() {
+    this.state.socket.disconnect();
+    clearInterval(this.poll);
+    this.state.peer.destroy();
+    this.state.stream.getTracks().map(track => track.stop());
+    document.getElementById('remote').srcObject = null;
+    this.setState({peer: null, stream: null, socket: null});
   }
 
   render() {
