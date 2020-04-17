@@ -257,7 +257,7 @@ function chargeUser(io, socket, sessionid, user, count) {
                   to: email,
                   subject: '[TutoPoint] Post Session Receipt',
                   text: 'Hello ' + name + ', thank you for your business!\n\n ' +
-                   'You have been charged $' + (count * 15) + ' for your ' + (count * 15) + ' session with ' + session.createdBy.name + '.\n' +
+                   'You have been charged $' + (40 + (count-4) * 15) + ' for your ' + (count * 15) + ' minute session with ' + session.createdBy.name + '.\n' +
                    'If you enjoyed your session and/or found it helpful, you can rebook another session with your past guide(s) in your profile page at https://tutopoint.com/profile .' +
                    '\nIn the rare occasion that the service provided was not up to our standards or you have a question regarding your session, please email support@tutopoint.com, we will reply within 2 business days.' +
                    '\n\nOnce again, thank you for your support. Wishing you the best,' +
@@ -279,14 +279,14 @@ function chargeUser(io, socket, sessionid, user, count) {
                 stripe.customers.retrieve(
                     customerAccount.stripeCustomerId,
                     function(err, customer) {
-                      if (count == 0 && customer.balance <= -6000) {
+                      if (count == 0 && customer.balance <= -4000) {
                         stripe.customers.createBalanceTransaction(
                             customerAccount.stripeCustomerId,
-                            {amount: 6000, currency: 'usd', description: 'Session charge.'},
+                            {amount: 4000, currency: 'usd', description: 'Session charge.'},
                             function(err, customerAfterCharge) {
                               console.log(err);
                               if (err) return; // Handle when it could not charge.
-                              io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'You have been charged.', message: `You have been charged $60 for this session. You have $${customerAfterCharge.ending_balance / 100 * -1} remaining`, style: 'is-primary'});
+                              io.in('/').to(socket.request.session.passport.user).emit('notification', {title: 'You have been charged.', message: `You have been charged $40 for this session. You have $${customerAfterCharge.ending_balance / 100 * -1} remaining`, style: 'is-primary'});
                               setTimeout(() => {
                                 chargeUser(io, socket, sessionid, user, count+4);
                               }, 3600000);

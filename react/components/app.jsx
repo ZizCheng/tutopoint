@@ -17,7 +17,7 @@ import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
 const Discover = React.lazy(() => import("./discover.jsx"));
-const Documents = React.lazy(() => import ("./document.jsx")); 
+const Documents = React.lazy(() => import ("./document.jsx"));
 const DocumentEdit = React.lazy(() => import("./DocumentEdit.jsx"));
 import Profile from "./profile.jsx";
 import Session from "./session.jsx";
@@ -231,7 +231,7 @@ class App extends React.Component {
                         activeClassName="is-active"
                         to="/balance"
                         data-step="3"
-                        data-intro="Refill your balance to at least $15 before you book a session by clicking balance."
+                        data-intro="Refill your balance to at least $40 before you book a session by clicking balance. All our guides cost $40/hour during the beta period."
                       >
                         Balance{" "}
                         {this.state.profile

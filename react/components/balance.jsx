@@ -90,7 +90,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
                 placeholder="Amount in USD"
               />
             </div>
-            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions are $60/hour. You need at least $60 in your
+            <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions during beta are $40/hour. You need at least $40 in your
             balance to book a session.</p>
           </div>
         </div>
