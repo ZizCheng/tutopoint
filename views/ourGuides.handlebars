@@ -8,59 +8,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <link rel="stylesheet" href="/css/bulma-0.6.2.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-  <link rel="stylesheet" href="/css/aboutUs.css">
+  <link rel="stylesheet" href="/css/ourGuides.css">
+  <link rel="stylesheet" href="/css/guideCard.css">
   <link rel="stylesheet" href="/css/navbar.css">
   <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
   <link rel="stylesheet" href="/css/index.css">
-  <style>
-      #discoverSection {
-        margin-top: 1.5em;
-      }
-      .profiles-container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .profile {
-        width: 25%;
-      }
-      .profile-picture-wrapper {
-          position: absolute !important;
-          top: 45%;
-          left: 50%;
-          transform: translate(-50%,-50%);
-      }
-      .backdrop {
-          filter: blur(.5px) brightness(80%);
-      }
-      .rating {
-          position: absolute !important;
-          bottom: 0%;
-          left: 50%;
-          transform: translate(-50%,0%);
-      }
-      .no-margin-bottom {
-          margin-bottom: .5em !important;
-      }
-      @media only screen and (max-width: 1500px) {
-        .profile {
-          width: 33%;
-        }
-      }
-      @media only screen and (max-width: 950px) {
-        .profile {
-          width: 50%;
-        }
-      }
-      @media only screen and (max-width: 600px) {
-        .profile {
-          width: 90%;
-        }
-      }
-
-  </style>
 </head>
 <body>
 
@@ -210,43 +162,31 @@
 
 
   <section id="discoverSection">
-      <div class="container">
-        <div class="profiles-container">
-          {{#each guideChunks}}
-            {{#each this}}
-            <div class="profile column has-flex-0" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
-              <div class="card">
-                <div class="card-image">
-                  <figure class="backdrop image is-2by1">
-                    <img src="{{this.backdrop}}">
-                  </figure>
-                  <figure class="profile-picture-wrapper image is-128x128">
-                    <img class="profile-picture is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
-                  </figure>
-                  <div class="rating">
-                    <span class="icon has-text-danger">
-                      <i class="fas fa-star"></i>
-                    </span>
-                  </div>
-
-                </div>
-                <div class="card-content">
-                  <div class="media-content">
-                    <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
-                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}}</p>
-                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.grade}}</p>
-                    <p class="title is-6 has-text-centered no-margin-bottom">{{this.major}}</p>
-                  </div>
-                </div>
-                <footer class="card-footer">
-                  <a onclick="show('registerModal')" class="card-footer-item">Schedule Now!</a>
-
-                </footer>
+      <div class="guides-container">
+        {{#each guideChunks}}
+          {{#each this}}
+          <div class="profile column has-flex-0" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
+            <div class="card guide-card">
+              <div class="card-image">
+                <figure class="backdrop image is-2by1">
+                  <img src="{{this.backdrop}}">
+                </figure>
+                <figure class="profile-picture-wrapper image is-128x128">
+                  <img class="profile-picture is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+                </figure>
               </div>
+              <div class="card-content guide-card-content">
+                <p class="guide-name">{{this.name}}</p>
+                <p class="guide-description">{{this.university}}, {{this.grade}} in {{this.major}}</p>
+                <p class="guide-bio">{{this.bio}}</p>
+              </div>
+              <footer class="card-footer guide-card-footer">
+                  <a href="/signup" class="card-footer-item">Schedule Now!</a>
+              </footer>
             </div>
-            {{/each}}
+          </div>
           {{/each}}
-        </div>
+        {{/each}}
     </div>
     </section>
 

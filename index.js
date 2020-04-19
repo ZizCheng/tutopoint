@@ -114,7 +114,7 @@ const chunk = (arr, size) =>
 app.get('/guides', function(req, res) {
   Guides
       .find({})
-      .select('_id name university major grade university profilePic backdrop')
+      .select('_id name university major grade university profilePic backdrop bio')
       .then((listOfGuides) => res.render('ourGuides', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
       .catch((err) => res.send(err));
 });
