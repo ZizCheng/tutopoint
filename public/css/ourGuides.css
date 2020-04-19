@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
+body {
+  font-family: 'Lato', 'sans-serif';
+}
+#discoverSection {
+  margin-top: 1.5em;
+}
+.guides-container {
+  margin: 0 10vw;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+
+@media only screen and (max-width: 900px) {
+  .guides-container {
+    margin: 0 5vw;
+  }
+}
+@media only screen and (max-width: 739px) {
+  .guide-card {
+    height: auto;
+    max-height: 450px;
+  }
+}
