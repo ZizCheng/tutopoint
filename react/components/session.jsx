@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
 import profileStore from "../store/profileStore.js";
-import quilljs from "quill";
+import Quill from "quill";
 import {
   IoIosEyeOff,
   IoIosEye,
@@ -15,6 +15,8 @@ import "./session.scss";
 import io from "socket.io-client";
 import Timer from "react-compound-timer";
 import * as mediasoupClient from "mediasoup-client";
+
+var notesId;
 
 class Session extends React.Component {
   constructor(props) {
@@ -35,7 +37,7 @@ class Session extends React.Component {
   }
   initializeQuill() {
     const that = this;
-    this.quill = new quilljs("#editor", {
+    this.quill = new Quill("#editor", {
       theme: "snow",
     });
     this.quill.on("text-change", function (delta, oldDelta, source) {
@@ -55,7 +57,7 @@ class Session extends React.Component {
 
     /*
       Whoever is last to join the call will be the one initiating the call.
-      
+
       Process:
         -> Once IO is connected IO will receive an IO info event to know who is missing in the call. Information about room and initiators.
         -> Signaling server is completely independent from any payment system / tracker.
@@ -146,6 +148,37 @@ class Session extends React.Component {
   }
 
   startCall() {
+    //save notes interval
+    console.log("starting save notes interval");
+    setInterval(function(quill) {
+      console.log(quill.getContents());
+      if(!notesId) {
+        //createDocument
+        fetch('/api/document', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: "Untitled Document",
+            text: quill.getContents()
+          })
+        }).then((response) => response.text())
+          .then((doc_id) => {
+            notesId = JSON.parse(doc_id);
+          });
+      }
+      else {
+        //updateDocument
+        fetch('/api/document/' + notesId, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            title: "Untitled Document",
+            text: quill.getContents()
+          })
+        });
+      }
+    }, 10*1000, this.quill);
+
     this.state.socket.emit("callStart");
     this.state.socket.emit("ping");
   }
