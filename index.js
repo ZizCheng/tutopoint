@@ -8,8 +8,6 @@ const auth = require('./auth/auth.js');
 const handlebars = require('express-handlebars');
 const expressSession = require('express-session');
 const io = require('socket.io')(http);
-const redis = require('redis').createClient();
-const subscriber = require('redis').createClient();
 const redisAdapter = require('socket.io-redis');
 
 const secret = require('./secret.js').stripe;
@@ -53,13 +51,20 @@ const session = expressSession({
   resave: true,
 });
 
+let redisConfig = {}
+
+if (process.env.NODE_ENV == 'production') {
+ redisConfig = {host: 'rd1.tutopoint.com', port: 6379};
+}
+
+const redis = require('redis').createClient(redisConfig);
+const subscriber = require('redis').createClient(redisConfig);
 
 mongoose.connect(databaseCredentials.url, {useNewUrlParser: true});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static('public'));
-
 
 app.use(function(req, res, next) {
   res.locals.stripePK = secret.pk_key;
@@ -86,10 +91,8 @@ app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
 
-
 app.engine('handlebars', handlebars());
 app.set('view engine', 'handlebars');
-
 
 const config = {
   port: 3000,
@@ -100,7 +103,9 @@ passport.use(auth.Strategy);
 passport.serializeUser(auth.serializeUser);
 passport.deserializeUser(auth.deserializeUser);
 
+
 app.get('/', function(req, res) {
+  if(req.isAuthenticated()) return res.redirect('/dashboard');
   res.sendFile('views/index.html', {root: __dirname});
 });
 app.get('/about', function(req, res) {
@@ -114,10 +119,14 @@ const chunk = (arr, size) =>
     arr.slice(i * size, i * size + size),
   );
 app.get('/guides', function(req, res) {
-  Guides
-      .find({})
+  Guides.find({})
       .select('_id name university major grade university profilePic backdrop')
-      .then((listOfGuides) => res.render('ourGuides', {guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4), layout: false}))
+      .then((listOfGuides) =>
+        res.render('ourGuides', {
+          guideChunks: chunk(JSON.parse(JSON.stringify(listOfGuides)), 4),
+          layout: false,
+        }),
+      )
       .catch((err) => res.send(err));
 });
 app.use(express.static('dist'));
@@ -134,7 +143,6 @@ http.listen(config.port, function() {
 transportsAPI.initialize();
 // transportsAPI.initialize();
 
-
 io.use(function(socket, next) {
   // Wrap the express middleware
   session(socket.request, {}, next);
@@ -142,18 +150,16 @@ io.use(function(socket, next) {
 
 io.on('connection', transportsAPI.handleIO);
 
-
 if (process.env.NODE_ENV == 'production') {
   io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
 }
-
 
 io.use(function(socket, next) {
   // Wrap the express middleware
   session(socket.request, {}, next);
 });
 
-const refreshTTL = 60*1;
+const refreshTTL = 60 * 1;
 
 async function sendInfo(socket, sessionid, userid) {
   const tempSession = {};
@@ -183,13 +189,13 @@ async function sendInfo(socket, sessionid, userid) {
         room['lastSeenClient'] = currentDate;
       }
 
-
       info['roomInfo'] = room;
+      info['myid'] = userid;
 
       redis
           .multi()
           .set(sessionid, JSON.stringify(room))
-          .setex(`shadow:${sessionid}`, (refreshTTL), '')
+          .setex(`shadow:${sessionid}`, refreshTTL, '')
           .exec(function(err, reply) {
             if (err) return console.log(err);
             socket.emit('info', info);
@@ -235,6 +241,10 @@ io.on('connection', function(socket, req, res) {
 
   sendInfo(socket, sessionid, userid);
 
+  socket.on('text change', function(data) {
+    socket.to(sessionid).broadcast.emit('text change', data);
+  });
+
   socket.on('disconnect', function() {
     console.log('A user has disconnected');
 
@@ -254,8 +264,33 @@ io.on('connection', function(socket, req, res) {
 
       redis.set(sessionid, JSON.stringify(room), function(err, r) {
         if (err) return console.log(err);
-        socket.to(sessionid).emit('event', {type: 'disconnect', user: userid});
+        socket
+            .to(sessionid)
+            .emit('event', {type: 'disconnect', user: userid});
       });
+    });
+  });
+
+  socket.on('callEnd', function() {
+    console.log('callEnds');
+    redis.get(sessionid, function(err, reply) {
+      if (err) return console.log(err);
+      if (!reply) return;
+
+      const room = JSON.parse(reply);
+
+      if (!room['callEnd']) {
+        console.log('no end date');
+        room['callEnd'] = Date.now();
+        const thatSocket = socket;
+
+        redis.set(sessionid, JSON.stringify(room), function(err, r) {
+          if (err) return console.log(err);
+          console.log('ok it ended');
+          thatSocket.emit('event', {type: 'callEnd'});
+          redis.EXPIRE(`shadow:${sessionid}`, 2);
+        });
+      }
     });
   });
 
@@ -269,9 +304,14 @@ io.on('connection', function(socket, req, res) {
         refreshUser(sessionid, userid);
         if (room && !room['callStart']) {
           const currentDate = new Date(Date.now());
-          console.log('call started on', room);
           room['callStart'] = currentDate;
           redis.set(sessionid, JSON.stringify(room));
+          socket.emit('event', {type: 'callStarted', startTime: currentDate});
+        } else if (room['callStart']) {
+          socket.emit('event', {
+            type: 'callStarted',
+            startTime: room['callStart'],
+          });
         }
       });
     });
@@ -294,12 +334,21 @@ io.on('connection', function(socket, req, res) {
   });
 });
 
-function payClient(clientstripeid, amount, message) {
+function chargeClient(clientstripeid, amount, message, dir) {
+  const chargeType = {
+    charge: 1,
+    debit: -1,
+  };
   return new Promise((resolve, reject) => {
-    stripe.customers.createBalanceTransaction(clientstripeid,
-        {amount: -(amount), currency: 'usd', description: message},
+    stripe.customers.createBalanceTransaction(
+        clientstripeid,
+        {
+          amount: chargeType[dir] * amount,
+          currency: 'usd',
+          description: message,
+        },
         function(err, _) {
-          if (err) return reject();
+          if (err) reject(err);
           resolve();
         },
     );
@@ -307,52 +356,65 @@ function payClient(clientstripeid, amount, message) {
 }
 
 function payGuide(guidestripeaccount, amount) {
-  const paymentInfo =
-    {amount: amount,
+  return new Promise((resolve, reject) => {
+    const paymentInfo = {
+      amount: amount,
       currency: 'usd',
       destination: guidestripeaccount,
     };
-  stripe.transfers.create(paymentInfo)
-      .then(() => {
-      // Success
-
-      })
-      .catch((err) => {
-      // Failure
-        const topupInfo = {amount: amount*2, currency: 'usd', description: `Topup`, statement_descriptor: 'Top-up'};
-        stripe.topup(topupInfo)
-            .then(() => {
-              // Attempt to charge again
-              stripe.transfers.create(paymentInfo)
-                  .then(() => {
-                    // Success
-                  })
-                  .catch(() => {
-                    const failedPayment = new FailedPayments({
-                      guideId: session.createdBy,
-                      sessionId: session._id,
-                      count: count,
-
+    stripe.transfers
+        .create(paymentInfo)
+        .then(() => {
+        // Success
+          resolve();
+        })
+        .catch((err) => {
+        // Failure
+          const topupInfo = {
+            amount: amount * 2,
+            currency: 'usd',
+            description: `Topup`,
+            statement_descriptor: 'Top-up',
+          };
+          stripe
+              .topups.create(topupInfo)
+              .then(() => {
+                // Attempt to charge again
+                stripe.transfers
+                    .create(paymentInfo)
+                    .then(() => {
+                      // Success
+                      resolve();
+                    })
+                    .catch(() => {
+                      const failedPayment = new FailedPayments({
+                        stripeAccountId: guidestripeaccount,
+                        sessionId: session._id,
+                        count: amount,
+                      });
+                      failedPayment.save().then(() => {
+                        console.log(
+                            `Transfer payment for ${session.createdBy} has failed.`,
+                        );
+                        resolve();
+                      });
                     });
-                    failedPayment.save()
-                        .then(() => {
-                          console.log(`Transfer payment for ${session.createdBy} has failed.`);
-                        });
-                  });
-            })
-            .catch(() => {
-              const failedPayment = new FailedPayments({
-                guideId: session.createdBy,
-                sessionId: session._id,
-                count: count,
-
+              })
+              .catch(() => {
+                const failedPayment = new FailedPayments({
+                  guideId: session.createdBy,
+                  sessionId: session._id,
+                  count: count,
+                });
+                failedPayment.save().then(() => {
+                  resolve();
+                  console.log(
+                      `Transfer payment for ${session.createdBy} has failed.`,
+                  );
+                });
               });
-              failedPayment.save()
-                  .then(() => {
-                    console.log(`Transfer payment for ${session.createdBy} has failed.`);
-                  });
-            });
-      });
+        });
+  });
 }
 
 async function sessionCharge(sessionid) {
@@ -361,6 +423,9 @@ async function sessionCharge(sessionid) {
   const per15rate = 15;
   Sessions.findById(sessionid)
       .then((session) => {
+        if (session.completed) {
+          return redis.DEL([sessionid, `shadow:${sessionid}`]);
+        }
         if (!session.completed) {
           session.completed = true;
         }
@@ -374,8 +439,40 @@ async function sessionCharge(sessionid) {
           const callStart = new Date(room['callStart']);
           const callEnd = new Date(room['callEnd']);
 
-          
+          const diff = (callEnd.valueOf() - callStart.valueOf()) / 1000 / 60 - trialTime; // Turns into minutes.
+          if (diff < 0) return redis.DEL([sessionid, `shadow:${sessionid}`]);
 
+          let totalClientCost;
+          if (diff > 0 && diff < 60) {
+            totalClientCost = hour;
+          } else if (diff > 60) {
+            totalClientCost = hour + Math.ceil((diff - 60) / 15) * per15rate;
+          }
+          totalClientCost = Math.ceil(totalClientCost) * 100;
+          console.log(totalClientCost);
+          Users.findById(session.clients[0]).then((u) => {
+            chargeClient(
+                u.stripeCustomerId,
+                totalClientCost,
+                `Session Charge`,
+                'charge',
+            );
+          });
+          const guidePay = Math.ceil(totalClientCost * 0.9);
+          Users.findById(session.createdBy)
+              .then((guide) => {
+                payGuide(guide.stripeAccountId, guidePay).then(() => {
+                  redis.DEL([sessionid, `shadow:${sessionid}`]);
+                });
+              })
+              .catch(() => {
+                const failedPayment = new FailedPayments({
+                  guideId: session.createdBy,
+                  sessionId: session._id,
+                  count: amount,
+                });
+                failedPayment.save();
+              });
         });
       })
       .catch((e) => console.log('Session doesn\'t exist!'));
@@ -384,7 +481,7 @@ async function sessionCharge(sessionid) {
 subscriber.subscribe('__keyevent@0__:expired');
 
 subscriber.on('message', function(_channel, message) {
-  const noActivityTimeout = 1000*60*5;
+  const noActivityTimeout = 1000 * 60 * 5;
   const sessionid = message.split(':')[1];
 
   redis.get(sessionid, function(err, data) {
@@ -400,12 +497,19 @@ subscriber.on('message', function(_channel, message) {
     }
 
     if (room['callEnd']) {
-      // Caller has already pressed end.
+      io.to(sessionid).emit('event', {type: 'callEnd'});
+      sessionCharge(sessionid);
     }
     // Calculate room activity based on client
-    else if ((Date.now() - lastSeenClient.valueOf()) > noActivityTimeout && !room['guidePresent']) {
+    else if (
+      Date.now() - lastSeenClient.valueOf() > noActivityTimeout &&
+      !room['guidePresent']
+    ) {
       console.log(Date.now() - lastSeenClient.valueOf());
-      console.log('No activity in this cut');
+      room['callEnd'] = Date.now();
+      redis.set(sessionid, JSON.stringify(room), function(err, _) {
+        sessionCharge(sessionid);
+      });
     } else {
       console.log('ping activity');
 

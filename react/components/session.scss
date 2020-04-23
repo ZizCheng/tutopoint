@@ -2,6 +2,24 @@
     height: 100%;
 }
 
+.videoContainer .icon { 
+    background-color: #646464;
+    border-radius: 24px;
+    &.is-small {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+    }
+}
+
+.icons>* {
+    margin-right: .25rem;
+}
+
+.timer {
+    user-select: none;
+}
+
+
 .ql-container {
     height: unset;
 }

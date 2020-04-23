@@ -3,9 +3,17 @@ import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
 import profileStore from "../store/profileStore.js";
 import quilljs from "quill";
+import {
+  IoIosEyeOff,
+  IoIosEye,
+  IoMdMicOff,
+  IoMdMic,
+  IoMdCall,
+} from "react-icons/io";
 import simplePeer from "simple-peer";
 import "./session.scss";
 import io from "socket.io-client";
+import Timer from "react-compound-timer";
 import * as mediasoupClient from "mediasoup-client";
 
 class Session extends React.Component {
@@ -19,10 +27,26 @@ class Session extends React.Component {
     this.initializeQuill = this.initializeQuill.bind(this);
     this.replyOffer = this.replyOffer.bind(this);
     this.startCall = this.startCall.bind(this);
+    this.muteAudio = this.muteAudio.bind(this);
+    this.unmuteAudio = this.unmuteAudio.bind(this);
+    this.hideVideo = this.hideVideo.bind(this);
+    this.showVideo = this.showVideo.bind(this);
+    this.endCall = this.endCall.bind(this);
   }
   initializeQuill() {
+    const that = this;
     this.quill = new quilljs("#editor", {
       theme: "snow",
+    });
+    this.quill.on("text-change", function (delta, oldDelta, source) {
+      console.log("source", source);
+      if (source === "user") {
+        const data = {
+          who: that.state.userid,
+          delta: JSON.stringify(delta),
+        };
+        that.state.socket?.emit("text change", data);
+      }
     });
   }
 
@@ -61,7 +85,6 @@ class Session extends React.Component {
 
     p.on("stream", function (stream) {
       console.log("got stream");
-      that.getUserMedia();
 
       const remote = document.getElementById("remote");
       remote.srcObject = stream;
@@ -72,7 +95,7 @@ class Session extends React.Component {
 
     that.setState({ peer: p });
 
-    return;
+    // return;
   }
 
   replyOffer(socket, data) {
@@ -97,7 +120,6 @@ class Session extends React.Component {
     p.on("connect", function () {
       console.log("noninit connected");
       that.startCall();
-      that.getUserMedia();
     });
 
     p.on("stream", function (stream) {
@@ -117,43 +139,124 @@ class Session extends React.Component {
     return;
   }
 
-  startCall(){
-    this.state.socket.emit('callStart');
-    this.state.socket.emit('ping');
-    this.poll = setTimeout(() => {
-      console.log("pinging");
-      this.state.socket.emit('ping')
-    }, 2 * 60 * 1000);
+  endCall() {
+    if (this.state.socket) {
+      this.state.socket.emit("callEnd");
+    }
   }
- getUserMedia() { 
-  return new Promise((resolve, reject) => {
 
+  startCall() {
+    this.state.socket.emit("callStart");
+    this.state.socket.emit("ping");
+  }
+
+  unmuteAudio() {
+    if (this.state.stream) {
+      const localVideo = document.getElementById("local");
+      const audioTracks = localVideo.srcObject.getAudioTracks();
+
+      this.setState({ audioMuted: false }, () => {
+        audioTracks.forEach((track) => {
+          track.enabled = true;
+        });
+      });
+    }
+  }
+  muteAudio() {
+    if (this.state.stream) {
+      const localVideo = document.getElementById("local");
+      const audioTracks = localVideo.srcObject.getAudioTracks();
+
+      this.setState({ audioMuted: true }, () => {
+        audioTracks.forEach((track) => {
+          track.enabled = false;
+        });
+      });
+    }
+  }
+
+  showVideo() {
+    if (this.state.stream) {
+      const localVideo = document.getElementById("local");
+      const videoTracks = localVideo.srcObject.getVideoTracks();
+
+      this.setState({ videoMuted: false }, () => {
+        videoTracks.forEach((track) => {
+          track.enabled = true;
+        });
+      });
+    }
+  }
+
+  hideVideo() {
+    if (this.state.stream) {
+      const localVideo = document.getElementById("local");
+      const videoTracks = localVideo.srcObject.getVideoTracks();
+
+      this.setState({ videoMuted: true }, () => {
+        videoTracks.forEach((track) => {
+          track.enabled = false;
+        });
+      });
+    }
+  }
+
+  getUserMedia() {
+    return new Promise((resolve, reject) => {
       // ask for video
+
+      const tryAudio = () => {
+        return new Promise((resolve, reject) => {
+          navigator.mediaDevices
+            .getUserMedia({
+              audio: {
+                sampleSize: 8,
+                echoCancellation: true,
+              },
+            })
+            .then((audioSrc) => {
+              const audioTracks = audioSrc.getAudioTracks();
+              // If there is a video then we will add track if not set stream to audioSrc.
+              if (this.state.stream) {
+                audioTracks.forEach((track) => {
+                  this.state.stream.addTrack(track);
+                });
+                this.setState({ hasAudio: true }, () => {
+                  resolve();
+                });
+              } else {
+                this.setState({ stream: audioSrc, hasAudio: true }, () => {
+                  resolve();
+                });
+              }
+            })
+            .catch((err) => {
+              resolve();
+            });
+        });
+      };
+
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((vidSrc) => {
           const localVideo = document.getElementById("local");
           localVideo.srcObject = vidSrc;
+          localVideo.muted = true;
           localVideo.play();
-          this.setState({stream: vidSrc}, () => {
-            resolve()
-          })
+          this.setState({ stream: vidSrc, hasVideo: true }, () => {
+            tryAudio()
+              .then(() => resolve())
+              .catch((err) => resolve());
+          });
         })
         .catch((err) => {
           console.log("video was not found.");
-          reject();
+          tryAudio()
+            .then(() => resolve())
+            .catch((err) => {
+              resolve();
+            });
         });
-
-      // // ask for audio.
-      // navigator.mediaDevices
-      //   .getUserMedia({ audio: true })
-      //   .then((audioSrc) => {
-      //     // Handle audio src. Send it to RTC.
-      //     this.state.peer.addStream(audioSrc);
-      //   })
-      //   .catch((err) => {
-      //     //  No audio src has been found once user has been connected so to other caller that there is no audio found.
-      //   });
     });
   }
 
@@ -169,8 +272,15 @@ class Session extends React.Component {
     socket.on("connect", function () {
       console.log(`Connection successful`);
     });
+    socket.on('text change', function(msg) {
+      console.log(msg);
+      if (msg.who != that.state.userid) {
+        const del = JSON.parse(msg.delta);
+        that.quill.updateContents(del, msg.who);
+      }
+    });
     socket.on("info", function (data) {
-      console.log(data);
+      that.setState({ userid: data.myid });
       if (data?.roomInfo?.clientPresent && data?.roomInfo?.guidePresent) {
         that.initializePeer(socket);
       }
@@ -180,32 +290,44 @@ class Session extends React.Component {
       console.log("receive an offer");
       that.replyOffer(socket, data);
     });
-    socket.on("event", function(data){
-      console.log(data)
-      if(data.type == "disconnect"){
-        that.setState({peer: null})
-        document.getElementById('remote').srcObject = null;
+    socket.on("event", function (data) {
+      console.log(data);
+      if (data.type == "disconnect") {
+        that.setState({ peer: null });
+        document.getElementById("remote").srcObject = null;
       }
-    })
+      if (data.type == "callStarted") {
+        const startTime = data.startTime;
+        that.setState({ startTime: startTime, callHasStarted: true });
+      }
+      if (data.type == "callEnd") {
+        that.props.history.push(`/postcall/${that.state.sessionid}`);
+      }
+    });
     socket.on("answer", (offer) => {
       // replyOfferTODO: Connect first before asking for video source.
       console.log("got answer", this.state.peer);
 
       this.state.peer.signal(offer);
     });
-    this.setState({socket: socket})
+    this.setState({ socket: socket });
   }
 
   componentWillUnmount() {
-    this.state.socket.disconnect();
-    clearInterval(this.poll);
-    this.state.peer.destroy();
-    this.state.stream.getTracks().map(track => track.stop());
-    document.getElementById('remote').srcObject = null;
-    this.setState({peer: null, stream: null, socket: null});
+    this.state.socket?.disconnect();
+    this.state.peer?.destroy();
+    this.state.stream?.getTracks().forEach((track) => track.stop());
+    document.getElementById("remote").srcObject = null;
+    this.setState({ peer: null, stream: null, socket: null });
   }
 
   render() {
+    let timerStart = 0;
+
+    if (this.state.startTime) {
+      timerStart = Date.now() - new Date(this.state.startTime).valueOf();
+      console.log(timerStart);
+    }
     return (
       <div>
         <div className="tile is-ancestor ">
@@ -218,10 +340,57 @@ class Session extends React.Component {
           <div className="tile is-parent videoContainer">
             <div className="tile is-child has-background-white">
               <nav className="level">
-                <div className="level-left">
-                  <h1 className="title is-size-4 has-text-gray">Call</h1>
+                <div className="level-left"></div>
+                <div className="level-right icons">
+                  {this.state.hasAudio && (
+                    <span className="icon is-small has-text-white">
+                      {!this.state.audioMuted ? (
+                        <IoMdMic onClick={this.muteAudio} />
+                      ) : (
+                        <IoMdMicOff onClick={this.unmuteAudio} />
+                      )}
+                    </span>
+                  )}
+                  {this.state.hasVideo && (
+                    <span className="icon is-small has-text-white">
+                      {!this.state.videoMuted ? (
+                        <IoIosEye onClick={this.hideVideo} />
+                      ) : (
+                        <IoIosEyeOff onClick={this.showVideo} />
+                      )}
+                    </span>
+                  )}
+                  {this.state.callHasStarted && (
+                    <div className="field has-addons timer">
+                      <div className="control">
+                        <div className="input is-rounded is-small" readOnly>
+                          {timerStart && (
+                            <Timer initialTime={timerStart}>
+                              <Timer.Minutes />:
+                              <Timer.Seconds formatValue={value => value.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})}/>
+                            </Timer>
+                          )}
+                        </div>
+                      </div>
+                      <div className="control">
+                        <button
+                          onClick={this.endCall}
+                          className="button is-rounded is-small active"
+                        >
+                          <span
+                            className="icon is-small has-text-white"
+                            style={{
+                              backgroundColor: "transparent",
+                              transform: "rotate(135deg)",
+                            }}
+                          >
+                            <IoMdCall />
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="level-right">Icons here</div>
               </nav>
               <video
                 id="remote"
