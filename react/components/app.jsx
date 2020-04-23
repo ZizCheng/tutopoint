@@ -7,7 +7,7 @@ import {
   NavLink,
   Link,
   Redirect,
-  withRouter
+  withRouter,
 } from "react-router-dom";
 import SVG from "react-inlinesvg";
 
@@ -17,13 +17,13 @@ import Dashboard from "./dashboard.jsx";
 import Appointments from "./appointments.jsx";
 import Balance from "./balance.jsx";
 const Discover = React.lazy(() => import("./discover.jsx"));
-const Documents = React.lazy(() => import ("./document.jsx")); 
+const Documents = React.lazy(() => import("./document.jsx"));
 const DocumentEdit = React.lazy(() => import("./DocumentEdit.jsx"));
+const Session = React.lazy(() => import('./session.jsx'));
 import Profile from "./profile.jsx";
-import Session from "./session.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
-import PostCall from "./PostCall.jsx";
+ const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
 import profileStore from "../store/profileStore.js";
 
 import "./theme.sass";
@@ -47,30 +47,30 @@ class App extends React.Component {
 
   toggleSideBarMobile() {
     this.setState({
-      hidden: !this.state.hidden
+      hidden: !this.state.hidden,
     });
   }
 
   componentDidMount() {
-    profileAPI.getProfile().then(profile => {
+    profileAPI.getProfile().then((profile) => {
       const intro = introJs();
       console.log(profile);
       profileStore.dispatch({ type: "Update", data: profile });
-      this.setState({ loaded: true }, function() {
+      this.setState({ loaded: true }, function () {
         if (
           this.state.profile?.__t == "clients" &&
           !this.state.profile?.tutorialHidden
         ) {
           this.toggleSideBarMobile();
-          intro.onafterchange(function(element) {
+          intro.onafterchange(function (element) {
             window.scroll(0, 0);
           });
           intro.start();
           const that = this;
-          intro.oncomplete(function() {
+          intro.oncomplete(function () {
             that.closeTutorial();
           });
-          intro.onexit(function() {
+          intro.onexit(function () {
             that.closeTutorial();
           });
         }
@@ -83,7 +83,7 @@ class App extends React.Component {
   }
 
   closeTutorial() {
-    profileAPI.closeTutorial().then(resp => {
+    profileAPI.closeTutorial().then((resp) => {
       if (resp.error) {
         console.log(
           "Error occurred when closing the tutorial page. Internet connection may be down!"
@@ -91,7 +91,7 @@ class App extends React.Component {
       }
       profileStore.dispatch({
         type: "Close Tutorial",
-        data: this.state.profile
+        data: this.state.profile,
       });
     });
   }
@@ -114,7 +114,7 @@ class App extends React.Component {
             <div className="navbar-brand">
               <a
                 className="navbar-item is-size-4"
-                href="https://tutopoint.com"
+                href="/dashboard"
                 data-step="1"
                 data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service."
               >
@@ -174,7 +174,9 @@ class App extends React.Component {
                 this.state.hidden || !this.state.profile?.tutorialHidden
                   ? "scale-up-ver-top"
                   : "is-hidden-mobile"
-              }`}
+              }
+              ${this.props.location.pathname?.startsWith('/session') ? ' is-hidden' : ''}
+              `}
             >
               <aside className="menu">
                 <ul className="menu-list">
@@ -235,8 +237,9 @@ class App extends React.Component {
                       >
                         Balance{" "}
                         {this.state.profile
-                          ? `- $${(this.state.profile.stripe.balance / 100) *
-                              -1}`
+                          ? `- $${
+                              (this.state.profile.stripe.balance / 100) * -1
+                            }`
                           : ""}
                       </NavLink>
                     </li>
@@ -304,12 +307,16 @@ class App extends React.Component {
                 <Route path="/fail">
                   <PaymentFailed />
                 </Route>
-                {/* <Route path="/session/:id">
+                <Route path="/session/:id">
                   <Session />
-                </Route> */}
-                {this.state.profile?.__t == "clients" && (
+                </Route>
+                {this.state.profile?.__t == "clients" ? (
                   <Route path="/postcall/:id">
                     <PostCall />
+                  </Route>
+                ) : (
+                  <Route Path="/postcall/:id">
+                    <Redirect to="/Dashboard" />
                   </Route>
                 )}
               </Switch>
