@@ -117,7 +117,7 @@ class ScheduleWithoutRouter extends React.Component {
       intervalTableHtml = scheduleAPI
         .listTimes(this.state.schedule)
         .map((time, row) => {
-          const format = "ddd MM/DD HH:mm";
+          const format = "ddd MM/DD hh:mm A";
           const timezones = [moment.tz.guess(), "America/Los_Angeles"].map(
             (timezone, column) => {
               if (column == 0) {
@@ -327,7 +327,7 @@ class Discover extends React.Component {
 
                     {/* schedule */}
                     {this.state.view == "Schedule" ? <Schedule id={this.state.focusedGuide._id} /> : <Reviews id={this.state.focusedGuide._id}/>}
-                    
+
                   </div>
                 </div>
               </div>

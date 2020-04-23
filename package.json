@@ -9,6 +9,12 @@
     "app": "nodemon index.js",
     "build": "webpack --config './webpack.production.config.js'"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "react/*",
+      "dist/*"
+    ]
+  },
   "author": "tutopoint, llc.",
   "license": "ISC",
   "dependencies": {
@@ -32,7 +38,7 @@
     "express-socket.io-session": "^1.3.5",
     "intro.js": "^2.9.3",
     "jsonwebtoken": "^8.5.1",
-    "mediasoup": "^3.5.5",
+    "mediasoup": "^3.5.8",
     "mediasoup-client": "^3.5.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
@@ -46,10 +52,13 @@
     "quill": "^1.3.7",
     "react": "^16.13.0",
     "react-app-polyfill": "^1.0.6",
+    "react-compound-timer": "^1.2.0",
     "react-dom": "^16.13.0",
+    "react-icons": "^3.9.0",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "react-star-ratings": "^2.3.0",
+    "redis": "^3.0.2",
     "sendmail": "^1.6.1",
     "simple-peer": "^9.6.2",
     "socket.io": "^2.3.0",

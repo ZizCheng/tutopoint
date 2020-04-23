@@ -9,6 +9,7 @@ const Users = require('../models/model.js').Users;
 const Referrals = require('../models/model.js').Referrals;
 
 router.get('/login', function(req, res) {
+  if(req.isAuthenticated()) return res.redirect('/dashboard');
   res.render('login', {
     layout: false,
   });
@@ -41,7 +42,6 @@ router.get('/verify/:token', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
-  console.log('were in');
   passport.authenticate('local', function(err, user, info) {
     if (err) {
       return res.render('login', {layout: false, error: 'Invalid Login'});
