@@ -176,6 +176,12 @@ h1 {
   padding: 1rem !important;
 }
 
+.pricing-image {
+  width: 80vw;
+  margin: auto;
+  display: block;
+}
+
 @media only screen and (max-width: 1300px) {
   .services-container {
     width: 80%;
