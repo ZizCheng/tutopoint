@@ -1,5 +1,4 @@
 # tutopoint
 tuto
 
-what an amazing project!
-
+Merge pull request #420 from ZizCheng/mcklyde
