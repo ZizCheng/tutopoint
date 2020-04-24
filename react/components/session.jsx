@@ -16,8 +16,6 @@ import io from "socket.io-client";
 import Timer from "react-compound-timer";
 import * as mediasoupClient from "mediasoup-client";
 
-var notesId;
-
 class Session extends React.Component {
   constructor(props) {
     super(props);
@@ -150,34 +148,34 @@ class Session extends React.Component {
   startCall() {
     //save notes interval
     console.log("starting save notes interval");
-    setInterval(function(quill) {
-      console.log(quill.getContents());
-      if(!notesId) {
+    this.saveNotesInterval = setInterval(function(this2) {
+      console.log(this2.quill.getContents());
+      if(!this2.notesId) {
         //createDocument
         fetch('/api/document', {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             title: "Untitled Document",
-            text: quill.getContents()
+            text: this2.quill.getContents()
           })
         }).then((response) => response.text())
           .then((doc_id) => {
-            notesId = JSON.parse(doc_id);
+            this2.notesId = JSON.parse(doc_id);
           });
       }
       else {
         //updateDocument
-        fetch('/api/document/' + notesId, {
+        fetch('/api/document/' + this2.notesId, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
             title: "Untitled Document",
-            text: quill.getContents()
+            text: this2.quill.getContents()
           })
         });
       }
-    }, 10*1000, this.quill);
+    }, 10*1000, this);
 
     this.state.socket.emit("callStart");
     this.state.socket.emit("ping");
@@ -352,6 +350,7 @@ class Session extends React.Component {
     this.state.stream?.getTracks().forEach((track) => track.stop());
     document.getElementById("remote").srcObject = null;
     this.setState({ peer: null, stream: null, socket: null });
+    clearInterval(this.saveNotesInterval);
   }
 
   render() {
