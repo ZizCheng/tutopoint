@@ -1,5 +1,5 @@
 # tutopoint
 tuto
 
-this project is fucked!
+what an amazing project!
 
