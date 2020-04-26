@@ -400,7 +400,7 @@ function payGuide(guidestripeaccount, amount) {
                 const failedPayment = new FailedPayments({
                   guideId: session.createdBy,
                   sessionId: session._id,
-                  count: count,
+                  count: amount,
                 });
                 failedPayment.save().then(() => {
                   resolve();

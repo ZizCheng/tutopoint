@@ -47,9 +47,5 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js',
   },
-  devServer: {
-    hot: true,
-    inline: true,
-  },
   watch: true,
 };
