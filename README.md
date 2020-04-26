@@ -1,5 +1,4 @@
 # tutopoint
 tuto
 
-this project is fucked!
-
+Merge pull request #420 from ZizCheng/mcklyde

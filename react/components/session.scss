@@ -1,0 +1,43 @@
+.tile.is-ancestor {
+    height: 100%;
+}
+
+.videoContainer .icon { 
+    background-color: #646464;
+    border-radius: 24px;
+    &.is-small {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+    }
+}
+
+.icons>* {
+    margin-right: .25rem;
+}
+
+.timer {
+    user-select: none;
+}
+
+
+.ql-container {
+    height: unset;
+}
+
+#remote {
+    margin:auto;
+    display: block;
+}
+
+#local {
+    max-width: 192px;
+    max-height: 192px;
+    position: absolute;
+    bottom: 2em;
+    right: 2em;
+    border-radius: 24px;
+}
+
+.videoContainer {
+    position: relative;
+}

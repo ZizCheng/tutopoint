@@ -7,6 +7,8 @@ import Quill from "quill";
 import "./document.scss";
 import documentAPI from "../api/document.js";
 
+import { IoIosAdd } from "react-icons/io";
+
 class DocumentCardWithoutRouter extends React.Component {
   constructor(props) {
     super(props);
@@ -122,9 +124,9 @@ class Documents extends React.Component {
         <div className="document-wrapper">
           <div className="document-container-top">
             <div className="document-header">Documents</div>
-            <div className="document-new" onClick={this.newDocumentClick}>
-              <span className="document-new-plus">+</span>
-            </div>
+            <span className="icon active is-rounded has-text-white" style={{ borderRadius: "24px" }}>
+              <IoIosAdd onClick={this.newDocumentClick}/>
+            </span>
           </div>
           <div className="document-container-bottom">
             <div className="document-list">
