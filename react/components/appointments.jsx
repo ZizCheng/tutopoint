@@ -336,7 +336,7 @@ class Appointments extends React.Component {
       .filter(session => {
         const sessionDate = new Date(session.date);
         return (
-          Date.now() > sessionDate.valueOf() - 300000 && Date.now() < sessionDate.valueOf() + (2*60*60*1000) && (!session.cancelled && !session.completed)
+           (Date.now() < sessionDate.valueOf()  || (Date.now() > sessionDate.valueOf() - 300000 && Date.now() < sessionDate.valueOf() + (2*60*60*1000))) && (!session.cancelled && !session.completed)
         );
       })
       .map((session, i) => {
