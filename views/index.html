@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="/css/bulma.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/guideCard.css">
     <link rel="stylesheet" href="/css/navbar.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" type="text/css"
-        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
 
 
 </head>
@@ -212,6 +212,13 @@
         </div>
     </div>
 
+    <div class="pricing-container">
+      <h2 class="section-header has-text-centered is-size-1-mobile">
+          Why us?
+      </h2>
+      <img class="pricing-image" src="/images/chart.png">
+    </div>
+
     <div class="services-container">
       <h2 class="section-header has-text-centered is-size-1-mobile">
           Our Services
@@ -258,6 +265,15 @@
             How to write your EC section, what to include in your common app and what not.
           </p>
         </div>
+        <div class="service">
+          <img class="service-image" src="/images/service6.png">
+          <p class="service-title">Tutoring</p>
+          <p class="service-body">
+            Our guides were once students, and they can tutor almost all high school classes.<br /><br />
+            Have a quick question about a class or an assignment? Our guides can help you out.<br /><br />
+            APs, IB, ACT/SAT, high school courses, standardized testing, we can tutor too!
+          </p>
+        </div>
       </div>
     </div>
 
@@ -267,72 +283,72 @@
         </h2>
 
         <div class="carousel">
-            <div class="card carousel-card">
-                <div class="card-image">
-                    <figure class="backdrop image is-2by1">
-                        <img class="backdrop-image" src="/images/berkeley.jpg">
-                    </figure>
-                    <figure class="profilePicture image is-128x128">
-                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                            src="/images/zizcheng.jpg">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <div class="media-content">
-                        <p class="title is-4 has-text-centered no-margin-bottom">Zizheng Cheng</p>
-                        <p class="title is-5 has-text-centered no-margin-bottom">UC Berkeley</p>
-                        <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-                    </div>
-                </div>
-                <footer class="card-footer">
-                    <a href="/signup" class="card-footer-item">schedule</a>
-                </footer>
+            <div class="card carousel-card guide-card">
+              <div class="card-image">
+                <figure class="backdrop image is-2by1">
+                  <img src="/images/berkeley.jpg">
+                </figure>
+                <figure class="profile-picture-wrapper image is-128x128">
+                  <img class="profile-picture is-rounded" style="border: solid 1px black" src="/images/zizcheng.jpg">
+                </figure>
+              </div>
+              <div class="card-content guide-card-content">
+                <p class="guide-name">Zizheng Cheng</p>
+                <p class="guide-description">UC Berkeley, Freshman in Computer Science</p>
+                <p class="guide-bio">
+                  Hello! My name is Ziz, I went to Bellevue High School in Washington. I was elected into student government all four years of high school,
+                  was a part of robotics, debate, and the tennis team. Schedule a time with me if you have questions about clubs,
+                  summer programs, or your class schedule. 我还可以说中文!
+                </p>
+              </div>
+              <footer class="card-footer guide-card-footer">
+                  <a href="/signup" class="card-footer-item">Schedule Now!</a>
+              </footer>
             </div>
 
-            <div class="card carousel-card">
-                <div class="card-image">
-                    <figure class="backdrop image is-2by1">
-                        <img class="backdrop-image" src="/images/princeton.png">
-                    </figure>
-                    <figure class="profilePicture image is-128x128">
-                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                            src="/images/CheyenneZhang.jpg">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <div class="media-content">
-                        <p class="title is-4 has-text-centered no-margin-bottom">Cheyenne Zhang</p>
-                        <p class="title is-5 has-text-centered no-margin-bottom">Princeton University</p>
-                        <p class="title is-6 has-text-centered no-margin-bottom">Computer Science</p>
-                    </div>
-                </div>
-                <footer class="card-footer">
-                    <a href="/signup" class="card-footer-item">schedule</a>
-
-                </footer>
+            <div class="card carousel-card guide-card">
+              <div class="card-image">
+                <figure class="backdrop image is-2by1">
+                  <img src="/images/princeton.png">
+                </figure>
+                <figure class="profile-picture-wrapper image is-128x128">
+                  <img class="profile-picture is-rounded" style="border: solid 1px black" src="/images/CheyenneZhang2.jpg">
+                </figure>
+              </div>
+              <div class="card-content guide-card-content">
+                <p class="guide-name">Cheyenne Zhang</p>
+                <p class="guide-description">Princeton University, Sophomore in Computer Science</p>
+                <p class="guide-bio">
+                  Hi! I'm Cheyenne, a CS sophomore at Princeton University with minors in Film, East Asian Studies, and Cognitive Science.
+                  In high school, I was involved with flute, chess, and tennis. I also scored 1600 on the SAT and have taught SAT classes,
+                  so feel free to book me if you are interested in SAT help.
+                </p>
+              </div>
+              <footer class="card-footer guide-card-footer">
+                  <a href="/signup" class="card-footer-item">Schedule Now!</a>
+              </footer>
             </div>
 
-            <div class="card carousel-card">
-                <div class="card-image">
-                    <figure class="backdrop image is-2by1">
-                        <img class="backdrop-image" src="/images/harvard.jpg">
-                    </figure>
-                    <figure class="profilePicture image is-128x128">
-                        <img class="is-rounded" style="border: solid 1px black;width: 100%;height: 100%;"
-                            src="/images/JenniferHong.png">
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <div class="media-content">
-                        <p class="title is-4 has-text-centered no-margin-bottom">Jennifer Hong</p>
-                        <p class="title is-5 has-text-centered no-margin-bottom">Harvard University</p>
-                        <p class="title is-6 has-text-centered no-margin-bottom">Chemical & Physical Biology</p>
-                    </div>
-                </div>
-                <footer class="card-footer">
-                    <a href="/signup" class="card-footer-item">schedule</a>
-
-                </footer>
+            <div class="card carousel-card guide-card">
+              <div class="card-image">
+                <figure class="backdrop image is-2by1">
+                  <img src="/images/kevinbanner.png">
+                </figure>
+                <figure class="profile-picture-wrapper image is-128x128">
+                  <img class="profile-picture is-rounded" style="border: solid 1px black" src="/images/kevin.jpg">
+                </figure>
+              </div>
+              <div class="card-content guide-card-content">
+                <p class="guide-name">Kevin Ma</p>
+                <p class="guide-description">Brown University, Sophomore in Neuroscience, Pre-med</p>
+                <p class="guide-bio">
+                  Hi! My name is Kevin, and I am a sophomore at Brown University concentrating in neuroscience and planning to pursue medical school after graduating.
+                  In my free time, I enjoy going to the gym, volunteering with local refugees, and speaking French.
+                </p>
+              </div>
+              <footer class="card-footer guide-card-footer">
+                  <a href="/signup" class="card-footer-item">Schedule Now!</a>
+              </footer>
             </div>
         </div>
 

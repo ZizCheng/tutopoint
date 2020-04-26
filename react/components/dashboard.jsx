@@ -53,7 +53,7 @@ class Dashboard extends React.Component {
       <React.Fragment>
         <div id="dashboard__discoverGuide" className={`card is-hidden-touch ${this.state.profile?.__t == "guides" ? 'is-hidden' : ""}`}>
           <header className="card-header">
-            <p className="is-size-3 card-header-title">Discover Guides</p>
+            <p className="is-size-3 card-header-title">Top Guides Of The Week</p>
             <p className="card-header-icon has-text-black">
               <Link to="/discover" className="highlight">
                 See all

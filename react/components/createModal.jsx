@@ -3,6 +3,12 @@ import ReactDOM from "react-dom";
 
 const modalEl = document.getElementById("modal");
 
+const backgroundStyle = {
+  backgroundColor: "#FFFFFF",
+  borderRadius: "24px",
+  padding: "24px",
+}
+
 class Modal extends React.Component {
   constructor(props) {
     super(props);
@@ -29,7 +35,7 @@ class Modal extends React.Component {
     return (
       <div className="modal is-active">
         <div className="modal-background"></div>
-        <div className="modal-content">
+        <div className="modal-content" style={backgroundStyle}>
           <h1 className="title is-size-4">{this.props.message}</h1>
           <div className="field is-grouped">
             <p className="control">
