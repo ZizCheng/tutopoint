@@ -40,7 +40,6 @@ const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
 const documentAPI = require('./api/document.js');
 const balanceAPI = require('./api/balance.js');
-const transportsAPI = require('./api/transports.js');
 const sessionAPI = require('./api/session.js');
 const referralAPI = require('./api/referral.js');
 const postcallAPI = require('./api/postcall.js');
@@ -86,7 +85,6 @@ app.use('/api/profile', profileAPI);
 app.use('/api/discover', discoverAPI);
 app.use('/api/document', documentAPI);
 app.use('/api/balance', balanceAPI);
-app.use('/api/transports', transportsAPI.router);
 app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
@@ -136,15 +134,12 @@ app.get('*', auth.loggedIn, function(req, res) {
 http.listen(config.port, function() {
   console.log(`Server listening on :${config.port}`);
 });
-transportsAPI.initialize();
-// transportsAPI.initialize();
 
 io.use(function(socket, next) {
   // Wrap the express middleware
   session(socket.request, {}, next);
 });
 
-io.on('connection', transportsAPI.handleIO);
 
 if (process.env.NODE_ENV == 'production') {
   io.adapter(redisAdapter({host: 'rd1.tutopoint.com', port: 6379}));
