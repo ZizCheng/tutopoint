@@ -15,7 +15,6 @@ import simplePeer from "simple-peer";
 import "./session.scss";
 import io from "socket.io-client";
 import Timer from "react-compound-timer";
-import * as mediasoupClient from "mediasoup-client";
 
 class Session extends React.Component {
   constructor(props) {
