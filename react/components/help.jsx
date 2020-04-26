@@ -14,8 +14,8 @@ class Help extends React.Component {
             speak to.
           </li>
           <li className="is-size-5 is-size-6-mobile">
-            Refill your <a href="/balance">balance</a> to at least $60 before booking a session.
-            All of our guides cost $60 an hour.
+            Refill your <a href="/balance">balance</a> to at least $40 before booking a session.
+            All of our guides cost $40 an hour during the beta period.
           </li>
           <li className="is-size-5 is-size-6-mobile">
             Write down any questions you might have in a new questionnaire
@@ -27,17 +27,17 @@ class Help extends React.Component {
             the session time to cancel your booking in <a href="/appointments">appointments</a>.
           </li>
           <li className="is-size-5 is-size-6-mobile">
-            The first 5 minutes of your session is always free. The guide will
-            receive your money after the first 5 minutes.
+            The first 5 minutes of your session is always free. If you do not feel like they are the right guide for you, end the call during the first 5 minutes and you won't be charged.
           </li>
           <li className="is-size-5 is-size-6-mobile">
             During the hour with your guide, ask any questions you have prepared or think of. Our guides
             are here to help you answer those questions and give you all the information they have that you might want.
+            DO NOT click the "end" button unless you are done with your session, we apologize for technical difficulties.
           </li>
           <li className="is-size-5 is-size-6-mobile">
             Every 15 minutes after the first hour will cost an additional $15,
             if your <a href="/balance">balance</a> does not have enough to extend a session
-            automatically, your session will end 5 minutes after the hour is
+            automatically, your session will force-end 10 minutes after the hour is
             complete.
           </li>
           <li className="is-size-5 is-size-6-mobile">
