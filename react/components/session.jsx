@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
 import profileStore from "../store/profileStore.js";
+import createModal from "./createModal.jsx";
 import quilljs from "quill";
 import {
   IoIosEyeOff,
@@ -55,7 +56,7 @@ class Session extends React.Component {
 
     /*
       Whoever is last to join the call will be the one initiating the call.
-      
+
       Process:
         -> Once IO is connected IO will receive an IO info event to know who is missing in the call. Information about room and initiators.
         -> Signaling server is completely independent from any payment system / tracker.
@@ -374,7 +375,9 @@ class Session extends React.Component {
                       </div>
                       <div className="control">
                         <button
-                          onClick={this.endCall}
+                          onClick={() => {
+                            createModal("Are you sure you want to end the call? This will end your session.", () => {this.endCall()});
+                          }}
                           className="button is-rounded is-small active"
                         >
                           <span
