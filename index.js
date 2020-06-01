@@ -104,7 +104,11 @@ passport.deserializeUser(auth.deserializeUser);
 
 app.get('/', function(req, res) {
   if(req.isAuthenticated()) return res.redirect('/dashboard');
-  res.sendFile('views/index.html', {root: __dirname});
+  Guides
+      .find({})
+      .select('_id name university major grade university profilePic backdrop bio')
+      .then((listOfGuides) => res.render('index', {guides: JSON.parse(JSON.stringify(listOfGuides)), layout: false}))
+      .catch((err) => next(err));
 });
 app.get('/about', function(req, res) {
   res.sendFile('views/aboutUs.html', {root: __dirname});
