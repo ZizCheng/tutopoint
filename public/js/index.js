@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
   $('.carousel').slick({
     slidesToShow: 3,
@@ -23,8 +24,12 @@ $(document).ready(function() {
     // settings: "unslick"
     // instead of a settings object
     ],
+    nextArrow: ".slick-next",
+    prevArrow: ".slick-prev",
   });
 });
+
+
 
 let dropdown = false;
 dropdownMenu = document.getElementById('dropdownMenu');
