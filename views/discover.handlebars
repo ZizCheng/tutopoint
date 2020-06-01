@@ -102,46 +102,42 @@
       </level>
       <hr>
       <div class="container">
-
-          {{#each guideChunks}}
-          <div class="columns is-centered">
-            {{#each this}}
-            <div class="profile column is-one-quarter" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
-              <div class="card">
-                <div class="card-image">
-                  <figure class="backdrop image is-2by1">
-                    <img src="{{this.backdrop}}">
-                  </figure>
-                  <figure class="profilePicture image is-128x128">
-                    <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
-                  </figure>
-                  <div class="rating">
-                    <span class="icon has-text-danger">
-                      <i class="fas fa-star"></i>
-                    </span>
-                  </div>
-
+        {{#each guideChunks}}
+        <div class="columns is-centered">
+          {{#each this}}
+          <div class="profile column is-one-quarter" data-name="{{this.name}}" data-college="{{this.university}}" data-major="{{this.major}}">
+            <div class="card">
+              <div class="card-image">
+                <figure class="backdrop image is-2by1">
+                  <img src="{{this.backdrop}}">
+                </figure>
+                <figure class="profilePicture image is-128x128">
+                  <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+                </figure>
+                <div class="rating">
+                  <span class="icon has-text-danger">
+                    <i class="fas fa-star"></i>
+                  </span>
                 </div>
-                <div class="card-content">
-                  <div class="media-content">
-                    <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
-                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}}</p>
-                    <p class="title is-5 has-text-centered no-margin-bottom">{{this.grade}}</p>
-                    <p class="title is-6 has-text-centered no-margin-bottom">{{this.major}}</p>
-                  </div>
-                </div>
-                <footer class="card-footer">
-                  <a href="/discover/{{this._id}}" class="card-footer-item">Schedule</a>
 
-                </footer>
               </div>
+              <div class="card-content">
+                <div class="media-content">
+                  <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
+                  <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}}</p>
+                  <p class="title is-5 has-text-centered no-margin-bottom">{{this.grade}}</p>
+                  <p class="title is-6 has-text-centered no-margin-bottom">{{this.major}}</p>
+                </div>
+              </div>
+              <footer class="card-footer">
+                <a href="/discover/{{this._id}}" class="card-footer-item">Schedule</a>
+
+              </footer>
             </div>
-            {{/each}}
-            </div>
+          </div>
           {{/each}}
-
-
-
+          </div>
+        {{/each}}
       </div>
     </div>
     </section>

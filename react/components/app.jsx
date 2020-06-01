@@ -23,6 +23,7 @@ const Session = React.lazy(() => import('./session.jsx'));
 import Profile from "./profile.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
+import Services from "./services.jsx";
  const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
 import profileStore from "../store/profileStore.js";
 
@@ -139,13 +140,7 @@ class App extends React.Component {
               <div className="navbar-end">
                 <div className="navbar-item is-size-4">
                   <div className="buttons">
-                    <NavLink
-                      className="button is-light"
-                      activeClassName="is-active"
-                      to="/logout"
-                    >
-                      Log Out
-                    </NavLink>
+                    <a className="button is-light" href="/logout">Log Out</a>
                   </div>
                 </div>
                 <div
@@ -261,9 +256,17 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/logout">
-                      Log Out
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/services"
+                      data-intro="You can always read more about our services here."
+                      data-step="7"
+                    >
+                      Our Services
                     </NavLink>
+                  </li>
+                  <li>
+                    <a href="/logout">Log Out</a>
                   </li>
                 </ul>
               </aside>
@@ -295,11 +298,11 @@ class App extends React.Component {
                     <Balance />
                   </Route>
                 )}
-                <Route path="/Logout">
-                  <Logout />
-                </Route>
                 <Route path="/help">
                   <Help />
+                </Route>
+                <Route path="/services">
+                  <Services />
                 </Route>
                 <Route path="/success">
                   <PaymentSuccess />
@@ -338,10 +341,6 @@ function About() {
 
 function Users() {
   return <h2>Users</h2>;
-}
-
-function Logout() {
-  window.location.href = "/logout";
 }
 
 const PaymentSuccess = () => {
