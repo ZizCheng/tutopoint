@@ -19,7 +19,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
       $facet: {
         stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'schedule': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0, 'comments': 0}}],
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0, 'comments': 0}}],
       },
     },
     {$unwind: '$stage1'},
@@ -30,6 +30,16 @@ discover.get('/page/:pagenumber', async function(req, res) {
       },
     },
   ]);
+
+  //filter out guides with no times in the future
+  //guides with no available times will still appear if they have a booked time in the future
+  for(var i = 0;i<query[0].data.length;i++) {
+    var schedule = query[0].data[i].schedule;
+    if(schedule.length === 0 || schedule[schedule.length-1].start.getTime() < Date.now()) {
+      query[0].data.splice(i,1);
+      i--;
+    }
+  }
 
   res.json(query[0]);
 });
