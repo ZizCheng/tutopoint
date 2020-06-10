@@ -413,20 +413,26 @@ function payGuide(guidestripeaccount, amount) {
 }
 
 async function sessionCharge(sessionid) {
+  console.log("sessionCharge called");
   const trialTime = 10; // 10 minutes.
   const hour = 40;
   const per15rate = 15;
   Sessions.findById(sessionid)
       .then((session) => {
+        console.log("logged from sessionCharge, session has been found");
         if (session.completed) {
+          console.log("logged from sessionCharge, session.completed is true, returning");
           return redis.DEL([sessionid, `shadow:${sessionid}`]);
         }
         if (!session.completed) {
           session.completed = true;
         }
-
         session.save();
+
+        console.log("logged from sessionCharge, session.completed was false and is now true");
+
         redis.get(sessionid, function(err, reply) {
+          console.log("logged from sessionCharge, redis.get sessionid found a session")
           if (err) return console.log(err);
           if (!reply) return;
 
@@ -437,37 +443,41 @@ async function sessionCharge(sessionid) {
           const diff = (callEnd.valueOf() - callStart.valueOf()) / 1000 / 60 - trialTime; // Turns into minutes.
           if (diff < 0) return redis.DEL([sessionid, `shadow:${sessionid}`]);
 
-          let totalClientCost;
-          if (diff > 0 && diff < 60) {
-            totalClientCost = hour;
-          } else if (diff > 60) {
-            totalClientCost = hour + Math.ceil((diff - 60) / 15) * per15rate;
+          if(!session.free) {
+            console.log("logged from sessionCharge, session.free was false");
+            let totalClientCost;
+            if (diff > 0 && diff < 60) {
+              totalClientCost = hour;
+            } else if (diff > 60) {
+              totalClientCost = hour + Math.ceil((diff - 60) / 15) * per15rate;
+            }
+            totalClientCost = Math.ceil(totalClientCost) * 100;
+            console.log(totalClientCost);
+            Users.findById(session.clients[0]).then((u) => {
+              chargeClient(
+                  u.stripeCustomerId,
+                  totalClientCost,
+                  `Session Charge`,
+                  'charge',
+              );
+            });
+            const guidePay = Math.ceil(totalClientCost * 0.9);
+            Users.findById(session.createdBy)
+                .then((guide) => {
+                  payGuide(guide.stripeAccountId, guidePay).then(() => {
+                    redis.DEL([sessionid, `shadow:${sessionid}`]);
+                  });
+                })
+                .catch(() => {
+                  const failedPayment = new FailedPayments({
+                    guideId: session.createdBy,
+                    sessionId: session._id,
+                    count: amount,
+                  });
+                  failedPayment.save();
+                });
           }
-          totalClientCost = Math.ceil(totalClientCost) * 100;
-          console.log(totalClientCost);
-          Users.findById(session.clients[0]).then((u) => {
-            chargeClient(
-                u.stripeCustomerId,
-                totalClientCost,
-                `Session Charge`,
-                'charge',
-            );
-          });
-          const guidePay = Math.ceil(totalClientCost * 0.9);
-          Users.findById(session.createdBy)
-              .then((guide) => {
-                payGuide(guide.stripeAccountId, guidePay).then(() => {
-                  redis.DEL([sessionid, `shadow:${sessionid}`]);
-                });
-              })
-              .catch(() => {
-                const failedPayment = new FailedPayments({
-                  guideId: session.createdBy,
-                  sessionId: session._id,
-                  count: amount,
-                });
-                failedPayment.save();
-              });
+          else console.log("free session occured. client was not charged and guide was not paid.");
         });
       })
       .catch((e) => console.log('Session doesn\'t exist!'));
@@ -476,10 +486,13 @@ async function sessionCharge(sessionid) {
 subscriber.subscribe('__keyevent@0__:expired');
 
 subscriber.on('message', function(_channel, message) {
+  console.log("subscriber.on message called");
+
   const noActivityTimeout = 1000 * 60 * 5;
   const sessionid = message.split(':')[1];
 
   redis.get(sessionid, function(err, data) {
+    console.log("from subscriber.on message, redis.get sessionid successful");
     if (err) return console.log(err);
     if (!data) return;
 
@@ -492,6 +505,7 @@ subscriber.on('message', function(_channel, message) {
     }
 
     if (room['callEnd']) {
+      console.log("from subscriber.on message, room[callEnd] is true, will call sessionCharge");
       io.to(sessionid).emit('event', {type: 'callEnd'});
       sessionCharge(sessionid);
     }
@@ -503,6 +517,7 @@ subscriber.on('message', function(_channel, message) {
       console.log(Date.now() - lastSeenClient.valueOf());
       room['callEnd'] = Date.now();
       redis.set(sessionid, JSON.stringify(room), function(err, _) {
+        console.log("from subscriber.on message, room[callEnd] wasn't true but other criteria met, will call sessionCharge");
         sessionCharge(sessionid);
       });
     } else {

@@ -79,16 +79,10 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
         <BalanceSteps step={count} />
 
         <div id="Balance__Form" className={count != 0 ? "is-hidden" : ""}>
-          <div className="field has-addons">
+          <div className="select-amount-form field has-addons">
             <p className="control has-text-grey-light">Select Amount to Add</p>
             <div className="control">
-              <input
-                id="FormAmount"
-                className="input"
-                type="number"
-                name="amount"
-                placeholder="Amount in USD"
-              />
+              <input id="FormAmount" className="input" type="number" name="amount" placeholder="Amount in USD" />
             </div>
             <p class={`footnote ${balanceerror ? "shake-horizontal highlight" : null}`}>*Sessions during beta are $40/hour. You need at least $40 in your
             balance to book a session.</p>
@@ -108,13 +102,7 @@ const CheckOutForm = React.forwardRef(({ onFormCompleted, sources, balanceerror 
           <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>
             <p className="control has-text-grey-light">Name On Card:</p>
             <div className="control">
-              <input
-                className="input"
-                type="text"
-                name="name"
-                placeholder="Jane Doe"
-                required
-              />
+              <input className="input" type="text" name="name"  placeholder="Jane Doe" required />
             </div>
           </div>
           <div className={`field has-addons ${paymentMethod != 'NewCard' ? 'is-hidden' : ''}`}>

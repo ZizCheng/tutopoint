@@ -45,7 +45,8 @@ const AppointmentItem = ({
   cancel,
   send,
   updateParentSessionId,
-  status
+  status,
+  free
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
@@ -78,10 +79,7 @@ const AppointmentItem = ({
         <figure className="image is-64x64 is-hidden-touch">
           <img
             className="is-rounded"
-            src={
-              guideProfilePic
-                ? guideProfilePic
-                : "https://bulma.io/images/placeholders/64x64.png"
+            src={guideProfilePic ? guideProfilePic : "https://bulma.io/images/placeholders/64x64.png"
             }
           />
         </figure>
@@ -97,6 +95,12 @@ const AppointmentItem = ({
           <p className="is-size-7-widescreen is-size-7 has-text-weight-light">
             {guideMajor}
           </p>
+          {free && (
+            <p className="is-size-7-widescreen has-text-success">
+              This is a free session.
+            </p>
+          )}
+
         </div>
       </div>
       <div className="media-right">
@@ -295,6 +299,7 @@ class Appointments extends React.Component {
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
             status=""
+            free={session.free}
           />
         );
       });
@@ -328,6 +333,7 @@ class Appointments extends React.Component {
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
             status="past"
+            free={session.free}
           />
         );
       });
@@ -368,6 +374,7 @@ class Appointments extends React.Component {
             send={this.sendDocument}
             updateParentSessionId={this.updateSessionId}
             status={sessionStatus}
+            free={session.free}
           />
         );
       });

@@ -16,7 +16,6 @@
 #Balance__FormContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   row-gap: 1em;
   height: 60vh;
 }
@@ -52,32 +51,32 @@
       rgba(0, 0, 0, 0.0196078) 0px 1px 0px;
     border: 0px;
   }
-  .input {
-    border-radius: 18px;
-    box-shadow: rgba(50, 50, 93, 0.14902) 0px 1px 3px,
-      rgba(0, 0, 0, 0.0196078) 0px 1px 0px;
-    border: 0px;
-  }
 
   select {
     box-shadow: rgba(50, 50, 93, 0.14902) 0px 1px 3px,
       rgba(0, 0, 0, 0.0196078) 0px 1px 0px;
   }
 
-  .field:not(.Balance__FormConfirmation) {
+  .select-amount-form {
     justify-content: center;
     flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .field:not(.Balance__FormConfirmation) {
     p:not(.Balance__FormConfirmation) {
       text-align: right;
     }
     select {
       color: #646464 !important;
-  }
+    }
   }
 
   .field {
     column-gap: 2em;
-    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
 
@@ -107,7 +106,7 @@
 @include touch {
   @include steps-all-segments {
     flex-grow: 0;
-    
+
   }
 
   #Balance__FormContainer {
@@ -133,8 +132,7 @@
   }
 }
 
-input,
-.StripeElement {
+input, .StripeElement {
   display: block;
   width: 20em;
   padding: 10px 14px;
