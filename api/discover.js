@@ -22,6 +22,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
         stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12},
         {$project: {'backdrop': true, 'bio': true, 'email': true, 'grade': true, 'language': true, 'logo': true,
             'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true}}],
+
       },
     },
     {$unwind: '$stage1'},
@@ -32,6 +33,16 @@ discover.get('/page/:pagenumber', async function(req, res) {
       },
     },
   ]);
+
+  //filter out guides with no times in the future
+  //guides with no available times will still appear if they have a booked time in the future
+  for(var i = 0;i<query[0].data.length;i++) {
+    var schedule = query[0].data[i].schedule;
+    if(schedule.length === 0 || schedule[schedule.length-1].start.getTime() < Date.now()) {
+      query[0].data.splice(i,1);
+      i--;
+    }
+  }
 
   res.json(query[0]);
 });
