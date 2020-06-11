@@ -16,7 +16,11 @@ const transporter = nodemailer.createTransport({
 
 // client requests to start session with guide
 // create a new session, add to client and guide
-function requestSession(client, guide, date) {
+function requestSession(client, guide, date, free = false) {
+  if(free) {
+    client.freeFirstSessionAvailable = false;
+    client.save();
+  }
   // if we ever want multiple clients
 
   return new Promise((resolve, reject) => {
@@ -29,6 +33,7 @@ function requestSession(client, guide, date) {
       clients: clients,
       date: date,
       confirmed: false,
+      free: free,
     });
     newSession.save(function(err) {
       if (err) {
@@ -47,7 +52,7 @@ function requestSession(client, guide, date) {
         to: email,
         subject: '[TutoPoint] New Booking',
         text: 'Hello ' + name + ', someone has booked your time at ' +
-         date + ' please confirm this session on your guide dashboard at ' +
+         date + '. Please confirm this session on your guide dashboard at ' +
          'https://tutopoint.com/dashboard' + '\n\nBest,\nTutoPoint LLC',
       };
       transporter.sendMail(mailOptions, function(error, info) {
@@ -116,13 +121,16 @@ function cancelSession(session) {
         console.log(error);
       } else {
         console.log(t);
-        console.log(session.createdBy.schedule)
         Schedule.unbookDate(t, session.createdBy.schedule);
         session.createdBy.save();
         session.cancelled = true;
         session.save()
             .then((session) => resolve(session))
             .catch((err) => reject(err));
+        if(session.free) {
+          session.clients[0].freeFirstSession = true;
+          session.cleints[0].save();
+        }
       }
     });
   });

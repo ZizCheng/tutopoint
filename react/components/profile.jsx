@@ -32,7 +32,11 @@ class Profile extends React.Component {
 
   change(e) {
     const field = e.target.getAttribute("name");
-    const val = e.target.value;
+    var val = e.target.value;
+    if(field == "freeFirstSession") {
+      val = e.target.checked;
+    }
+    console.log(e.target.value + " " + e.target.checked + " " + val);
     if (val != this.state.changed[field]) {
       let change = {};
       change[field] = val;
@@ -93,6 +97,27 @@ class Profile extends React.Component {
       }
     );
 
+    var clientProfile =
+      <div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Name</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input className="input" type="text" name="name" onChange={this.change}
+                  placeholder={this.state.profile?.name} value={`${this.state.changed.name || ""}`} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field-label">
+          {this.state.profile?.freeFirstSessionAvailable &&
+            <p className="has-text-success">You have a free session available! You can use it on any guide who accepts free first sessions.</p>}
+        </div>
+      </div>
+
     return (
       <div>
         <div className="tile is-ancestor">
@@ -100,28 +125,8 @@ class Profile extends React.Component {
             <article className="tile is-child has-background-white">
               <p className="is-size-3">Edit Profile</p>
               <form id="editProfileForm" onSubmit={this.handleSubmit}>
-                <div class="container is-fluid">
-                  {this.state.profile?.__t == "clients" && (
-                    <div className="field is-horizontal">
-                      <div className="field-label is-normal">
-                        <label className="label">Name</label>
-                      </div>
-                      <div className="field-body">
-                        <div className="field">
-                          <div className="control">
-                            <input
-                              className="input"
-                              type="text"
-                              name="name"
-                              onChange={this.change}
-                              placeholder={this.state.profile?.name}
-                              value={`${this.state.changed.name || ""}`}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                <div className="container is-fluid">
+                  {this.state.profile?.__t == "clients" && clientProfile}
 
                   {this.state.profile?.__t == "guides" && (
                     <React.Fragment>
@@ -132,13 +137,8 @@ class Profile extends React.Component {
                         <div className="field-body">
                           <div className="field">
                             <div className="control">
-                              <input
-                                className="input"
-                                type="text"
-                                name="bio"
-                                onChange={this.change}
-                                placeholder={this.state.profile?.bio}
-                              value={`${this.state.changed.bio || ""}`}
+                              <input className="input" type="text" name="bio" onChange={this.change}
+                                placeholder={this.state.profile?.bio} value={`${this.state.changed.bio || ""}`}
                               />
                             </div>
                           </div>
@@ -151,34 +151,26 @@ class Profile extends React.Component {
                         <div className="field-body">
                           <div className="field">
                             <div className="control">
-                              <input
-                                className="input"
-                                type="text"
-                                name="major"
-                                onChange={this.change}
-                                placeholder={this.state.profile?.major}
-                              value={`${this.state.changed.major || ""}`}
-                              />
+                              <input className="input" type="text" name="major" onChange={this.change}
+                              placeholder={this.state.profile?.major} value={`${this.state.changed.major || ""}`} />
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div className="field is-horizontal">
+                        <label className="checkbox is-flex">
+                          <input className="checkbox-input" type="checkbox" name="freeFirstSession"
+                             onChange={this.change} checked={this.state.changed.freeFirstSession ? this.state.changed.freeFirstSession : this.state.profile?.freeFirstSession} />
+                          <p>Allow free first sessions</p>
+                        </label>
+                      </div>
                     </React.Fragment>
                   )}
-
-                  <div className="field is-grouped is-grouped-right">
+                  <div className="field">
                     <p className="control is-expanded">
-                      <a className="is-size-4" href="/reset">
-                        Change password
-                      </a>
+                      <a className="is-size-6" href="/reset">Change password</a>
                     </p>
-                    <p className="control">
-                      <input
-                        type="submit"
-                        className="button is-primary"
-                        value="Apply Changes"
-                      />
-                    </p>
+                    <input type="submit" className="button is-primary apply-button" value="Apply Changes" />
                   </div>
                 </div>
               </form>

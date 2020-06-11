@@ -75,6 +75,10 @@ const Guide = new Schema({
     type: Boolean,
     default: false,
   },
+  freeFirstSession: {
+    type: Boolean,
+    default: false,
+  }
 });
 const Client = new Schema({
   stripeCustomerId: {
@@ -92,6 +96,10 @@ const Client = new Schema({
     type: Boolean,
     default: false,
   },
+  freeFirstSessionAvailable: {
+    type: Boolean,
+    default: true,
+  }
 });
 
 const Session = new Schema({
@@ -131,6 +139,10 @@ const Session = new Schema({
     type: Boolean,
     default: false,
   },
+  free: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const Document = new Schema({
