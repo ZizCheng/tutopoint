@@ -19,7 +19,10 @@ discover.get('/page/:pagenumber', async function(req, res) {
       $facet: {
         stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12}, {$project: {'sessions': 0, 'documents': 0, 'password': 0, 'stripeAccountId': 0, 'isVerified': 0, 'onboarded': 0, 'comments': 0}}],
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12},
+        {$project: {'backdrop': true, 'bio': true, 'email': true, 'grade': true, 'language': true, 'logo': true,
+            'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true}}],
+
       },
     },
     {$unwind: '$stage1'},
@@ -47,7 +50,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
 discover.get('/:id', function(req, res) {
   Guides.findOne({_id: req.params.id})
       .select(
-          '_id name university major grade university profilePic backdrop logo bio ratings',
+          '_id name university major grade university profilePic backdrop logo bio ratings freeFirstSession',
       )
       .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
       .catch((err) => {
@@ -69,7 +72,6 @@ discover.get('/:id/reviews', function(req, res) {
 });
 
 discover.get('/:id/schedule', async function(req, res) {
-  console.log('/:id/schedule recieved request');
   try {
     const guides = await Guides
         .findById(req.params.id)
@@ -80,7 +82,6 @@ discover.get('/:id/schedule', async function(req, res) {
       return schedule.end > Date.now();
     });
 
-    console.log('filteredSchedule: ' + filteredSchedule);
     res.json(filteredSchedule);
   } catch (err) {
     res.status(400).json({message: 'Invalid Guide ID'});

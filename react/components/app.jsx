@@ -86,9 +86,7 @@ class App extends React.Component {
   closeTutorial() {
     profileAPI.closeTutorial().then((resp) => {
       if (resp.error) {
-        console.log(
-          "Error occurred when closing the tutorial page. Internet connection may be down!"
-        );
+        console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
       }
       profileStore.dispatch({
         type: "Close Tutorial",
