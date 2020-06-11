@@ -7,6 +7,7 @@ discover.use(auth.loggedIn);
 discover.use(auth.ensureUserIsClient);
 
 discover.get('/page/:pagenumber', async function(req, res) {
+
   const pagenumber = parseInt(req.params.pagenumber);
   if (!Number.isInteger(pagenumber)) {
     return res.status(400).json({error: 'Invalid Page Number'});
@@ -21,7 +22,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
 
         stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12},
         {$project: {'backdrop': true, 'bio': true, 'email': true, 'grade': true, 'language': true, 'logo': true,
-            'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true}}],
+            'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true, 'schedule': true}}],
 
       },
     },
@@ -33,6 +34,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
       },
     },
   ]);
+
 
   //filter out guides with no times in the future
   //guides with no available times will still appear if they have a booked time in the future
@@ -50,7 +52,7 @@ discover.get('/page/:pagenumber', async function(req, res) {
 discover.get('/:id', function(req, res) {
   Guides.findOne({_id: req.params.id})
       .select(
-          '_id name university major grade university profilePic backdrop logo bio ratings freeFirstSession',
+          '_id name university major grade university profilePic backdrop logo bio ratings schedule freeFirstSession',
       )
       .then((guide) => res.json(JSON.parse(JSON.stringify(guide))))
       .catch((err) => {
