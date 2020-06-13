@@ -116,6 +116,19 @@ app.get('/about', function(req, res) {
 app.get('/mission', function(req, res) {
   res.sendFile('views/mission.html', {root: __dirname});
 });
+app.get('/summer', function(req, res) {
+  res.sendFile('views/summer.html', {root: __dirname});
+});
+app.get('/summer/act1', function(req, res) {
+  res.sendFile('views/act1.html', {root: __dirname});
+});
+app.get('/summer/act2', function(req, res) {
+  res.sendFile('views/act2.html', {root: __dirname});
+});
+app.get('/summer/finance', function(req, res) {
+  res.sendFile('views/finance.html', {root: __dirname});
+});
+
 const chunk = (arr, size) =>
   Array.from({length: Math.ceil(arr.length / size)}, (v, i) =>
     arr.slice(i * size, i * size + size),
