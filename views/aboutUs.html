@@ -25,28 +25,28 @@
   <div id="loginModal" class="modal">
       <div class="modal-background" onclick="hideModal()"></div>
       <div class="modal-content">
-          <form method="post" action="/login">
-              <div class="card center-items modal-card-c">
-                  <h1>Login</h1>
-                  <div class="field">
-                      <div class="control">
-                          <input class="input" name="email" type="email" placeholder="Email">
-                      </div>
-                  </div>
-                  <div class="field">
-                      <div class="control">
-                          <input class="input" name="password" type="password" placeholder="Password">
-                      </div>
-                  </div>
-                  <button type="submit" class="button">
-                      <strong>Log in</strong>
-                  </button>
-                  <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
-                  <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
-          </form>
-      </div>
+        <form method="post" action="/login">
+            <div class="card center-items modal-card-c">
+                <h1>Login</h1>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" name="email" type="email" placeholder="Email">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" name="password" type="password" placeholder="Password">
+                    </div>
+                </div>
+                <button type="submit" class="button">
+                    <strong>Log in</strong>
+                </button>
+                <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
+                <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
+            </div>
+        </form>
       <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
-  </div>
+    </div>
   </div>
 
   <!--register modal-->
@@ -80,9 +80,9 @@
                   <button class="button">
                       <strong>Register</strong>
                   </button>
+              </div>
           </form>
           <p>Already have an account? <a onClick="show('loginModal')" class="is-primary">Log in</a></p>
-      </div>
       <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
   </div>
   </div>
@@ -104,7 +104,6 @@
                   <button type="submit" class="button">
                       <strong>submit</strong>
                   </button>
-                  </a>
               </form>
               <p><a onClick="show('loginModal')" class="link">back to login</a></p>
           </div>
@@ -141,8 +140,8 @@
                       </a>
                   </div>
                   <div class="navbar-item">
-                      <a class="nav-link" href="/mission">
-                          Mission
+                      <a class="nav-link" href="/summer">
+                          Summer
                       </a>
                   </div>
                   <div class="navbar-item">
@@ -175,7 +174,7 @@
       <p class="is-size-4" style="vertical-align: middle;"> Our guides are all current college undergraduates at the nations
          top universities studying highly competitive majors. They understand the struggle
          because a couple years ago they were in your same exact position, and they know how to get
-          you in because they got themselves in. Read more about<span> <a href="/mission"> our mission. </a> </span> </p>
+          you in because they got themselves in.</p>
     </div>
   </div>
   <div class="main-panel columns has-mobile-reverse-flex">
