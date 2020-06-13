@@ -5,10 +5,7 @@
 }
 
 .summer-links-container {
-  margin: 10%;
-}
-.summer-links-container a {
-  display: block;
+  margin: 3% 10%;
 }
 
 @media screen and (max-width: 1024px) {
