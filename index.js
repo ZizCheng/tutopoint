@@ -125,6 +125,9 @@ app.get('/summer/act1', function(req, res) {
 app.get('/summer/act2', function(req, res) {
   res.sendFile('views/act2.html', {root: __dirname});
 });
+app.get('/summer/sat', function(req, res) {
+  res.sendFile('views/sat.html', {root: __dirname});
+});
 app.get('/summer/finance', function(req, res) {
   res.sendFile('views/finance.html', {root: __dirname});
 });
