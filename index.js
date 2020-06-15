@@ -431,7 +431,7 @@ function payGuide(guidestripeaccount, amount) {
 async function sessionCharge(sessionid) {
   console.log("sessionCharge called");
   const trialTime = 10; // 10 minutes.
-  const hour = 40;
+  const hour = 60;
   const per15rate = 15;
   Sessions.findById(sessionid)
       .then((session) => {
