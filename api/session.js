@@ -19,13 +19,15 @@ router.post('/request', auth.loggedIn, auth.ensureUserIsClient, async function(r
 
   const stripeData = await stripe.customers.retrieve(req.user['stripeCustomerId']);
   const balance = stripeData.balance * -1 / 100;
-  if (balance < 40) {
-    return res.status(401).json({error: 'Not enough money', code: 15});
-  } else {
-    Guides.findById(req.body.guideId).exec(function(err, guide) {
-      var free = false;
-      if(req.user.freeFirstSessionAvailable && guide.freeFirstSession) free = true;
 
+  Guides.findById(req.body.guideId).exec(function(err, guide) {
+    var free = false;
+    if(req.user.freeFirstSessionAvailable && guide.freeFirstSession) free = true;
+
+    if (balance < 60 && !free) {
+      return res.status(401).json({error: 'Not enough money', code: 15});
+    }
+    else {
       Session.requestSession(req.user, guide, new Date(req.body.date), free)
           .then(() => {
             res.json({message: 'ok'});
@@ -33,8 +35,10 @@ router.post('/request', auth.loggedIn, auth.ensureUserIsClient, async function(r
           .catch((err) => {
             console.log(err); res.json(err);
           });
-    });
-  }
+    }
+
+
+  });
 });
 router.get('/confirm/:id', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   Sessions.findById(req.params.id, function(err, session) {
