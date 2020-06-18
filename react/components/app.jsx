@@ -39,7 +39,7 @@ import "intro.js/introjs.css";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: null, hidden: false, loaded: false };
+    this.state = { profile: null, hidden: true, loaded: false };
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
     this.closeTutorial = this.closeTutorial.bind(this);
@@ -226,7 +226,7 @@ class App extends React.Component {
                         activeClassName="is-active"
                         to="/balance"
                         data-step="3"
-                        data-intro="Refill your balance to at least 40 before you book a session by clicking balance. All our guides cost 40/hour during the beta period."
+                        data-intro="Refill your balance to at least $60 before you book a session by clicking balance. All our guides cost $60/hour during the beta period."
                       >
                         Balance{" "}
                         {this.state.profile

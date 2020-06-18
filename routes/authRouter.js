@@ -102,7 +102,8 @@ router.post('/reset/:token', auth.resetUser, function(req, res) {
   res.redirect('/dashboard');
 });
 router.post('/signup', auth.newUser, (req, res) => {
-  res.redirect('/awaitVerification');
+  //res.redirect('/awaitVerification');
+  res.redirect('/dashboard');
 });
 router.get('/logout', function(req, res) {
   req.logout();
