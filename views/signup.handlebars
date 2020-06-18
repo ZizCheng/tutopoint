@@ -39,9 +39,19 @@
                     </div>
                     <div class="field">
                         <div class="control">
-                            <input id="registerModalPassword" class="input" name="password" type="password" placeholder="Password">
+                            <input id="registerModalPassword" class="input" name="password" type="password"
+                              placeholder="Password" oninput="checkPasswordMatch(this)">
                         </div>
                     </div>
+                    <div class="field">
+                        <div class="control">
+                            <input id="registerModalConfirmPassword" class="input" name="password" type="password"
+                              placeholder="Confirm Password" oninput="checkPasswordMatch(this)">
+                        </div>
+                    </div>
+                    <p id="confirmPasswordError" class="has-text-danger">
+                      * Passwords do not match
+                    </p>
                     <div class="field">
                         <div class="control">
                             <input class="input" name="referralCode" type="text" placeholder="Referral Code (Optional)" value={{referralCode}}>
@@ -113,6 +123,7 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/js/register.js"></script>
     <script type="text/javascript" src="/js/index.js"></script>
     <script type="text/javascript">
     </script>
