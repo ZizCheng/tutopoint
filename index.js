@@ -89,8 +89,13 @@ app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
 
-app.engine('handlebars', handlebars());
-app.set('view engine', 'handlebars');
+
+app.engine('hbs', handlebars({
+  extname: 'hbs',
+  layoutsDir: './views/layouts',
+  partialsDir: './views/partials',
+}));
+app.set('view engine', 'hbs');
 
 const config = {
   port: 3000,
@@ -108,28 +113,28 @@ app.get('/', function(req, res) {
       .find({})
       .select('_id name university major grade university profilePic backdrop bio')
       .then((listOfGuides) => res.render('index', {guides: JSON.parse(JSON.stringify(listOfGuides)), layout: false}))
-      .catch((err) => next(err));
+      .catch((err) => console.log(err));
 });
 app.get('/about', function(req, res) {
-  res.sendFile('views/aboutUs.html', {root: __dirname});
+  res.render('aboutUs', {layout: false});
 });
 app.get('/mission', function(req, res) {
-  res.sendFile('views/mission.html', {root: __dirname});
+  res.render('mission', {layout: false});
 });
 app.get('/summer', function(req, res) {
-  res.sendFile('views/summer.html', {root: __dirname});
+  res.render('summer', {layout: false});
 });
 app.get('/summer/act1', function(req, res) {
-  res.sendFile('views/act1.html', {root: __dirname});
+  res.render('act1', {layout: false});
 });
 app.get('/summer/act2', function(req, res) {
-  res.sendFile('views/act2.html', {root: __dirname});
+  res.render('act2', {layout: false});
 });
 app.get('/summer/sat', function(req, res) {
-  res.sendFile('views/sat.html', {root: __dirname});
+  res.render('sat', {layout: false});
 });
 app.get('/summer/finance', function(req, res) {
-  res.sendFile('views/finance.html', {root: __dirname});
+  res.render('finance', {layout: false});
 });
 
 const chunk = (arr, size) =>

@@ -15,11 +15,11 @@ class Help extends React.Component {
           </li>
           <li className="is-size-5 is-size-6-mobile">
             Refill your <a href="/balance">balance</a> to at least $60 before booking a session.
-            All of our guides cost $60 an hour during the beta period.
+            All of our guides cost $60 per hour.
           </li>
           <li className="is-size-5 is-size-6-mobile">
-            Write down any questions you might have in a new questionnaire
-            <a href="/documents">document</a> and send it to your guide so they can prepare. You can send
+            Write down any questions you might have in a new questionnaire <a href="/documents">document</a>
+            and send it to your guide so they can prepare. You can send
             the questionnaire in appointments once you book a session.
           </li>
           <li className="is-size-5 is-size-6-mobile">

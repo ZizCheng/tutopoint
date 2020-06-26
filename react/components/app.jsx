@@ -226,7 +226,7 @@ class App extends React.Component {
                         activeClassName="is-active"
                         to="/balance"
                         data-step="3"
-                        data-intro="Refill your balance to at least $60 before you book a session by clicking balance. All our guides cost $60/hour during the beta period."
+                        data-intro="Refill your balance to at least $60 before you book a session by clicking balance. All our guides cost $60/hour."
                       >
                         Balance{" "}
                         {this.state.profile

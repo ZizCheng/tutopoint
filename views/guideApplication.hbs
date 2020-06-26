@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/guideApplication.css">
+  </head>
+  <body>
+<div class="content-wrapper">
+  <h1 class="title">Guide Application</h1>
+  <form class="form" action="/apply/submit" enctype="multipart/form-data" method="POST">
+    <div class="field">
+      <label class="label">Full legal name (first/last)</label>
+      <div class="control">
+        <input class="input" type = "text" name = "name" placeholder = "ex. Daniel Cheng" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Email address (preferrably school email)</label>
+      <div class="control">
+        <input class="input" type = "text" name = "email" placeholder = "ex. daniel.cheng23@university.edu" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">University (currently attending)</label>
+      <div class="control">
+        <input class="input" type = "text" name = "university" placeholder = "ex. Hamburger University" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Academic/Intended Major(s), use comma if double majoring</label>
+      <div class="control">
+        <input class="input" type = "text" name = "major" placeholder = "ex. Pre-med, Computer Science" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Languages spoken (Many clients search for guides who speak a specific language)</label>
+      <div class="control">
+        <input class="input" type = "text" name = "language" placeholder = "ex. English, Korean" />
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Grade level</label>
+      <div class="select">
+        <select name="grade">
+          <option value="freshman">Freshman</option>
+          <option value="sophomore">Sophomore</option>
+          <option value="junior">Junior</option>
+          <option value="senior">Senior</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Bio (to show clients)</label>
+      <div class="control">
+        <textarea class="textarea" name="bio" rows="5" cols="60"
+          placeholder="Hi! My name is Kevin, I'm a sophomore at Hamburger University studying Pre-med and CS. In my free time I like to play tennis, watch anime, and go hiking."></textarea>
+      </div>
+    </div>
+    <div class="field">
+      <input class="checkbox" type="checkbox" value="terms"> I agree to the TutoPoint guide's terms and conditions.<br>
+    </div>
+    <div class="field">
+      <label class="label">Please upload a clear image of you holding your
+        student ID (covering ID number). This will be displayed to your
+        potential clients.</label>
+      <div class="show-file-name file has-name">
+        <label class="file-label">
+          <input class="file-input" type="file" name="profilePic">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+          </span>
+          <span class="file-name">No file chosen</span>
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Please upload another document proving your student
+        status at this university (acceptance letter, transcript, screenshot of
+        student portal, etc). This will only be used for authentification purposes.</label>
+      <div class="show-file-name file has-name">
+        <label class="file-label">
+          <input class="file-input" type="file" name="file1">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+          </span>
+          <span class="file-name">No file chosen</span>
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Please upload another document proving your student
+        status at this university (acceptance letter, transcript, screenshot of
+        student portal, etc). This will only be used for authentification purposes.</label>
+      <div class="show-file-name file has-name">
+        <label class="file-label">
+          <input class="file-input" type="file" name="file2">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+          </span>
+          <span class="file-name">No file chosen</span>
+        </label>
+      </div>
+    </div>
+    <div class="control">
+      <button class="button is-primary">Submit</button>
+    </div>
+  </form>
+</div>
+    <script>
+      const fileInput = $(".show-file-name input[type=file]");
+      fileInput.change(function(){
+        if (this.files.length > 0) {
+          $(this).parents(".show-file-name").find(".file-name").html(this.files[0].name);
+        }
+      })
+    </script>
+  </body>
+</html>
