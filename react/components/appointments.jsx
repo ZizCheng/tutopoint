@@ -110,17 +110,18 @@ const AppointmentItem = ({
 
         {status == "active" ? (
           <div className="control is-expanded">
-            <button
-              className={"button is-light is-fullwidth is-small"}
+            <button className={"button is-light is-fullwidth is-small"}
               onClick={() => {
                 onClick(sessionid);
               }}
               disabled={
-                Date.now() + 300000 > new Date(date).valueOf() ? "" : "disabled"
+                //Date.now() + 300000 > new Date(date).valueOf() ? "" : "disabled"
+                "disabled"
               }
             >
               Join
             </button>
+            <p>We now use zoom for our calls.</p>
           </div>
         ) : null}
         {(profileStore.getState().__t == "clients" && status != "past") && (
@@ -221,7 +222,7 @@ class Appointments extends React.Component {
   }
 
   sessionClicked(i) {
-    window.location.href = `/session/${i}`;
+    //window.location.href = `/session/${i}`;
   }
 
   handleConfirm(sessionid) {
