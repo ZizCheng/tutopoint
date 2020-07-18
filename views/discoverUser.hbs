@@ -1,0 +1,207 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/discoverUser.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="nav-content">
+
+    <div class="side-nav">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+          <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+          <li><a href="/discover">Discover</a></li>
+        </ul>
+        <p class="menu-label">Account</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="balance" href="/pay">Balance: ${{customerBalance}}</a></li>
+          <li><a href="/logout">Log out</a></li>
+        </ul>
+        <div></div>
+      </aside>
+    </div>
+    <div class="mcontainer">
+      <div class="main-content">
+        <div class="columns">
+          <div class="column">
+            <div class="columns guideinfo">
+              <div class="column" class="guide-pictures">
+                <img src="{{guide.profilePic}}" class="profile-pic"> <br>
+                <img src="{{guide.logo}}" class="college-pic">
+              </div>
+              <div class="column is-two-thirds" class="guide-text">
+                <ul class="stats">
+                  <li class="bold">{{guide.name}}</li>
+                  <li class="bold">{{guide.university}}</li>
+                  <li class="light">{{guide.major}}</li>
+                  <li class="light">{{guide.grade}}</li>
+                </ul>
+                <p class="bio-text">
+                  {{guide.bio}}
+                </p>
+              </div>
+            </div>
+
+
+
+
+          </div>
+
+
+
+          <div class="column reviews">
+            <div class="total-rating-bar">
+              <h2>Reviews</h1>
+                <img class="total-rating-icon" src="/images/icons/star_0.png">
+            </div>
+            <div class="reviews-box">
+              <!-- repeat this thing for reviews -->
+              <div class="review">
+                <div class="review-title">
+                  <h3>Placeholder Name</h3>
+                  <img src="/images/icons/star_0.png">
+                </div>
+                <div class="review-content">
+                  <p>
+                    placeholder
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <form id="requestSessionForm" action="/session/request" method="post">
+
+
+        </form>
+      </div>
+      <div class="signup-menu">
+        <div class="filter-bar">
+          <div class="filter-left">
+            <a href="#">Clear Filters</a>
+            <div class="select is-rounded is-small language">
+              <select>
+                <option>Today</option>
+                <option>Tomorrow</option>
+              </select>
+            </div>
+
+            <input class="input is-small" type="text" placeholder="Start Date">
+            <input class="input is-small" type="text" placeholder="End Date">
+
+          </div>
+          
+          <div class="filter-right">
+            <a href="#">Refresh Times</a>
+          </div>
+        </div>
+
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th><abbr title="Detected Time">Detected Time</abbr>Detected Time</th>
+              <th><abbr title="Pacific Time"></abbr>Los Angeles Time</th>
+              <th><abbr title="Eastern Standard Time"></abbr>New York Time</th>
+              <th><abbr title="CST Time"></abbr>Beijing Time</th>
+              <th><abbr title="Booked"></abbr></th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            {{#each schedule}}
+            <tr class="entries">
+              <th class="local-time" date-global="{{this.[0]}}"></th>
+              <th class="pt-time" date-global="{{this.[0]}}"></th>
+              <th class="est-time" date-global="{{this.[0]}}"></th>
+              <th class="cst-time" date-global="{{this.[0]}}"></th>
+              <th><button class="button">Schedule</button></th>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script type="text/javascript" src="/js/moment.min.js"></script>
+  <script type="text/javascript" src="/js/moment-timezone-with-data-10-year-range.min.js"></script>
+
+  <script>
+
+    let currentSelectedDate = null;
+    let guideId = "{{guide._id}}"
+
+    initializeTimeSlotCards();
+
+    function initializeTimeSlotCards() {
+      let dateFormat = "ddd MM/DD HH:mm";
+
+      const entries = document.getElementsByClassName('entries');
+      const localTimes = document.getElementsByClassName('local-time');
+      const ptTimes = document.getElementsByClassName('pt-time');
+      const estTimes = document.getElementsByClassName('est-time');
+      const cstTimes = document.getElementsByClassName('cst-time');
+      const buttons = document.getElementsByClassName('button');
+
+      for (let i = 0; i < localTimes.length; i++) {
+        const localTime = localTimes[i];
+        const ptTime = ptTimes[i];
+        const estTime = estTimes[i];
+        const cstTime = cstTimes[i];
+        const optionsFullDisplay = { weekday: 'long', month: 'numeric', day: 'numeric' };
+        const globalTime = new Date(localTime.getAttribute('date-global'));
+        if (globalTime < Date.now()) {
+          entries[i].style.display = "none";
+        }
+        const localTimeData = globalTime.toLocaleDateString("en-US", optionsFullDisplay) + " " + globalTime.toLocaleTimeString();
+        localTime.innerHTML = moment(globalTime).tz(moment.tz.guess()).format(dateFormat);
+
+        ptTime.innerHTML = moment(globalTime).tz("America/Los_Angeles").format(dateFormat);
+        estTime.innerHTML = moment(globalTime).tz("America/New_York").format(dateFormat);
+        cstTime.innerHTML = moment(globalTime).tz("Asia/Shanghai").format(dateFormat);
+
+        buttons[i].addEventListener('click', function () {
+          if (buttons[i].classList.contains("selected")) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('requestSessionForm');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'date');
+            hiddenInput.setAttribute('value', localTimes[i].getAttribute('date-global'));
+
+            var hiddenGuideInput = document.createElement('input');
+            hiddenGuideInput.setAttribute('type', 'hidden');
+            hiddenGuideInput.setAttribute('name', 'guideId');
+            hiddenGuideInput.setAttribute('value', guideId);
+
+            form.appendChild(hiddenGuideInput);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+          }
+
+          else {
+            for (let j = 0; j < buttons.length; j++) {
+              buttons[j].classList.remove("selected");
+              buttons[j].textContent = "Schedule";
+            }
+            buttons[i].classList.add("selected");
+            buttons[i].textContent = "Confirm";
+          }
+        })
+      }
+    }
+
+  </script>
+</body>
+
+</html>

@@ -129,7 +129,7 @@ router.post('/comment', auth.loggedIn, auth.ensureUserIsClient, function(req, re
 });
 router.get('/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
   Sessions.findById(req.params.id)
-      .populate('createdBy', 'name _id profilePic')
+      .populate('createdBy', 'name _id profilePic zoomLink')
       .select('createdBy')
       .then((session) => res.json(session))
       .catch((err) => res.status(400).json({error: 'invalid session'}));

@@ -6,13 +6,16 @@ const passport = require('passport');
 const VerifyToken = require('../models/model.js').VerifyTokens;
 const ResetToken = require('../models/model.js').ResetTokens;
 const Users = require('../models/model.js').Users;
+const Guides = require('../models/model.js').Guides;
 const Referrals = require('../models/model.js').Referrals;
 
 router.get('/login', function(req, res) {
   if(req.isAuthenticated()) return res.redirect('/dashboard');
-  res.render('login', {
-    layout: false,
-  });
+  Guides
+      .find({})
+      .select('_id name university major grade university profilePic backdrop bio')
+      .then((listOfGuides) => res.render('index', {guides: JSON.parse(JSON.stringify(listOfGuides)), activeModal: "loginModal", layout: false}))
+      .catch((err) => console.log(err));
 });
 router.get('/awaitVerification', function(req, res) {
   res.render('awaitVerification', {
@@ -43,11 +46,14 @@ router.get('/verify/:token', function(req, res) {
 
 router.post('/login', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
-    if (err) {
-      return res.render('login', {layout: false, error: 'Invalid Login'});
-    }
-    if (!user) {
-      return res.render('login', {layout: false, error: 'Invalid Login'});
+    if (err || !user) {
+      Guides
+          .find({})
+          .select('_id name university major grade university profilePic backdrop bio')
+          .then((listOfGuides) => res.render('index',
+          {guides: JSON.parse(JSON.stringify(listOfGuides)), activeModal: "loginModal", loginError: 'Invalid Login', layout: false}))
+          .catch((error) => console.log(error));
+      return;
     }
     req.logIn(user, function(err) {
       if (err) {

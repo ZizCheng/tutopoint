@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Tutopoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/bulma.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/guideCard.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <!-- carousel -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+</head>
+
+<body>
+
+    {{> modals loginError=loginError }}
+
+    {{> navbar }}
+
+    <!--background image-->
+    <div class="bg-section">
+
+      <div class="custom-container">
+        <div class="columns display">
+          <!--bg image-->
+          <div class="column">
+              <img src="/images/kid.png" />
+          </div>
+
+          <!--motto and register box-->
+          <div class="column center-items">
+            <p class="motto is-size-4-mobile">Don't let COVID-19 hold you back. Online college consulting with authentic college students</p>
+            <div class="card">
+              <div class="card-content center-items">
+                <h1 class="is-size-5-mobile register-box-heading">Lets get started</h1>
+
+                <!--Register Form-->
+                <div class="field">
+                  <div class="control">
+                    <input id="front-email" class="input is-flex-mobile" name="email" type="email"
+                        placeholder="Email">
+                  </div>
+                </div>
+                <div id="front-password" class="field">
+                  <div class="control">
+                    <input class="input" name="password" type="password" placeholder="Password">
+                  </div>
+                </div>
+                <button onclick="register()" type="submit" class="button">
+                  <strong>Sign Up</strong>
+                </button>
+                <p>Already have an account? <a onclick="show('loginModal')" class="is-primary">Log in</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="services-container">
+      <h2 class="section-header has-text-centered is-size-1-mobile">
+          Our Services
+      </h2>
+      <div class="services-wrapper">
+        <div class="service">
+          <img class="service-image" src="/images/service1.svg">
+          <p class="service-title">College Consulting</p>
+          <p class="service-body">
+            Getting started with the process, we will tell you everything you need to know.<br /><br />
+            We can help package your child to match what top schools look for, starting anywhere, anytime.<br /><br />
+            Tailored, personalized solutions to unlock your child’s full potential for top universities to see.
+          </p>
+        </div>
+        <div class="service">
+          <img class="service-image" src="/images/service2.svg">
+          <p class="service-title">High School Planning</p>
+          <p class="service-body">
+            What courses to take in high school and when to take them, aligned
+                  with your child’s future college, major, and career path.<br /><br />
+            What to do over the summers. Internships, summer camps, where to go
+                  and how to apply, we will help maximize your productivity over the summer months.<br /><br />
+            AP/IB, when to take ACT/SAT, subject tests, etc. Which test is right for me?<br />
+            Tips to let your child stay ahead in high school (how to study, time management).
+          </p>
+        </div>
+        <div class="tablet-break"></div>
+        <div class="service">
+          <img class="service-image" src="/images/service3.svg">
+          <p class="service-title">Extracurriculars</p>
+          <p class="service-body">
+            Clubs, sports, leadership, volunteering, personalized to fit what your child likes and should do.<br /><br />
+            Competitions, national contests worth participating in. How to prepare, how to get ahead.<br /><br />
+            Tailoring to the future, we help identify which activities your child should
+                  do in high school to get into their dream school
+          </p>
+        </div>
+        <div class="service">
+          <img class="service-image" src="/images/service4.svg">
+          <p class="service-title">Application/Essay Writing</p>
+          <p class="service-body">
+            Essay brainstorming, what to talk about, how to answer prompts.<br /><br />
+            Revising/editing essays to stand out in the admission room.<br /><br />
+            How to write your EC section, what to include in your common app and what not.
+          </p>
+        </div>
+        <div class="service">
+          <img class="service-image" src="/images/service6.png">
+          <p class="service-title">Tutoring</p>
+          <p class="service-body">
+            Our guides were once students, and they can tutor almost all high school classes.<br /><br />
+            Have a quick question about a class or an assignment? Our guides can help you out.<br /><br />
+            APs, IB, ACT/SAT, high school courses, standardized testing, we can tutor too!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-container">
+      <h2 class="section-header has-text-centered is-size-1-mobile">
+          Why us?
+      </h2>
+      <img class="pricing-image" src="/images/chart.png">
+    </div>
+
+
+    <div class="custom-container">
+      <h2 class="section-header has-text-centered is-size-1-mobile">
+          Meet our guides
+      </h2>
+      <div class="carousel-wrapper">
+        <div class="carousel">
+        {{#each guides}}
+          <div class="carousel-card card">
+            <div class="card-image">
+              <figure class="backdrop image is-2by1">
+                <img src="{{this.backdrop}}">
+              </figure>
+              <figure class="profilePicture image is-128x128">
+                <img class="is-rounded" style="border: solid 1px black" src="{{this.profilePic}}">
+              </figure>
+            </div>
+            <div class="card-content">
+              <div class="media-content">
+                <p class="title is-4 has-text-centered no-margin-bottom">{{this.name}}</p>
+                <p class="title is-5 has-text-centered no-margin-bottom">{{this.university}} &mdash; {{this.grade}}</p>
+                <p class="title is-5 has-text-centered">{{this.major}}</p>
+                <p class="guide-bio no-margin-bottom">{{this.bio}}</p>
+              </div>
+            </div>
+            <footer class="card-footer">
+              <a href="/discover/{{this._id}}" class="card-footer-item">Schedule</a>
+            </footer>
+          </div>
+        {{/each}}
+        </div>
+        <div class="slick-next">
+          <span class="fa fa-angle-right">
+        </div>
+        <div class="slick-prev">
+          <span class="fa fa-angle-left"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{> footer }}
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script type="text/javascript" src="/js/register.js"></script>
+  <script type="text/javascript" src="/js/index.js"></script>
+  <script>
+    show('{{activeModal}}');
+  </script>
+</body>
+
+</html>

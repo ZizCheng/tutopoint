@@ -1,0 +1,134 @@
+<html>
+
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="/css/bulma.css">
+  <link rel="stylesheet" href="/css/userAddPayment.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+  <div class="page-content">
+
+    <div class="side-nav">
+      <aside class="menu">
+        <p class="menu-label">General</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="upcoming-sessions">Upcoming sessions</a></li>
+          <li><a class="menu-link" data-page="my-documents">My documents</a></li>
+          <li><a href="/discover">Discover</a></li>
+        </ul>
+        <p class="menu-label">Account</p>
+        <ul class="menu-list">
+          <li><a class="menu-link" data-page="balance" href="/pay">Balance: ${{customerBalance}}</a></li>
+          <li><a href="/logout">Log out</a></li>
+        </ul>
+        <div></div>
+      </aside>
+    </div>
+
+    <div class="payment">
+      <div class="card">
+        <div class="card-content">
+          <h1 class="title">Add Payment Method</h1>
+          <form action="/pay/addpaymentmethod" method="post" id="payment-form">
+            <div class="field">
+              <label class="label">Name</label>
+              <div class="control">
+                <input class="input" type="text" name="name" placeholder="Name">
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Zip Code</label>
+              <div class="control">
+                <input class="input" type="text" name="zip" placeholder="zip code">
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Credit or Debit Card</label>
+              <div id="card-element"></div>
+              <div id="card-errors" role="alert"></div>
+            </div>
+            <button class="button is-link">Submit Payment</button>
+        </div>
+      </div>
+      </form>
+      <!--
+      <div class="form-content">
+        <form action="/pay/addpaymentmethod" method="post" id="payment-form">
+          <div class="form-row">
+            <label for="name">
+              name
+            </label>
+            <input type="text" name="name">
+          </div>
+          <div class="form-row">
+            <label for="zip">
+              zip
+            </label>
+            <input type="text" name="zip">
+          </div>
+          <div class="form-row">
+            <label for="card-element">
+              Credit or debit card
+            </label>
+            <div id="card-element">
+            </div>
+            <div id="card-errors" role="alert"></div>
+          </div>
+
+          <button>Submit Payment</button>
+        </form>
+        -->
+    </div>
+
+  </div>
+  </div>
+  <script>
+    var stripe = Stripe('{{stripePK}}');
+    var elements = stripe.elements();
+    // Create an instance of the card Element.
+    var card = elements.create('card');
+
+    // Add an instance of the card Element into the `card-element` <div>.
+    card.mount('#card-element');
+
+
+
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      stripe.createToken(card).then(function (result) {
+        if (result.error) {
+          // Inform the customer that there was an error.
+          var errorElement = document.getElementById('card-errors');
+          errorElement.textContent = result.error.message;
+        } else {
+          // Send the token to your server.
+          stripeTokenHandler(result.token);
+        }
+      });
+    });
+
+
+    function stripeTokenHandler(token) {
+      // Insert the token ID into the form so it gets submitted to the server
+      var form = document.getElementById('payment-form');
+      var hiddenInput = document.createElement('input');
+      hiddenInput.setAttribute('type', 'hidden');
+      hiddenInput.setAttribute('name', 'stripeToken');
+      hiddenInput.setAttribute('value', token.id);
+      form.appendChild(hiddenInput);
+      alert("submittinf")
+      // Submit the form
+      form.submit();
+    }
+
+  </script>
+</body>
+
+</html>

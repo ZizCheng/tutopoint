@@ -110,8 +110,7 @@ const AppointmentItem = ({
 
         {status == "active" ? (
           <div className="control is-expanded">
-            <button
-              className={"button is-light is-fullwidth is-small"}
+            <button className={"button is-light is-fullwidth is-small"}
               onClick={() => {
                 onClick(sessionid);
               }}
@@ -221,7 +220,11 @@ class Appointments extends React.Component {
   }
 
   sessionClicked(i) {
-    window.location.href = `/session/${i}`;
+    console.log(i);
+    sessionAPI.info(i).then(resp => {
+      console.log(resp.createdBy);
+      window.location.href = resp.createdBy.zoomLink;
+    })
   }
 
   handleConfirm(sessionid) {

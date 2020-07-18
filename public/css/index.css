@@ -6,15 +6,6 @@ body {
   height: 100%;
   font-family: "Lato", "sans-serif";
 }
-.navbar {
-  padding: 1em 0;
-}
-.nav-link {
-  text-decoration: none;
-  font-weight: 300;
-  color: #000;
-  font-size: 1.5em;
-}
 .button {
   background-color: #ff3636;
   color: #fff;
@@ -22,7 +13,7 @@ body {
   border: none;
   width: 150px;
 }
-.button strong {
+.card .button strong {
   font-weight: 300;
   font-size: 1.2em;
 }

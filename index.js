@@ -89,8 +89,13 @@ app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
 
-app.engine('handlebars', handlebars());
-app.set('view engine', 'handlebars');
+
+app.engine('hbs', handlebars({
+  extname: 'hbs',
+  layoutsDir: './views/layouts',
+  partialsDir: './views/partials',
+}));
+app.set('view engine', 'hbs');
 
 const config = {
   port: 3000,
@@ -108,28 +113,28 @@ app.get('/', function(req, res) {
       .find({})
       .select('_id name university major grade university profilePic backdrop bio')
       .then((listOfGuides) => res.render('index', {guides: JSON.parse(JSON.stringify(listOfGuides)), layout: false}))
-      .catch((err) => next(err));
+      .catch((err) => console.log(err));
 });
 app.get('/about', function(req, res) {
-  res.sendFile('views/aboutUs.html', {root: __dirname});
+  res.render('aboutUs', {layout: false});
 });
 app.get('/mission', function(req, res) {
-  res.sendFile('views/mission.html', {root: __dirname});
+  res.render('mission', {layout: false});
 });
 app.get('/summer', function(req, res) {
-  res.sendFile('views/summer.html', {root: __dirname});
+  res.render('summer', {layout: false});
 });
 app.get('/summer/act1', function(req, res) {
-  res.sendFile('views/act1.html', {root: __dirname});
+  res.render('act1', {layout: false});
 });
 app.get('/summer/act2', function(req, res) {
-  res.sendFile('views/act2.html', {root: __dirname});
+  res.render('act2', {layout: false});
 });
 app.get('/summer/sat', function(req, res) {
-  res.sendFile('views/sat.html', {root: __dirname});
+  res.render('sat', {layout: false});
 });
 app.get('/summer/finance', function(req, res) {
-  res.sendFile('views/finance.html', {root: __dirname});
+  res.render('finance', {layout: false});
 });
 
 const chunk = (arr, size) =>
@@ -345,99 +350,13 @@ io.on('connection', function(socket, req, res) {
   });
 });
 
-function chargeClient(clientstripeid, amount, message, dir) {
-  const chargeType = {
-    charge: 1,
-    debit: -1,
-  };
-  return new Promise((resolve, reject) => {
-    stripe.customers.createBalanceTransaction(
-        clientstripeid,
-        {
-          amount: chargeType[dir] * amount,
-          currency: 'usd',
-          description: message,
-        },
-        function(err, _) {
-          if (err) reject(err);
-          resolve();
-        },
-    );
-  });
-}
-
-function payGuide(guidestripeaccount, amount) {
-  return new Promise((resolve, reject) => {
-    const paymentInfo = {
-      amount: amount,
-      currency: 'usd',
-      destination: guidestripeaccount,
-    };
-    stripe.transfers
-        .create(paymentInfo)
-        .then(() => {
-        // Success
-          resolve();
-        })
-        .catch((err) => {
-        // Failure
-          const topupInfo = {
-            amount: amount * 2,
-            currency: 'usd',
-            description: `Topup`,
-            statement_descriptor: 'Top-up',
-          };
-          stripe
-              .topups.create(topupInfo)
-              .then(() => {
-                // Attempt to charge again
-                stripe.transfers
-                    .create(paymentInfo)
-                    .then(() => {
-                      // Success
-                      resolve();
-                    })
-                    .catch(() => {
-                      const failedPayment = new FailedPayments({
-                        stripeAccountId: guidestripeaccount,
-                        sessionId: session._id,
-                        count: amount,
-                      });
-                      failedPayment.save().then(() => {
-                        console.log(
-                            `Transfer payment for ${session.createdBy} has failed.`,
-                        );
-                        resolve();
-                      });
-                    });
-              })
-              .catch(() => {
-                const failedPayment = new FailedPayments({
-                  guideId: session.createdBy,
-                  sessionId: session._id,
-                  count: amount,
-                });
-                failedPayment.save().then(() => {
-                  resolve();
-                  console.log(
-                      `Transfer payment for ${session.createdBy} has failed.`,
-                  );
-                });
-              });
-        });
-  });
-}
-
-async function sessionCharge(sessionid) {
-  console.log("sessionCharge called");
-  const trialTime = 10; // 10 minutes.
-  const hour = 60;
-  const per15rate = 15;
+async function sessionFinished(sessionid) {
+  console.log("sessionFinished called");
   Sessions.findById(sessionid)
       .then((session) => {
-        console.log("logged from sessionCharge, session has been found");
+        console.log("logged from sessionFinished, session has been found");
         if (session.completed) {
-          console.log("logged from sessionCharge, session.completed is true, returning");
+          console.log("logged from sessionFinished, session.completed is true, returning");
           return redis.DEL([sessionid, `shadow:${sessionid}`]);
         }
         if (!session.completed) {
@@ -445,10 +364,10 @@ async function sessionCharge(sessionid) {
         }
         session.save();
 
-        console.log("logged from sessionCharge, session.completed was false and is now true");
+        console.log("logged from sessionFinished, session.completed was false and is now true");
 
         redis.get(sessionid, function(err, reply) {
-          console.log("logged from sessionCharge, redis.get sessionid found a session")
+          console.log("logged from sessionFinished, redis.get sessionid found a session")
           if (err) return console.log(err);
           if (!reply) return;
 
@@ -459,44 +378,10 @@ async function sessionCharge(sessionid) {
           const diff = (callEnd.valueOf() - callStart.valueOf()) / 1000 / 60 - trialTime; // Turns into minutes.
           if (diff < 0) return redis.DEL([sessionid, `shadow:${sessionid}`]);
 
-          if(!session.free) {
-            console.log("logged from sessionCharge, session.free was false");
-            let totalClientCost;
-            if (diff > 0 && diff < 60) {
-              totalClientCost = hour;
-            } else if (diff > 60) {
-              totalClientCost = hour + Math.ceil((diff - 60) / 15) * per15rate;
-            }
-            totalClientCost = Math.ceil(totalClientCost) * 100;
-            console.log(totalClientCost);
-            Users.findById(session.clients[0]).then((u) => {
-              chargeClient(
-                  u.stripeCustomerId,
-                  totalClientCost,
-                  `Session Charge`,
-                  'charge',
-              );
-            });
-            const guidePay = Math.ceil(totalClientCost * 0.9);
-            Users.findById(session.createdBy)
-                .then((guide) => {
-                  payGuide(guide.stripeAccountId, guidePay).then(() => {
-                    redis.DEL([sessionid, `shadow:${sessionid}`]);
-                  });
-                })
-                .catch(() => {
-                  const failedPayment = new FailedPayments({
-                    guideId: session.createdBy,
-                    sessionId: session._id,
-                    count: amount,
-                  });
-                  failedPayment.save();
-                });
-          }
-          else console.log("free session occured. client was not charged and guide was not paid.");
+          redis.DEL([sessionid, `shadow:${sessionid}`]);
+
         });
-      })
-      .catch((e) => console.log('Session doesn\'t exist!'));
+      }).catch((e) => console.log('Session doesn\'t exist!'));
 }
 
 subscriber.subscribe('__keyevent@0__:expired');
@@ -521,9 +406,9 @@ subscriber.on('message', function(_channel, message) {
     }
 
     if (room['callEnd']) {
-      console.log("from subscriber.on message, room[callEnd] is true, will call sessionCharge");
+      console.log("from subscriber.on message, room[callEnd] is true, will call sessionFinished");
       io.to(sessionid).emit('event', {type: 'callEnd'});
-      sessionCharge(sessionid);
+      sessionFinished(sessionid);
     }
     // Calculate room activity based on client
     else if (
@@ -533,8 +418,8 @@ subscriber.on('message', function(_channel, message) {
       console.log(Date.now() - lastSeenClient.valueOf());
       room['callEnd'] = Date.now();
       redis.set(sessionid, JSON.stringify(room), function(err, _) {
-        console.log("from subscriber.on message, room[callEnd] wasn't true but other criteria met, will call sessionCharge");
-        sessionCharge(sessionid);
+        console.log("from subscriber.on message, room[callEnd] wasn't true but other criteria met, will call sessionFinished");
+        sessionFinished(sessionid);
       });
     } else {
       console.log('ping activity');

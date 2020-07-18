@@ -38,7 +38,7 @@ class Profile extends React.Component {
     }
     console.log(e.target.value + " " + e.target.checked + " " + val);
     if (val != this.state.changed[field]) {
-      let change = {};
+      let change = this.state.changed;
       change[field] = val;
       this.setState({ changed: change });
     }
@@ -153,6 +153,19 @@ class Profile extends React.Component {
                             <div className="control">
                               <input className="input" type="text" name="major" onChange={this.change}
                               placeholder={this.state.profile?.major} value={`${this.state.changed.major || ""}`} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label className="label">Zoom meeting link</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              <input className="input" type="text" name="zoomLink" onChange={this.change}
+                              placeholder={this.state.profile?.zoomLink} value={`${this.state.changed.zoomLink || ""}`} />
                             </div>
                           </div>
                         </div>
