@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="/css/bulma-0.6.2.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/aboutUs.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css"/>
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+
+  {{> modals }}
+
+  {{> navbar }}
+
+
+  <div class="container">
+    <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> About Us </p>
+    <p class="is-size-4 about-text"> TutoPoint is a digital college consulting platform
+       designed to make your life easier. We take a innovative and fresh style of college consulting
+       to the table: </p>
+  </div>
+  <div class="main-panel columns">
+    <div class="column">
+      <img src="/images/collegeStudents.png">
+    </div>
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> Our guides are all current college undergraduates at the nations
+         top universities studying highly competitive majors. They understand the struggle
+         because a couple years ago they were in your same exact position, and they know how to get
+          you in because they got themselves in.</p>
+    </div>
+  </div>
+  <div class="main-panel columns has-mobile-reverse-flex">
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> The sessions that take place through TutoPoint are 100%
+        digital. Finding, booking, scheduling, and meeting with your guide is all done with the click of a few buttons,
+        and now college consulting is accessible from the comfort of your home.  </p>
+    </div>
+    <div class="column">
+      <img src="/images/digital.png">
+    </div>
+  </div>
+  <div class="main-panel columns">
+    <div class="column">
+      <img src="/images/time.png">
+    </div>
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> Dynamic payments allow you to only pay for time you use.
+        Traditional college consultants sell expensive packages for 3-4 years at a time. At TutoPoint, you only pay
+        the guide during your time speaking with them, starting with only $60/hour!  </p>
+    </div>
+  </div>
+  <div class="main-panel columns has-mobile-reverse-flex">
+    <div class="column is-two-thirds">
+      <p class="is-size-4" style="vertical-align: middle;"> The most modern college consulting experience featuring
+        video call, screen share, shared documents, and much, much more. You can now seamlessly integrate anything you
+        need help with straight into our platform and show your guide. </p>
+    </div>
+    <div class="column">
+      <img src="/images/digital2.png">
+    </div>
+  </div>
+  <div class="container what-are-you-waiting-for-container">
+    <p class="is-size-2 has-text-centered" style="margin: 30px 0 30px 0;"> What are you waiting for? </p>
+    <p class="is-size-4 has-text-centered" style="margin: 0px 0px 30px 0px;"> The future lies ahead!
+      <span> <a onclick="show('registerModal')"> Register Now </a> </span></p>
+  </div>
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <script type="text/javascript" src="/js/index.js"></script>
+</body>
+{{> footer }}
+</html>

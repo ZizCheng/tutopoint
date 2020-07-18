@@ -1,0 +1,39 @@
+<div class="custom-container">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <script type="text/javascript" src="/js/navbar.js"></script>
+  <!--nav bar-->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/images/logo.png">
+      </a>
+
+      <a id="dropdownButton" onclick="toggleDropdown()" role="button" class="navbar-burger burger is-active"
+          aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="dropdownMenu" class="navbar-menu is-active">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <a class="nav-link" href="/guides">Our Guides</a>
+        </div>
+        <div class="navbar-item">
+          <a class="nav-link" href="/about">About Us</a>
+        </div>
+        <div class="navbar-item">
+          <a class="nav-link" href="/summer">Summer</a>
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a onclick="show('registerModal')" class="button is-medium">Sign up</a>
+            <a onclick="show('loginModal')" class="button is-medium">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>
