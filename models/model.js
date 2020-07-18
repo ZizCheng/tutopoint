@@ -78,7 +78,10 @@ const Guide = new Schema({
   freeFirstSession: {
     type: Boolean,
     default: false,
-  }
+  },
+  zoomLink: {
+    type: String,
+  },
 });
 const Client = new Schema({
   stripeCustomerId: {

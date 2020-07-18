@@ -115,13 +115,11 @@ const AppointmentItem = ({
                 onClick(sessionid);
               }}
               disabled={
-                //Date.now() + 300000 > new Date(date).valueOf() ? "" : "disabled"
-                "disabled"
+                Date.now() + 300000 > new Date(date).valueOf() ? "" : "disabled"
               }
             >
               Join
             </button>
-            <p>We now use zoom for our calls.</p>
           </div>
         ) : null}
         {(profileStore.getState().__t == "clients" && status != "past") && (
@@ -222,7 +220,11 @@ class Appointments extends React.Component {
   }
 
   sessionClicked(i) {
-    //window.location.href = `/session/${i}`;
+    console.log(i);
+    sessionAPI.info(i).then(resp => {
+      console.log(resp.createdBy);
+      window.location.href = resp.createdBy.zoomLink;
+    })
   }
 
   handleConfirm(sessionid) {
