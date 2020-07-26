@@ -267,6 +267,22 @@ function listBookedTimes(schedule)
   }
   return retList;
 }
+/*
+changes schedule and returns a schedule that has no out-dated times. Used for database cleanup
+will not touch booked times, so hopefully no issues regarding appointments
+*/
+function removeOutdatedTimes(schedule) {
+  for(var i = 0;i<schedule.length;i++) {
+    var interval = schedule[i];
+    if(interval.status == "booked") continue;
+
+    if(interval.end.getTime() <= Date.now()) {
+      schedule.splice(i, 1);
+      i--;
+    }
+  }
+  return schedule;
+}
 
 
 // HELPER FUNCTIONS
@@ -331,4 +347,5 @@ module.exports = {
   listAvailableTimes: listAvailableTimes,
   listBookedTimes: listBookedTimes,
   findDate: findDate,
+  removeOutdatedTimes: removeOutdatedTimes,
 };
