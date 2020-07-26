@@ -2,8 +2,10 @@ const Schedule = require("./scripts/schedule.js");
 const Users = require("./models/model.js").Users;
 const Guides = require("./models/model.js").Guides;
 
+const databaseCredentials = require('./secret.js').databaseCredentials;
+
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/TutoPoint');
+mongoose.connect(databaseCredentials.url, {useNewUrlParser: true});
 
 
 Guides.find({}, function(err, users) {
