@@ -144,16 +144,14 @@ function cancelSession(session) {
 
 async function sessionCharge(session) {
   console.log("sessionCharge called");
-  const hour = 60;
-  const guidePay = 40;
+  const clientCost = 6000;
+  const guidePay = 4000;
 
   if(!session.free) {
     console.log("logged from sessionCharge, session.free was false");
-    let totalClientCost = Math.ceil(hour * 100);
-    console.log(totalClientCost);
 
     Users.findById(session.clients[0]).then((u) => {
-      chargeClient(u.stripeCustomerId, totalClientCost,`Session Charge`,'charge');
+      chargeClient(u.stripeCustomerId, clientCost,`Session Charge`,'charge');
     });
 
     Users.findById(session.createdBy)
