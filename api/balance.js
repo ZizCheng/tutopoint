@@ -35,6 +35,7 @@ router.post('/pay', function(req, res) {
               if (err) res.status(400).json({error: 'Transaction error.'});
               const transactions = await stripe.customers.listBalanceTransactions(req.user['stripeCustomerId'], {limit: 10});
               customer['transactions'] = transactions;
+              console.log(customer);
               res.json(customer);
             },
         );
