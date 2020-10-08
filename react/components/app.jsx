@@ -53,6 +53,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    //this is where profileStore first stores the profile (?)
     profileAPI.getProfile().then((profile) => {
       const intro = introJs();
       console.log(profile);
@@ -111,15 +112,10 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a
-                className="navbar-item is-size-4"
-                href="/dashboard"
-                data-step="1"
-                data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service."
-              >
-                <span className="icon is-large">
-                  <img src={tutologo} />
-                </span>
+              <a className="navbar-item is-size-4" href="/dashboard" data-step="1"
+                data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service.">
+
+                <span className="icon is-large"><img src={tutologo} /></span>
                 TUTOPOINT
               </a>
 
@@ -147,9 +143,8 @@ class App extends React.Component {
                   data-step="7"
                   data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!"
                 >
-                  <figure onClick={this.goToProfile} className="image is-48x48">
-                    <img
-                      className="is-rounded"
+                  <figure onClick={this.goToProfile} className="image is-48x48" style={{cursor: "pointer"}}>
+                    <img className="is-rounded"
                       src={
                         this.state.profile?.profilePic
                           ? this.state.profile.profilePic

@@ -323,6 +323,14 @@ exports.deserializeUser = function(id, cb) {
           model: 'users',
         },
       })
+      .populate({
+        path: 'sessions',
+        populate: {
+          path: 'clients',
+          select: 'name',
+          model: 'users',
+        },
+      })
       .populate('ratedSessions')
       .populate('documents')
       .exec(function(err, user) {

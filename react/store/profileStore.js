@@ -1,6 +1,9 @@
 import {createStore} from 'redux';
 
 const profileReducer = (state, action) => {
+  console.log("profileReducer called with state, action: ");
+  console.log(state);
+  console.log(action);
   const {type, data} = action;
   if (type == 'Initialize') {
     return data;

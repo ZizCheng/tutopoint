@@ -1,4 +1,8 @@
 
+.top-container
+{
+  padding: 1.5rem;
+}
 .page-container
 {
   display: flex;

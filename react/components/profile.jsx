@@ -13,11 +13,12 @@ import profileStore from "../store/profileStore.js";
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: profileStore.getState(), changed: {} };
+    this.state = { profile: profileStore.getState(), changed: {}, zoomInstructions: false };
 
     this.change = this.change.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.requestReferralCode = this.requestReferralCode.bind(this);
+    this.toggleZoomInstructions = this.toggleZoomInstructions.bind(this);
   }
 
   componentDidMount() {
@@ -65,6 +66,13 @@ class Profile extends React.Component {
         });
       }
     })
+  }
+
+  toggleZoomInstructions() {
+    console.log("qwer");
+    this.setState({
+      zoomInstructions: !this.state.zoomInstructions
+    });
   }
 
   render() {
@@ -118,6 +126,12 @@ class Profile extends React.Component {
         </div>
       </div>
 
+    var gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior", 'Graduated'];
+    var gradeSelectOptions = gradeOptions.map((grade) => {
+      if(this.state.profile?.grade == grade) return <option value={grade} selected>{grade}</option>
+      else return <option value={grade}>{grade}</option>
+    });
+
     return (
       <div>
         <div className="tile is-ancestor">
@@ -159,6 +173,24 @@ class Profile extends React.Component {
                       </div>
                       <div className="field is-horizontal">
                         <div className="field-label is-normal">
+                          <label className="label">Grade</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              {/*<input className="input" type="text" name="grade" onChange={this.change}
+                              placeholder={this.state.profile?.grade} value={`${this.state.changed.grade || ""}`} />*/}
+                              <div className="select">
+                                <select name="grade" onChange={this.change}>
+                                  {gradeSelectOptions}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
                           <label className="label">Zoom meeting link</label>
                         </div>
                         <div className="field-body">
@@ -170,6 +202,39 @@ class Profile extends React.Component {
                           </div>
                         </div>
                       </div>
+
+                      <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Instructions for Zoom</a>
+                      <div className={`modal ${this.state.zoomInstructions ? 'is-active' : ''}`}>
+                        <div className="modal-background"></div>
+                        <div className="modal-card">
+                          <header className="modal-card-head">
+                            <p className="modal-card-title">Getting your Zoom link</p>
+                            <button className="modal-close is-large" aria-label="close" onClick={this.toggleZoomInstructions}></button>
+                          </header>
+                          <section className="modal-card-body">
+                            <p>You will need a zoom account to meet with your clients.</p>
+                            <ol style={{marginLeft: "2rem"}}>
+                              <li>
+                                In Zoom, <b>create a recurring personal meeting</b> (you might already
+                                have one in the meetings tab, if not, click little arrow next to
+                                New Meeting to create one)
+                              </li>
+                              <li>
+                                Open your personal meeting invitation by clicking
+                                show meeting invitation and <b>copy/paste just the link of the
+                                invitation and add it to your profile</b> and hit apply changes
+                              </li>
+                            </ol>
+                            <br></br>
+                            Your link should look like this:
+                            <br></br>
+                            https://zoom.us/j/8641256592?pwd=ZG0yN3hRT3F3OHRjMytuL2V3djUwdz09
+                            <br></br><br></br>
+                            Note: please include the full URL, including the https://
+                          </section>
+                        </div>
+                      </div>
+                      <br></br><br></br>
                       <div className="field is-horizontal">
                         <label className="checkbox is-flex">
                           <input className="checkbox-input" type="checkbox" name="freeFirstSession"
