@@ -32,7 +32,6 @@ router.get('/', async function(req, res) {
   delete profile['isVerified'];
   delete profile['stripeCustomerId'];
 
-
   res.json(profile);
 });
 

@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop, onClick, freeFirstSession }) => {
-    console.log(freeFirstSession);
     return (
       <div onClick={onClick} className="card dashboard__discoverGuide_Item">
         <div className="card-image">
