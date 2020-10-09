@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Tutopoint</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/css/bulma.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" />
+
+
+</head>
+
+<body>
+
+    <!--reset password modal-->
+    <div id="resetModal" class="modal is-active">
+        <div class="modal-background" onclick="hideModal()"></div>
+        <div class="modal-content">
+            <div class="card center-items modal-card-c">
+                <h1>reset password</h1>
+                <form method="post" action="/reset">
+                    <div class="field">
+                        <label class="label">Please enter your email</label>
+                        <div class="control">
+                            <input class="input" name="email" placeholder="email">
+                        </div>
+                    </div>
+                    <input class="input" type="hidden" name="userType" value="client">
+                    <button type="submit" class="button" style="width: 100%;">
+                        <strong>submit</strong>
+                    </button>
+                    </a>
+                </form>
+                <p><a href="/login" class="link">back to login</a></p>
+            </div>
+            <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
+        </div>
+    </div>
+
+
+    <div id="loginModal" class="modal">
+    </div>
+    <div id="registerModal" class="modal">
+    </div>
+
+    {{> navbar }}
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript">
+    </script>
+</body>
+
+</html>

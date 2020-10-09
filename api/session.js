@@ -16,21 +16,29 @@ router.get('/list', auth.loggedIn, function(req, res) {
   res.json(req.user.sessions);
 });
 router.post('/request', auth.loggedIn, auth.ensureUserIsClient, async function(req, res) {
+
   const stripeData = await stripe.customers.retrieve(req.user['stripeCustomerId']);
   const balance = stripeData.balance * -1 / 100;
-  if (balance < 40) {
-    return res.status(401).json({error: 'Not enough money', code: 15});
-  } else {
-    Guides.findById(req.body.guideId).exec(function(err, guide) {
-      Session.requestSession(req.user, guide, new Date(req.body.date))
+
+  Guides.findById(req.body.guideId).exec(function(err, guide) {
+    var free = false;
+    if(req.user.freeFirstSessionAvailable && guide.freeFirstSession) free = true;
+
+    if (balance < 60 && !free) {
+      return res.status(401).json({error: 'Not enough money', code: 15});
+    }
+    else {
+      Session.requestSession(req.user, guide, new Date(req.body.date), free)
           .then(() => {
             res.json({message: 'ok'});
           })
           .catch((err) => {
             console.log(err); res.json(err);
           });
-    });
-  }
+    }
+
+
+  });
 });
 router.get('/confirm/:id', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   Sessions.findById(req.params.id, function(err, session) {
@@ -53,9 +61,8 @@ router.get('/cancel/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, 
       .then((session) => Session.cancelSession(session))
       .then(() => res.json({message: 'ok'}))
       .catch((err) => {
-        console.log(
-            err,
-        ); res.status(400).json({message: 'error'});
+        console.log(err);
+        res.status(400).json({message: 'error'});
       });
 });
 router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
@@ -109,7 +116,6 @@ router.post('/comment', auth.loggedIn, auth.ensureUserIsClient, function(req, re
     const comment = req.body.comment; // make sure rating is int
     Sessions.findById(sessionId, function(err, session) {
       Guides.findById(session.createdBy, function(err, guide) {
-        console.log(guide);
         guide.comments.push(comment);
         guide.markModified('comments');
         guide.save();
@@ -123,7 +129,7 @@ router.post('/comment', auth.loggedIn, auth.ensureUserIsClient, function(req, re
 });
 router.get('/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
   Sessions.findById(req.params.id)
-      .populate('createdBy', 'name _id profilePic')
+      .populate('createdBy', 'name _id profilePic zoomLink')
       .select('createdBy')
       .then((session) => res.json(session))
       .catch((err) => res.status(400).json({error: 'invalid session'}));

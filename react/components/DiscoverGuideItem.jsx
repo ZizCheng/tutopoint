@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop, onClick }) => {
+const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop, onClick, freeFirstSession }) => {
     return (
       <div onClick={onClick} className="card dashboard__discoverGuide_Item">
         <div className="card-image">
@@ -16,10 +16,7 @@ const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdro
           <div className="media">
             <div className="media-left">
               <figure className="image is-64x64">
-                <img
-                  className="is-rounded"
-                  src={profilePic ? profilePic : "https://bulma.io/images/placeholders/64x64.png"}
-                  alt="Placeholder image"
+                <img className="is-rounded" src={profilePic ? profilePic : "https://bulma.io/images/placeholders/64x64.png"} alt="Placeholder image"
                 />
               </figure>
             </div>
@@ -28,8 +25,14 @@ const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdro
                 {name} at <span className="highlight">{university}</span>
               </p>
               <p className="is-size-7 has-text-weight-bold">
-                {grade} at <span className="highlight">{major}</span>
+                {grade} &mdash; <span className="highlight">{major}</span>
               </p>
+              {freeFirstSession ? (
+                <p className="is-size-7 has-text-weight-bold has-text-success">
+                  Free first session
+                </p>
+              ) : ""}
+
             </div>
           </div>
         </div>

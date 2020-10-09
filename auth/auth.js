@@ -193,6 +193,7 @@ exports.newUser = function(req, res, next) {
         name: req.body.name,
         password: hash,
         email: req.body.email,
+        isVerified: true,
       };
       user = new Clients(userInfo);
       user.save(function(err, user) {
@@ -214,7 +215,7 @@ exports.newUser = function(req, res, next) {
               user.stripeCustomerId = customer.id;
               user.save()
                   .then((user) => handleReferral(user, req.body.referralCode))
-                  .then(() => mailToken(user))
+                  //.then(() => mailToken(user))
                   .then(() => req.login(user, function() {
                     next();
                   }))
@@ -319,6 +320,14 @@ exports.deserializeUser = function(id, cb) {
         path: 'sessions',
         populate: {
           path: 'createdBy',
+          model: 'users',
+        },
+      })
+      .populate({
+        path: 'sessions',
+        populate: {
+          path: 'clients',
+          select: 'name',
           model: 'users',
         },
       })

@@ -13,11 +13,12 @@ import profileStore from "../store/profileStore.js";
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: profileStore.getState(), changed: {} };
+    this.state = { profile: profileStore.getState(), changed: {}, zoomInstructions: false };
 
     this.change = this.change.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.requestReferralCode = this.requestReferralCode.bind(this);
+    this.toggleZoomInstructions = this.toggleZoomInstructions.bind(this);
   }
 
   componentDidMount() {
@@ -32,9 +33,13 @@ class Profile extends React.Component {
 
   change(e) {
     const field = e.target.getAttribute("name");
-    const val = e.target.value;
+    var val = e.target.value;
+    if(field == "freeFirstSession") {
+      val = e.target.checked;
+    }
+    console.log(e.target.value + " " + e.target.checked + " " + val);
     if (val != this.state.changed[field]) {
-      let change = {};
+      let change = this.state.changed;
       change[field] = val;
       this.setState({ changed: change });
     }
@@ -61,6 +66,13 @@ class Profile extends React.Component {
         });
       }
     })
+  }
+
+  toggleZoomInstructions() {
+    console.log("qwer");
+    this.setState({
+      zoomInstructions: !this.state.zoomInstructions
+    });
   }
 
   render() {
@@ -93,6 +105,33 @@ class Profile extends React.Component {
       }
     );
 
+    var clientProfile =
+      <div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Name</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input className="input" type="text" name="name" onChange={this.change}
+                  placeholder={this.state.profile?.name} value={`${this.state.changed.name || ""}`} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field-label">
+          {this.state.profile?.freeFirstSessionAvailable &&
+            <p className="has-text-success">You have a free session available! You can use it on any guide who accepts free first sessions.</p>}
+        </div>
+      </div>
+
+    var gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior", 'Graduated'];
+    var gradeSelectOptions = gradeOptions.map((grade) => {
+      if(this.state.profile?.grade == grade) return <option value={grade} selected>{grade}</option>
+      else return <option value={grade}>{grade}</option>
+    });
+
     return (
       <div>
         <div className="tile is-ancestor">
@@ -100,28 +139,8 @@ class Profile extends React.Component {
             <article className="tile is-child has-background-white">
               <p className="is-size-3">Edit Profile</p>
               <form id="editProfileForm" onSubmit={this.handleSubmit}>
-                <div class="container is-fluid">
-                  {this.state.profile?.__t == "clients" && (
-                    <div className="field is-horizontal">
-                      <div className="field-label is-normal">
-                        <label className="label">Name</label>
-                      </div>
-                      <div className="field-body">
-                        <div className="field">
-                          <div className="control">
-                            <input
-                              className="input"
-                              type="text"
-                              name="name"
-                              onChange={this.change}
-                              placeholder={this.state.profile?.name}
-                              value={`${this.state.changed.name || ""}`}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                <div className="container is-fluid">
+                  {this.state.profile?.__t == "clients" && clientProfile}
 
                   {this.state.profile?.__t == "guides" && (
                     <React.Fragment>
@@ -132,13 +151,8 @@ class Profile extends React.Component {
                         <div className="field-body">
                           <div className="field">
                             <div className="control">
-                              <input
-                                className="input"
-                                type="text"
-                                name="bio"
-                                onChange={this.change}
-                                placeholder={this.state.profile?.bio}
-                              value={`${this.state.changed.bio || ""}`}
+                              <input className="input" type="text" name="bio" onChange={this.change}
+                                placeholder={this.state.profile?.bio} value={`${this.state.changed.bio || ""}`}
                               />
                             </div>
                           </div>
@@ -151,34 +165,90 @@ class Profile extends React.Component {
                         <div className="field-body">
                           <div className="field">
                             <div className="control">
-                              <input
-                                className="input"
-                                type="text"
-                                name="major"
-                                onChange={this.change}
-                                placeholder={this.state.profile?.major}
-                              value={`${this.state.changed.major || ""}`}
-                              />
+                              <input className="input" type="text" name="major" onChange={this.change}
+                              placeholder={this.state.profile?.major} value={`${this.state.changed.major || ""}`} />
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label className="label">Grade</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              {/*<input className="input" type="text" name="grade" onChange={this.change}
+                              placeholder={this.state.profile?.grade} value={`${this.state.changed.grade || ""}`} />*/}
+                              <div className="select">
+                                <select name="grade" onChange={this.change}>
+                                  {gradeSelectOptions}
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="field is-horizontal">
+                        <div className="field-label is-normal">
+                          <label className="label">Zoom meeting link</label>
+                        </div>
+                        <div className="field-body">
+                          <div className="field">
+                            <div className="control">
+                              <input className="input" type="text" name="zoomLink" onChange={this.change}
+                              placeholder={this.state.profile?.zoomLink} value={`${this.state.changed.zoomLink || ""}`} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Instructions for Zoom</a>
+                      <div className={`modal ${this.state.zoomInstructions ? 'is-active' : ''}`}>
+                        <div className="modal-background"></div>
+                        <div className="modal-card">
+                          <header className="modal-card-head">
+                            <p className="modal-card-title">Getting your Zoom link</p>
+                            <button className="modal-close is-large" aria-label="close" onClick={this.toggleZoomInstructions}></button>
+                          </header>
+                          <section className="modal-card-body">
+                            <p>You will need a zoom account to meet with your clients.</p>
+                            <ol style={{marginLeft: "2rem"}}>
+                              <li>
+                                In Zoom, <b>create a recurring personal meeting</b> (you might already
+                                have one in the meetings tab, if not, click little arrow next to
+                                New Meeting to create one)
+                              </li>
+                              <li>
+                                Open your personal meeting invitation by clicking
+                                show meeting invitation and <b>copy/paste just the link of the
+                                invitation and add it to your profile</b> and hit apply changes
+                              </li>
+                            </ol>
+                            <br></br>
+                            Your link should look like this:
+                            <br></br>
+                            https://zoom.us/j/8641256592?pwd=ZG0yN3hRT3F3OHRjMytuL2V3djUwdz09
+                            <br></br><br></br>
+                            Note: please include the full URL, including the https://
+                          </section>
+                        </div>
+                      </div>
+                      <br></br><br></br>
+                      <div className="field is-horizontal">
+                        <label className="checkbox is-flex">
+                          <input className="checkbox-input" type="checkbox" name="freeFirstSession"
+                             onChange={this.change} checked={this.state.changed.freeFirstSession ? this.state.changed.freeFirstSession : this.state.profile?.freeFirstSession} />
+                          <p>Allow free first sessions</p>
+                        </label>
+                      </div>
                     </React.Fragment>
                   )}
-
-                  <div className="field is-grouped is-grouped-right">
+                  <div className="field">
                     <p className="control is-expanded">
-                      <a className="is-size-4" href="/reset">
-                        Change password
-                      </a>
+                      <a className="is-size-6" href="/reset">Change password</a>
                     </p>
-                    <p className="control">
-                      <input
-                        type="submit"
-                        className="button is-primary"
-                        value="Apply Changes"
-                      />
-                    </p>
+                    <input type="submit" className="button is-primary apply-button" value="Apply Changes" />
                   </div>
                 </div>
               </form>

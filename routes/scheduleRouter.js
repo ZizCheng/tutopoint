@@ -30,8 +30,6 @@ router.post('/', auth.loggedIn, auth.ensureUserIsGuide, function(req, res) {
   //should always match unless user is trying to hack
   var prevBookedTimes = scheduleAPI.listBookedTimes(req.user.schedule);
   var newBookedTimes = scheduleAPI.listBookedTimes(req.body.schedule);
-  console.log(prevBookedTimes);
-  console.log(newBookedTimes);
   if (prevBookedTimes.length != newBookedTimes.length) {
     res.send('booked times don\'t match');
     return;

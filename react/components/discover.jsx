@@ -144,10 +144,7 @@ class ScheduleWithoutRouter extends React.Component {
           timezones.push(
             <td key={row + "" + 4}>
               <button
-                className={
-                  "button" +
-                  (this.state.schedule[row].selected ? " is-primary" : "")
-                }
+                className={"button" + (this.state.schedule[row].selected ? " is-primary" : "")}
                 disabled={this.state.schedule[row].status == "booked"}
                 onClick={this.select.bind(this, row)}
               >
@@ -177,6 +174,10 @@ class ScheduleWithoutRouter extends React.Component {
 
 const Schedule = withRouter(ScheduleWithoutRouter);
 
+
+
+
+
 class Discover extends React.Component {
   constructor(props) {
     super(props);
@@ -199,6 +200,7 @@ class Discover extends React.Component {
     }
 
     discoverAPI.getGuides(this.state.currentPage).then(guides => {
+      console.log("componentDidMount", guides);
       this.setState({ topGuides: guides.data, totalGuides: guides.count });
     });
   }
@@ -216,6 +218,7 @@ class Discover extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.currentPage != this.state.currentPage) {
       discoverAPI.getGuides(this.state.currentPage).then(guides => {
+        console.log("componentDidUpdate", guides);
         this.setState({ topGuides: guides.data, totalGuides: guides.count});
       });
     }
@@ -234,6 +237,7 @@ class Discover extends React.Component {
 
   render() {
     const guides = this.state.topGuides?.map((guide, i) => {
+      console.log(guide.freeFirstSession);
       return (
         <DiscoverGuideItem
           key={i}
@@ -243,6 +247,7 @@ class Discover extends React.Component {
           grade={guide.grade}
           profilePic={guide.profilePic}
           backdrop={guide.backdrop}
+          freeFirstSession={guide.freeFirstSession}
           onClick={() => {
             this.handleGuideClicked(i);
           }}
@@ -263,12 +268,8 @@ class Discover extends React.Component {
                       <div className="image-wrapper">
                         <figure className="image is-1by1">
                           <img
-                            src={
-                              typeof this.state.focusedGuide?.profilePic !==
-                              "undefined"
-                                ? this.state.focusedGuide.profilePic
-                                : "https://bulma.io/images/placeholders/96x96.png"
-                            }
+                            src={ typeof this.state.focusedGuide?.profilePic !== "undefined" ?
+                              this.state.focusedGuide.profilePic : "https://bulma.io/images/placeholders/96x96.png" }
                             alt="Placeholder image"
                           />
                         </figure>
@@ -276,11 +277,8 @@ class Discover extends React.Component {
                       <div className="image-wrapper">
                         <figure className="image is-1by1 logo-image">
                           <img
-                            src={
-                              typeof this.state.focusedGuide?.logo !==
-                              "undefined"
-                                ? this.state.focusedGuide.logo
-                                : "https://bulma.io/images/placeholders/96x96.png"
+                            src={ typeof this.state.focusedGuide?.logo !== "undefined" ?
+                              this.state.focusedGuide.logo : "https://bulma.io/images/placeholders/96x96.png"
                             }
                             alt="Placeholder image"
                           />
@@ -305,11 +303,18 @@ class Discover extends React.Component {
                       {this.state.focusedGuide.grade} in{" "}
                       {this.state.focusedGuide.major}
                     </h2>
-
-                    {/* <p className="is-size-6">Rating</p> */}
                     <p className="is-size-6 has-text-weight-bold bio-text">
                       {this.state.focusedGuide.bio}
                     </p>
+                    {this.state.focusedGuide.freeFirstSession ? (
+                      <p className="is-size-6 has-text-weight-bold bio-text has-text-success">
+                        If you have a free session available, you may use it on this guide. Go to your profile to check if you have one available.
+                      </p>
+                    ) : (
+                      <p className="is-size-6 has-text-weight-bold bio-text has-text-primary">
+                        This guide does not accept free sessions. You will be charged even if you have a free session available.
+                      </p>
+                    )}
                     <div className="tabs">
                       <ul>
                         <li onClick={() => {

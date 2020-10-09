@@ -68,10 +68,10 @@ postcall.post('/refer', function(req, res) {
            '\n\nThank you for your interest, we hope to see you using our platform.\n' +
            'Best, TutoPoint LLC.'
         };
-        transporter.sendMail(mailOptions, function(error, info) {
-          if (error) {
-            console.log(error);
-            reject(error);
+        transporter.sendMail(mailOptions, function(err, info) {
+          if (err) {
+            console.log(err);
+            reject(err);
           } else {
             console.log('Email sent1');
             res.json({message: 'ok'});
@@ -97,10 +97,10 @@ postcall.post('/report/:id', function(req, res) {
           '\n\nThe client\'s email is ' + req.user.email + '\n' +
           'The guide\'s email is ' + guide.email
         };
-        transporter.sendMail(mailOptions, function(error, info) {
-          if (error) {
-            console.log(error);
-            reject(error);
+        transporter.sendMail(mailOptions, function(err, info) {
+          if (err) {
+            console.log(err);
+            reject(err);
           } else {
             console.log('Email sent1');
             res.json({message: 'ok'});

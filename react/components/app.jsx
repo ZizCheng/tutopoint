@@ -23,6 +23,7 @@ const Session = React.lazy(() => import('./session.jsx'));
 import Profile from "./profile.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
+import Services from "./services.jsx";
  const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
 import profileStore from "../store/profileStore.js";
 
@@ -38,7 +39,7 @@ import "intro.js/introjs.css";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: null, hidden: false, loaded: false };
+    this.state = { profile: null, hidden: true, loaded: false };
 
     this.toggleSideBarMobile = this.toggleSideBarMobile.bind(this);
     this.closeTutorial = this.closeTutorial.bind(this);
@@ -52,6 +53,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    //this is where profileStore first stores the profile (?)
     profileAPI.getProfile().then((profile) => {
       const intro = introJs();
       console.log(profile);
@@ -85,9 +87,7 @@ class App extends React.Component {
   closeTutorial() {
     profileAPI.closeTutorial().then((resp) => {
       if (resp.error) {
-        console.log(
-          "Error occurred when closing the tutorial page. Internet connection may be down!"
-        );
+        console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
       }
       profileStore.dispatch({
         type: "Close Tutorial",
@@ -112,15 +112,10 @@ class App extends React.Component {
             aria-label="main navigation"
           >
             <div className="navbar-brand">
-              <a
-                className="navbar-item is-size-4"
-                href="/dashboard"
-                data-step="1"
-                data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service."
-              >
-                <span className="icon is-large">
-                  <img src={tutologo} />
-                </span>
+              <a className="navbar-item is-size-4" href="/dashboard" data-step="1"
+                data-intro="Welcome to TutoPoint! Please follow this simple walk through to learn about our service.">
+
+                <span className="icon is-large"><img src={tutologo} /></span>
                 TUTOPOINT
               </a>
 
@@ -139,13 +134,7 @@ class App extends React.Component {
               <div className="navbar-end">
                 <div className="navbar-item is-size-4">
                   <div className="buttons">
-                    <NavLink
-                      className="button is-light"
-                      activeClassName="is-active"
-                      to="/logout"
-                    >
-                      Log Out
-                    </NavLink>
+                    <a className="button is-light" href="/logout">Log Out</a>
                   </div>
                 </div>
                 <div
@@ -154,9 +143,8 @@ class App extends React.Component {
                   data-step="7"
                   data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!"
                 >
-                  <figure onClick={this.goToProfile} className="image is-48x48">
-                    <img
-                      className="is-rounded"
+                  <figure onClick={this.goToProfile} className="image is-48x48" style={{cursor: "pointer"}}>
+                    <img className="is-rounded"
                       src={
                         this.state.profile?.profilePic
                           ? this.state.profile.profilePic
@@ -233,7 +221,7 @@ class App extends React.Component {
                         activeClassName="is-active"
                         to="/balance"
                         data-step="3"
-                        data-intro="Refill your balance to at least $40 before you book a session by clicking balance. All our guides cost $40/hour during the beta period."
+                        data-intro="Refill your balance to at least $60 before you book a session by clicking balance. All our guides cost $60/hour."
                       >
                         Balance{" "}
                         {this.state.profile
@@ -261,9 +249,17 @@ class App extends React.Component {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink activeClassName="is-active" to="/logout">
-                      Log Out
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/services"
+                      data-intro="You can always read more about our services here."
+                      data-step="7"
+                    >
+                      Our Services
                     </NavLink>
+                  </li>
+                  <li>
+                    <a href="/logout">Log Out</a>
                   </li>
                 </ul>
               </aside>
@@ -295,11 +291,11 @@ class App extends React.Component {
                     <Balance />
                   </Route>
                 )}
-                <Route path="/Logout">
-                  <Logout />
-                </Route>
                 <Route path="/help">
                   <Help />
+                </Route>
+                <Route path="/services">
+                  <Services />
                 </Route>
                 <Route path="/success">
                   <PaymentSuccess />
@@ -338,10 +334,6 @@ function About() {
 
 function Users() {
   return <h2>Users</h2>;
-}
-
-function Logout() {
-  window.location.href = "/logout";
 }
 
 const PaymentSuccess = () => {

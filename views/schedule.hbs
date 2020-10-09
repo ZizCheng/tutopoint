@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/bulma-0.6.2.css">
+    <link rel="stylesheet" href="/css/schedule.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <script src="/js/schedule.js"></script>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  </head>
+  <body>
+<div class="page-container">
+  <div class="top-container">
+    <a href="/dashboard"><i class="fas fa-arrow-left"></i> Back to dashboard</a>
+  </div>
+  <div class="content-container">
+    <div class="left-container">
+      <div class="calendar-container">
+        <div class="calendar-arrow-container">
+          <div class="calendar-arrow calendar-right-arrow"><i class="fas fa-chevron-left"></i></div>
+          <div class="calendar-month-name-container">
+            <p class="calendar-month-name"></p>
+          </div>
+          <div class="calendar-arrow calendar-left-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <table>
+          <thead>
+            <td class="calendar-day-label">S</td>
+            <td class="calendar-day-label">M</td>
+            <td class="calendar-day-label">T</td>
+            <td class="calendar-day-label">W</td>
+            <td class="calendar-day-label">T</td>
+            <td class="calendar-day-label">F</td>
+            <td class="calendar-day-label">S</td>
+          </thead>
+          <tbody class="calendar-body">
+
+          </tbody>
+        </table>
+      </div>
+      <button class="save-button button is-primary" onclick="saveSchedule()">Save</button>
+      <p class="has-text-grey-light">*Automatically saves every 3 seconds</p>
+      <div class="insert-type-wrapper control">
+        <p>Add available times:</p>
+        <label class="radio">
+          <input type="radio" name="insertType" value="oneTime" checked>
+          This day only
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="daily">
+          Every day (for the next 28 days)
+        </label>
+        <label class="radio">
+          <input type="radio" name="insertType" value="weekly">
+          This day of every week (for the next 4 weeks)
+        </label>
+      </div>
+    </div>
+    <div class="right-container">
+      <div class="timetable-wrapper">
+        <table class="table timetable-table is-bordered">
+          <thead>
+            <tr>
+              <th></th>
+              <th><div class="timetable-day-label">Sunday</div></th>
+              <th><div class="timetable-day-label">Monday</div></th>
+              <th><div class="timetable-day-label">Tuesday</div></th>
+              <th><div class="timetable-day-label">Wednesday</div></th>
+              <th><div class="timetable-day-label">Thursday</div></th>
+              <th><div class="timetable-day-label">Friday</div></th>
+              <th><div class="timetable-day-label">Saturday</div></th>
+            </tr>
+          </thead>
+          <tbody class="timetable-content">
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+      //JSON.parse changes dates into strings, need to convert back
+      var schedule = JSON.parse(`{{{schedule}}}`);
+      for(var i = 0;i<schedule.length;i++) {
+        schedule[i].start = new Date(schedule[i].start);
+        schedule[i].end = new Date(schedule[i].end);
+      }
+    </script>
+    <script>
+
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      var today = new Date();
+      var year = today.getFullYear();
+      var month = today.getMonth();
+      var day = today.getDate();
+      var startOfweek = getStartOfWeekFromDate(today);
+
+      newCalendar(new Date(year, month));
+
+      createTimetable();
+      updateTimetable();
+
+      /*
+      var autosaveInterval = setInterval(function() {
+        saveSchedule();
+      }, 3000);
+      */
+
+      $(".calendar-right-arrow").click(function(){
+        day = 1;
+        month--;
+        if(month == -1)
+        {
+          month = 11;
+          year--;
+        }
+        var firstDayInMonth = new Date(year, month, day);
+        var startOfweek = getStartOfWeekFromDate(firstDayInMonth);
+        newCalendar(firstDayInMonth);
+      });
+      $(".calendar-left-arrow").click(function(){
+        day = 1;
+        month++;
+        if(month == 12)
+        {
+          month = 0;
+          year++;
+        }
+        var firstDayInMonth = new Date(year, month, day);
+        var startOfweek = getStartOfWeekFromDate(firstDayInMonth);
+        newCalendar(firstDayInMonth);
+      });
+
+    </script>
+  </body>
+</html>

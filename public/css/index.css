@@ -1,37 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap");
 
-.custom-container {
-  width: 70%;
-  margin-left: auto;
-  margin-right: auto;
-}
 
 html,
 body {
   height: 100%;
   font-family: "Lato", "sans-serif";
 }
-
-.modal-card-c {
-  padding: 2em 0;
-}
-
-.modal-card-c h1,
-.modal-card-c button {
-  margin-bottom: 1em;
-}
-
-.navbar {
-  padding: 1em 0;
-}
-
-.nav-link {
-  text-decoration: none;
-  font-weight: 300;
-  color: #000;
-  font-size: 1.5em;
-}
-
 .button {
   background-color: #ff3636;
   color: #fff;
@@ -39,11 +13,31 @@ body {
   border: none;
   width: 150px;
 }
-
-.button strong {
+.card .button strong {
   font-weight: 300;
   font-size: 1.2em;
 }
+h1 {
+  font-weight: 700;
+  font-size: 1.6em;
+}
+.card {
+  border-radius: 30px;
+}
+.card-content {
+  padding: 2em 5em;
+}
+
+
+.modal-card-c {
+  padding: 2em 0;
+}
+.modal-card-c h1,
+.modal-card-c button {
+  margin-bottom: 1em;
+}
+
+
 .bg-section {
   background-color: #f56363;
 }
@@ -67,21 +61,16 @@ body {
   margin-bottom: 2em;
 }
 
-.card {
-  border-radius: 30px;
-}
-
-.card-content {
-  padding: 2em 5em;
-}
 
 .register-box-heading {
   margin-bottom: 1em;
 }
 
-h1 {
-  font-weight: 700;
-  font-size: 1.6em;
+
+.pricing-image {
+  width: 80vw;
+  margin: auto;
+  display: block;
 }
 
 .services-container {
@@ -124,63 +113,76 @@ h1 {
   margin-bottom: 0.5em;
 }
 
+
+
+.custom-container {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.carousel-wrapper {
+  position: relative;
+}
 .carousel-card {
   margin-bottom: 1em;
 }
-
-.slick-prev:before,
-.slick-next:before {
-  color: lightgray !important;
+.carousel .card-content {
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: scroll;
 }
-
+.slick-prev, .slick-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 4rem;
+  font-weight: 0;
+  cursor: pointer;
+}
+.slick-prev {
+  left: -40px;
+}
+.slick-next {
+  right: -40px;
+}
 .slick-slide {
   margin: 1em;
 }
-
 .columns:last-child {
   margin-bottom: 0;
 }
-
 .title:not(:last-child) {
   margin-bottom: 0;
 }
-
 .profilePicture {
   position: absolute !important;
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
 .backdrop {
   filter: blur(0.5px) brightness(80%);
 }
-
 .backdrop-image {
   border-radius: 30px 30px 0 0;
 }
-
+.guide-bio {
+  margin-top: 1rem;
+}
 .footer {
   margin-top: 4em;
   background-color: #f2f2f2;
 }
 
+
 .hidden {
   display: none;
 }
 
-.media-content {
-    overflow-x: unset;
-}
 .what-are-you-waiting-for-container {
   padding: 1rem !important;
 }
 
-.pricing-image {
-  width: 80vw;
-  margin: auto;
-  display: block;
-}
 
 @media only screen and (max-width: 1300px) {
   .services-container {
@@ -214,9 +216,5 @@ h1 {
   }
   .custom-container {
     width: 90%;
-  }
-  .slick-prev:before,
-  .slick-next:before {
-    display: none;
   }
 }

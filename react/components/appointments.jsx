@@ -34,6 +34,7 @@ const calculateTimeLeft = date => {
 const AppointmentItem = ({
   title,
   date,
+  clientName,
   guideName,
   guideGrade,
   guideMajor,
@@ -45,7 +46,8 @@ const AppointmentItem = ({
   cancel,
   send,
   updateParentSessionId,
-  status
+  status,
+  free,
 }) => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(date));
   let timerComponents = [];
@@ -76,38 +78,32 @@ const AppointmentItem = ({
     <article className={`media ${status}`}>
       <div className="media-left">
         <figure className="image is-64x64 is-hidden-touch">
-          <img
-            className="is-rounded"
-            src={
-              guideProfilePic
-                ? guideProfilePic
-                : "https://bulma.io/images/placeholders/64x64.png"
-            }
-          />
+          <img className="is-rounded"
+            src={guideProfilePic ? guideProfilePic : "https://bulma.io/images/placeholders/64x64.png"} />
         </figure>
       </div>
       <div className="media-content">
         <div className="content">
-          <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">
-            {title}
-          </p>
-          <p className="is-size-7-widescreen is-size-6 has-text-weight-light">
-            {guideGrade} at {guideUniversity}
-          </p>
-          <p className="is-size-7-widescreen is-size-7 has-text-weight-light">
-            {guideMajor}
-          </p>
+          {(profileStore.getState().__t == "guides") && (
+            <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">Session with {clientName}</p>
+          )}
+          {(profileStore.getState().__t == "clients") && (
+            <div className="react-stupid-gremlin-rules">
+              <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">{title}</p>
+              <p className="is-size-7-widescreen is-size-6 has-text-weight-light">{guideGrade} at {guideUniversity}</p>
+              <p className="is-size-7-widescreen is-size-7 has-text-weight-light">{guideMajor}</p>
+            </div>
+          )}
+          {free && (<p className="is-size-7-widescreen has-text-success">This is a free session.</p>)}
         </div>
       </div>
       <div className="media-right">
         <p className="is-size-6 has-text-right">{formattedDate}</p>
-
         <p className="is-size-6 has-text-right is-capitalized">{status}</p>
 
         {status == "active" ? (
           <div className="control is-expanded">
-            <button
-              className={"button is-light is-fullwidth is-small"}
+            <button className={"button is-light is-fullwidth is-small"}
               onClick={() => {
                 onClick(sessionid);
               }}
@@ -166,6 +162,7 @@ const AppointmentItem = ({
 class Appointments extends React.Component {
   constructor(props) {
     super(props);
+    //this.state.profile is used to get sessions later
     this.state = {
       isUpcoming: true,
       profile: profileStore.getState(),
@@ -202,11 +199,7 @@ class Appointments extends React.Component {
           <div className="modal-content">
             <DocumentCompactList action={this.action} />
           </div>
-          <button
-            className="modal-close is-large"
-            aria-label="close"
-            onClick={closeModal}
-          ></button>
+          <button className="modal-close is-large" aria-label="close" onClick={closeModal}></button>
         </div>
       )
     });
@@ -217,7 +210,11 @@ class Appointments extends React.Component {
   }
 
   sessionClicked(i) {
-    window.location.href = `/session/${i}`;
+    console.log(i);
+    sessionAPI.info(i).then(resp => {
+      console.log(resp.createdBy);
+      window.location.href = resp.createdBy.zoomLink;
+    })
   }
 
   handleConfirm(sessionid) {
@@ -256,7 +253,6 @@ class Appointments extends React.Component {
     document.getElementById("select-document-popup").classList.remove("is-active");
   }
   updateSessionId(sessionid) {
-    console.log(sessionid);
     this.setState(
       {
         selectedSessionId: sessionid
@@ -266,6 +262,7 @@ class Appointments extends React.Component {
   }
 
   render() {
+    console.log(this.state.profile?.sessions);
     if (this.props.pastOnly) {
       let pastSession = this.state.profile?.sessions.filter(session => {
         const sessionDate = new Date(session.date);
@@ -289,12 +286,14 @@ class Appointments extends React.Component {
             key={i}
             title={session.createdBy.name}
             date={session.date}
+            clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
             status=""
+            free={session.free}
           />
         );
       });
@@ -317,17 +316,20 @@ class Appointments extends React.Component {
         );
       })
       .map((session, i) => {
+        console.log(session);
         return (
           <AppointmentItem
             key={i}
             title={session.title}
             date={session.date}
+            clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}
             guideMajor={session.createdBy.major}
             guideUniversity={session.createdBy.university}
             guideProfilePic={session.createdBy.profilePic}
             status="past"
+            free={session.free}
           />
         );
       });
@@ -336,10 +338,11 @@ class Appointments extends React.Component {
       .filter(session => {
         const sessionDate = new Date(session.date);
         return (
-          Date.now() > sessionDate.valueOf() - 300000 && Date.now() < sessionDate.valueOf() + (2*60*60*1000) && (!session.cancelled && !session.completed)
+           (Date.now() < sessionDate.valueOf()  || (Date.now() > sessionDate.valueOf() - 300000 && Date.now() < sessionDate.valueOf() + (2*60*60*1000))) && (!session.cancelled && !session.completed)
         );
       })
       .map((session, i) => {
+
         const sessionDate = new Date(session.date);
         let sessionStatus;
 
@@ -356,6 +359,7 @@ class Appointments extends React.Component {
             key={i}
             title={session.title}
             date={session.date}
+            clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}
             guideMajor={session.createdBy.major}
@@ -368,6 +372,7 @@ class Appointments extends React.Component {
             send={this.sendDocument}
             updateParentSessionId={this.updateSessionId}
             status={sessionStatus}
+            free={session.free}
           />
         );
       });

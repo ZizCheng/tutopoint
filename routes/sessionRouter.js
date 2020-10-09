@@ -49,9 +49,7 @@ router.get('/cancel/:id', auth.loggedIn, auth.ensureUserIsClient, function(req, 
       .then((session) => Session.cancelSession(session))
       .then(() => res.redirect('/dashboard'))
       .catch((err) => {
-        console.log(
-            err,
-        ); res.send('Internal Server Error');
+        console.log(err); res.send('Internal Server Error');
       });
 });
 router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
@@ -74,14 +72,13 @@ router.post('/rate', auth.loggedIn, auth.ensureUserIsClient, function(req, res) 
         if (end == null) {
           res.send('session has not ended');
         } else {
-          const weight = Math.ceil((end-start)/(1000*60*15));
+          const weight = Math.ceil((end-start)/(1000*60*15))
           console.log(weight);
           Guides.findById(session.createdBy, function(err, guide) {
             // Similar to
             // guide.ratings[rating] += weight;
             // but marks it as modified. Using ^^^ would not save
             guide.ratings.set(rating, guide.ratings[rating] + weight);
-            console.log(guide.ratings);
             guide.save();
             res.send('success');
           });
@@ -106,7 +103,6 @@ router.post("/comment", auth.loggedIn, auth.ensureUserIsClient, function(req,res
     const comment = req.body.comment; //make sure rating is int
     Sessions.findById(sessionId, function(err, session) {
       Guides.findById(session.createdBy, function(err, guide) {
-        console.log(guide);
         guide.comments.push(comment);
         guide.markModified("comments");
         guide.save();
