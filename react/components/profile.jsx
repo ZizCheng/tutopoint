@@ -126,7 +126,7 @@ class Profile extends React.Component {
         </div>
       </div>
 
-    var gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior", 'Graduated'];
+    var gradeOptions = ["Accepted", "Freshman", "Sophomore", "Junior", "Senior", "Graduated"];
     var gradeSelectOptions = gradeOptions.map((grade) => {
       if(this.state.profile?.grade == grade) return <option value={grade} selected>{grade}</option>
       else return <option value={grade}>{grade}</option>
@@ -203,7 +203,7 @@ class Profile extends React.Component {
                         </div>
                       </div>
 
-                      <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Instructions for Zoom</a>
+                      <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Connect to your Zoom account</a>
                       <div className={`modal ${this.state.zoomInstructions ? 'is-active' : ''}`}>
                         <div className="modal-background"></div>
                         <div className="modal-card">
@@ -212,25 +212,29 @@ class Profile extends React.Component {
                             <button className="modal-close is-large" aria-label="close" onClick={this.toggleZoomInstructions}></button>
                           </header>
                           <section className="modal-card-body">
-                            <p>You will need a zoom account to meet with your clients.</p>
+                            <p>You need to connect your zoom account to meet with your clients.</p>
                             <ol style={{marginLeft: "2rem"}}>
                               <li>
                                 In Zoom, <b>create a recurring personal meeting</b> (you might already
                                 have one in the meetings tab, if not, click little arrow next to
-                                New Meeting to create one)
+                                New Meeting to create one) and turn password off.
                               </li>
                               <li>
                                 Open your personal meeting invitation by clicking
                                 show meeting invitation and <b>copy/paste just the link of the
-                                invitation and add it to your profile</b> and hit apply changes
+                                invitation and add it to your profile</b> and hit apply changes.
                               </li>
                             </ol>
                             <br></br>
                             Your link should look like this:
                             <br></br>
-                            https://zoom.us/j/8641256592?pwd=ZG0yN3hRT3F3OHRjMytuL2V3djUwdz09
+                            https://zoom.us/j/0123456789
                             <br></br><br></br>
-                            Note: please include the full URL, including the https://
+                            Note: please include just the full URL, including the https://
+                            <br></br>
+                            Make sure you open Zoom and start your personal meeting
+                            <b>10-15 minutes</b> before a session begins in case a
+                            client joins early.
                           </section>
                         </div>
                       </div>
