@@ -15,14 +15,17 @@ discover.get('/page/:pagenumber', async function(req, res) {
 
   const skip = (pagenumber - 1) * 12;
 
+  //"old" code commented out below
+  //not the original version, bug has already been fixed by querying all the guides after skip
+  /*
   //gets a js object query with query[0].count = # elements, query[0].data = guides' data
-  //gets all after skip (pruning happens later)
+  //gets all, pruning/skipping happens later
   const query = await Guides.aggregate([
     {
       $facet: {
         stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$match: {'onboarded': true}}, {$skip: skip},
+        stage2: [{$match: {'onboarded': true}},
         {$project: {'backdrop': true, 'bio': true, 'email': true, 'grade': true, 'language': true, 'logo': true,
             'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true, 'schedule': true}}],
 
@@ -49,15 +52,43 @@ discover.get('/page/:pagenumber', async function(req, res) {
 
   //prune it down to first 12 guides
   var prunedGuides = {
-    count: query[0].count,
+    count: query[0].data.length,
     data: [],
   }
-  for(var i = 0;i<Math.min(12,query[0].data.length);i++) {
-    prunedGuides.data[i] = query[0].data[i];
+  for(var i = 0;i<Math.min(12,query[0].data.length-skip);i++) {
+    prunedGuides.data[i] = query[0].data[i+skip];
   }
 
 
   res.json(prunedGuides);
+  */
+
+  //new code: query all guides, skip/limit later
+  Guides.find({onboarded: true})
+    .select("backdrop bio email grade language logo major name profilePic ratings university freeFirstSession schedule")
+    .exec(function(err, guides) {
+      //filter out guides with no times in the future
+      //guides with no available times will still appear if they have a booked time in the future
+      for(var i = 0;i<guides.length;i++) {
+        var schedule = guides[i].schedule;
+        if(schedule.length === 0 || schedule[schedule.length-1].start.getTime() < Date.now()) {
+          guides.splice(i,1);
+          i--;
+        }
+      }
+
+      //prune it down to first 12 guides
+      var prunedGuides = {
+        count: guides.length,
+        data: [],
+      }
+      for(var i = 0;i<Math.min(12,guides.length-skip);i++) {
+        prunedGuides.data[i] = guides[i+skip];
+      }
+
+      res.json(prunedGuides);
+    });
+
 });
 
 discover.get('/:id', function(req, res) {
