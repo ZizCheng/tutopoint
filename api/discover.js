@@ -15,12 +15,14 @@ discover.get('/page/:pagenumber', async function(req, res) {
 
   const skip = (pagenumber - 1) * 12;
 
+  //gets a js object query with query[0].count = # elements, query[0].data = guides' data
+  //gets all after skip (pruning happens later)
   const query = await Guides.aggregate([
     {
       $facet: {
         stage1: [{$match: {'onboarded': true}}, {$group: {_id: null, count: {$sum: 1}}}],
 
-        stage2: [{$match: {'onboarded': true}}, {$skip: skip}, {$limit: 12},
+        stage2: [{$match: {'onboarded': true}}, {$skip: skip},
         {$project: {'backdrop': true, 'bio': true, 'email': true, 'grade': true, 'language': true, 'logo': true,
             'major': true, 'name': true, 'profilePic': true, 'ratings': true, 'university': true, 'freeFirstSession': true, 'schedule': true}}],
 
@@ -35,7 +37,6 @@ discover.get('/page/:pagenumber', async function(req, res) {
     },
   ]);
 
-
   //filter out guides with no times in the future
   //guides with no available times will still appear if they have a booked time in the future
   for(var i = 0;i<query[0].data.length;i++) {
@@ -46,7 +47,17 @@ discover.get('/page/:pagenumber', async function(req, res) {
     }
   }
 
-  res.json(query[0]);
+  //prune it down to first 12 guides
+  var prunedGuides = {
+    count: query[0].count,
+    data: [],
+  }
+  for(var i = 0;i<Math.min(12,query[0].data.length);i++) {
+    prunedGuides.data[i] = query[0].data[i];
+  }
+
+
+  res.json(prunedGuides);
 });
 
 discover.get('/:id', function(req, res) {
