@@ -13,7 +13,16 @@ import profileStore from "../store/profileStore.js";
 class Profile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { profile: profileStore.getState(), changed: {}, zoomInstructions: false };
+    this.state =
+    {
+      profile: profileStore.getState(),
+      changed: {},
+      submitStatus: 0,
+      zoomInstructions: false,
+    };
+    console.log(this.state.profile);
+
+    this.submitCheckmarkTimeout = 0; //meaningless placeholder value
 
     this.change = this.change.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,7 +43,7 @@ class Profile extends React.Component {
   change(e) {
     const field = e.target.getAttribute("name");
     var val = e.target.value;
-    if(field == "freeFirstSession") {
+    if(field == "freeFirstSession" || field == "chatNotifs") {
       val = e.target.checked;
     }
     console.log(e.target.value + " " + e.target.checked + " " + val);
@@ -47,8 +56,19 @@ class Profile extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
+
     if (Object.keys(this.state.changed).length > 0) {
+      //clear checkmark timeout, set status to loading
+      clearTimeout(this.submitCheckmarkTimeout);
+      this.setState({ submitStatus: 1 });
       profileAPI.updateProfile(this.state.changed).then(msg => {
+        //set status to checkmark
+        this.setState({ submitStatus: 2 });
+        //set timeout to set status to default after 500 ms
+        this.submitCheckmarkTimeout = setTimeout(() => {
+          this.setState({ submitStatus: 0 });
+        }, 500);
+
         if (msg.message == "ok") {
           profileAPI.getProfile().then(profile => {
             profileStore.dispatch({ type: "Initialize", data: profile });
@@ -126,11 +146,119 @@ class Profile extends React.Component {
         </div>
       </div>
 
+
     var gradeOptions = ["Accepted", "Freshman", "Sophomore", "Junior", "Senior", "Graduated"];
     var gradeSelectOptions = gradeOptions.map((grade) => {
-      if(this.state.profile?.grade == grade) return <option value={grade} selected>{grade}</option>
-      else return <option value={grade}>{grade}</option>
+      if(this.state.profile?.grade == grade) return <option key={grade} value={grade} selected>{grade}</option>
+      else return <option key={grade} value={grade}>{grade}</option>
     });
+
+    var guideProfile =
+      <React.Fragment>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Bio</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input className="input" type="text" name="bio" onChange={this.change}
+                  placeholder={this.state.profile?.bio} value={`${this.state.changed.bio || ""}`}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Major</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input className="input" type="text" name="major" onChange={this.change}
+                placeholder={this.state.profile?.major} value={`${this.state.changed.major || ""}`} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Grade</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                {/*<input className="input" type="text" name="grade" onChange={this.change}
+                placeholder={this.state.profile?.grade} value={`${this.state.changed.grade || ""}`} />*/}
+                <div className="select">
+                  <select name="grade" onChange={this.change}>
+                    {gradeSelectOptions}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label">Zoom meeting link</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input className="input" type="text" name="zoomLink" onChange={this.change}
+                placeholder={this.state.profile?.zoomLink} value={`${this.state.changed.zoomLink || ""}`} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Connect to your Zoom account</a>
+        <div className={`modal ${this.state.zoomInstructions ? 'is-active' : ''}`}>
+          <div className="modal-background"></div>
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p className="modal-card-title">Getting your Zoom link</p>
+              <button className="modal-close is-large" aria-label="close" onClick={this.toggleZoomInstructions}></button>
+            </header>
+            <section className="modal-card-body">
+              <p>You need to connect your zoom account to meet with your clients.</p>
+              <ol style={{marginLeft: "2rem"}}>
+                <li>
+                  In Zoom, <b>create a recurring personal meeting</b> (you might already
+                  have one in the meetings tab, if not, click little arrow next to
+                  New Meeting to create one) and turn password off.
+                </li>
+                <li>
+                  Open your personal meeting invitation by clicking
+                  show meeting invitation and <b>copy/paste just the link of the
+                  invitation and add it to your profile</b> and hit apply changes.
+                </li>
+              </ol>
+              <br></br>
+              Your link should look like this:
+              <br></br>
+      				https://zoom.us/j/0123456789
+      				<br></br><br></br>
+      				Note: please include just the full URL, including the https://
+      				<br></br>
+      				Make sure you open Zoom and start your personal meeting
+      				<b>10-15 minutes</b> before a session begins in case a
+      				client joins early.
+            </section>
+          </div>
+        </div>
+        <br></br><br></br>
+        <div className="field is-horizontal">
+          <label className="checkbox is-flex">
+            <input className="checkbox-input" type="checkbox" name="freeFirstSession" onChange={this.change}
+               checked={this.state.changed?.freeFirstSession ??
+                 (this.state.profile?.freeFirstSession ?? false)} />
+            <p>Allow free first sessions</p>
+          </label>
+        </div>
+      </React.Fragment>
 
     return (
       <div>
@@ -142,117 +270,28 @@ class Profile extends React.Component {
                 <div className="container is-fluid">
                   {this.state.profile?.__t == "clients" && clientProfile}
 
-                  {this.state.profile?.__t == "guides" && (
-                    <React.Fragment>
-                      <div className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label">Bio</label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              <input className="input" type="text" name="bio" onChange={this.change}
-                                placeholder={this.state.profile?.bio} value={`${this.state.changed.bio || ""}`}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label">Major</label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              <input className="input" type="text" name="major" onChange={this.change}
-                              placeholder={this.state.profile?.major} value={`${this.state.changed.major || ""}`} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label">Grade</label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              {/*<input className="input" type="text" name="grade" onChange={this.change}
-                              placeholder={this.state.profile?.grade} value={`${this.state.changed.grade || ""}`} />*/}
-                              <div className="select">
-                                <select name="grade" onChange={this.change}>
-                                  {gradeSelectOptions}
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label">Zoom meeting link</label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              <input className="input" type="text" name="zoomLink" onChange={this.change}
-                              placeholder={this.state.profile?.zoomLink} value={`${this.state.changed.zoomLink || ""}`} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <a onClick={this.toggleZoomInstructions} style={{color: "#0275d8"}}>Connect to your Zoom account</a>
-                      <div className={`modal ${this.state.zoomInstructions ? 'is-active' : ''}`}>
-                        <div className="modal-background"></div>
-                        <div className="modal-card">
-                          <header className="modal-card-head">
-                            <p className="modal-card-title">Getting your Zoom link</p>
-                            <button className="modal-close is-large" aria-label="close" onClick={this.toggleZoomInstructions}></button>
-                          </header>
-                          <section className="modal-card-body">
-                            <p>You need to connect your zoom account to meet with your clients.</p>
-                            <ol style={{marginLeft: "2rem"}}>
-                              <li>
-                                In Zoom, <b>create a recurring personal meeting</b> (you might already
-                                have one in the meetings tab, if not, click little arrow next to
-                                New Meeting to create one) and turn password off.
-                              </li>
-                              <li>
-                                Open your personal meeting invitation by clicking
-                                show meeting invitation and <b>copy/paste just the link of the
-                                invitation and add it to your profile</b> and hit apply changes.
-                              </li>
-                            </ol>
-                            <br></br>
-                            Your link should look like this:
-                            <br></br>
-                            https://zoom.us/j/0123456789
-                            <br></br><br></br>
-                            Note: please include just the full URL, including the https://
-                            <br></br>
-                            Make sure you open Zoom and start your personal meeting
-                            <b>10-15 minutes</b> before a session begins in case a
-                            client joins early.
-                          </section>
-                        </div>
-                      </div>
-                      <br></br><br></br>
-                      <div className="field is-horizontal">
-                        <label className="checkbox is-flex">
-                          <input className="checkbox-input" type="checkbox" name="freeFirstSession"
-                             onChange={this.change} checked={this.state.changed.freeFirstSession ? this.state.changed.freeFirstSession : this.state.profile?.freeFirstSession} />
-                          <p>Allow free first sessions</p>
-                        </label>
-                      </div>
-                    </React.Fragment>
-                  )}
+                  {this.state.profile?.__t == "guides" && guideProfile}
                   <div className="field">
                     <p className="control is-expanded">
                       <a className="is-size-6" href="/reset">Change password</a>
                     </p>
-                    <input type="submit" className="button is-primary apply-button" value="Apply Changes" />
+                    <button type="submit" className="button is-primary apply-button">
+                      <span style={{visibility: (this.state.submitStatus == 0 ? "visible" : "hidden")}}>Apply Changes</span>
+                      <span className="profile-submit-icon-wrapper" style={{display: (this.state.submitStatus == 1 ? "block" : "none")}}>
+                        <i className="fas fa-circle-notch fa-spin"></i>
+                      </span>
+                      <span className="profile-submit-icon-wrapper" style={{display: (this.state.submitStatus == 2 ? "block" : "none")}}>
+                        <i className="fas fa-check"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div className="field is-horizontal">
+                    <label className="checkbox is-flex">
+                      <input className="checkbox-input" type="checkbox" name="chatNotifs" onChange={this.change}
+                        checked={this.state.changed?.chatNotifs ??
+                          (this.state.profile?.chatNotifs ?? false)} />
+                       <p>Email me with chat notifications</p>
+                    </label>
                   </div>
                 </div>
               </form>

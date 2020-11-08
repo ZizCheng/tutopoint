@@ -28,6 +28,15 @@ const User = new Schema({
     ref: 'referrals',
   },
   isVerified: {type: Boolean, default: false},
+  chats: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'chats',
+    default: [],
+  }],
+  chatNotifs: {
+    type: Boolean,
+    default: true,
+  }
 });
 const Guide = new Schema({
   university: {
@@ -205,6 +214,26 @@ const failedPayment = new Schema({
   },
 });
 
+//fields are named poorly: chatHistory should be renamed messages, chatHistory.message should be renamed text
+const Chat = new Schema({
+  participants: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+  }],
+  chatHistory: [{
+    message: {
+      type: String
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+    },
+    timestamp: {
+      type: Date,
+    }
+  }],
+});
+
 const Users = mongoose.model('users', User);
 const Guides = Users.discriminator('guides', Guide);
 const Clients = Users.discriminator('clients', Client);
@@ -214,6 +243,7 @@ const ReferralDocs = mongoose.model('referrals', Referrals);
 const VerifyTokens = mongoose.model('verifyTokens', VerifyToken);
 const ResetTokens = mongoose.model('resetTokens', ResetToken);
 const failedPayments = mongoose.model('failedPayments', failedPayment);
+const Chats = mongoose.model('chats', Chat);
 module.exports = {
   Users: Users,
   Clients: Clients,
@@ -224,4 +254,5 @@ module.exports = {
   VerifyTokens: VerifyTokens,
   ResetTokens: ResetTokens,
   failedPayments: failedPayments,
+  Chats: Chats,
 };
