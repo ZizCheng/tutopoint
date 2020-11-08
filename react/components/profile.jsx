@@ -244,7 +244,7 @@ class Profile extends React.Component {
       				Note: please include just the full URL, including the https://
       				<br></br>
       				Make sure you open Zoom and start your personal meeting
-      				<b>10-15 minutes</b> before a session begins in case a
+      				<b> 10-15 minutes</b> before a session begins in case a
       				client joins early.
             </section>
           </div>
