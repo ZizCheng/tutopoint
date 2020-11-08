@@ -147,8 +147,7 @@ class Profile extends React.Component {
       </div>
 
 
-
-    var gradeOptions = ["Freshman", "Sophomore", "Junior", "Senior", 'Graduated'];
+    var gradeOptions = ["Accepted", "Freshman", "Sophomore", "Junior", "Senior", "Graduated"];
     var gradeSelectOptions = gradeOptions.map((grade) => {
       if(this.state.profile?.grade == grade) return <option key={grade} value={grade} selected>{grade}</option>
       else return <option key={grade} value={grade}>{grade}</option>
