@@ -24,6 +24,7 @@ import Profile from "./profile.jsx";
 import Loading from "./loading.jsx";
 import Help from "./help.jsx";
 import Services from "./services.jsx";
+import Chat from "./chat.jsx";
  const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
 import profileStore from "../store/profileStore.js";
 
@@ -156,6 +157,7 @@ class App extends React.Component {
               </div>
             </div>
           </nav>
+          <Chat />
           <div className="columns">
             <div
               className={`column is-2 ${

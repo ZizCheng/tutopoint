@@ -3,6 +3,8 @@
     padding: 1em;
 }
 
+
+
 .table th {
     color: #4a4a4a;
 }
@@ -15,6 +17,14 @@
 .apply-button {
   width: auto;
   float: right;
+  position: relative;
+}
+.profile-submit-icon-wrapper {
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #profile__referralHistory {
