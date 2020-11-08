@@ -262,7 +262,6 @@ class Appointments extends React.Component {
   }
 
   render() {
-    console.log(this.state.profile?.sessions);
     if (this.props.pastOnly) {
       let pastSession = this.state.profile?.sessions.filter(session => {
         const sessionDate = new Date(session.date);
@@ -316,7 +315,6 @@ class Appointments extends React.Component {
         );
       })
       .map((session, i) => {
-        console.log(session);
         return (
           <AppointmentItem
             key={i}

@@ -25,6 +25,7 @@ const Users = require('./models/model.js').Users;
 const Guides = require('./models/model.js').Guides;
 const Sessions = require('./models/model.js').Sessions;
 const FailedPayments = require('./models/model.js').failedPayments;
+const Chats = require('./models/model.js').Chats;
 
 const authRouter = require('./routes/authRouter.js');
 const scheduleRouter = require('./routes/scheduleRouter.js');
@@ -43,6 +44,7 @@ const balanceAPI = require('./api/balance.js');
 const sessionAPI = require('./api/session.js');
 const referralAPI = require('./api/referral.js');
 const postcallAPI = require('./api/postcall.js');
+const chatAPI = require('./api/chat.js');
 
 const session = expressSession({
   secret: '385willneverlovetitor',
@@ -88,6 +90,7 @@ app.use('/api/balance', balanceAPI);
 app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
+app.use('/api/chat', chatAPI);
 
 
 app.engine('hbs', handlebars({
@@ -244,11 +247,61 @@ function refreshUser(sessionid, userid) {
   });
 }
 
-io.on('connection', function(socket, req, res) {
-  if (!socket.request.session.passport) {
-    return;
-  }
-  const userid = socket.request.session.passport.user;
+io.on('connection', function(socket) {
+  if (!socket.request.session.passport) return;
+  const userId = socket.request.session.passport.user;
+
+  //request: data: chat room id
+  //joins the given room (with chat- prefix), does not do security check
+  socket.on("chat-join-room", (data) => {
+    Chats.findById(data).exec((err,chat) => {
+      if(!chat) socket.emit("chat-error", "invalid chat id when joining chat room");
+      else {
+        //make sure user is part of this chat
+        if(!chat.participants.includes(userId)) socket.emit("chat-error", "you are not a part of this chat");
+        else {
+          socket.join("chat-" + data);
+          socket.leave("chat-" + socket.chatId);
+          socket.chatId = data;
+          console.log("chat room joined successfully");
+        }
+      }
+    });
+  });
+  //also save chat message
+  //performance should be fine because of low volume, but look into concurrent saves
+  socket.on("chat-msg", (data) => {
+    if(!data) return;
+    Chats.findById(socket.chatId).populate("participants", "_id email").exec((err, chat) => {
+      var newMessage = {
+        message: data,
+        sender: userId,
+        timestamp: new Date(),
+      }
+      chat.chatHistory.push(newMessage);
+      chat.save();
+
+      for(var user of chat.participants) {
+        if(user._id == userId) continue;
+
+        const mailOptions = {
+          from: 'TutoPoint Accounts <auth@tutopoint.com>',
+          to: user.email.toString(),
+          subject: 'New chat message',
+          text: 'You received a new chat message:\n\n' + data,
+        };
+        transporter.sendMail(mailOptions, function(err) {
+          
+        });
+      }
+
+      io.to("chat-" + socket.chatId).emit("chat-msg", newMessage);
+    });
+  });
+
+
+  //old call code
+  /*
   const sessionid = socket.request._query['session'];
   // Join sockets id room
   socket.join(userid);
@@ -348,6 +401,7 @@ io.on('connection', function(socket, req, res) {
     console.log('Replied offer');
     socket.to(sessionid).broadcast.emit('answer', offer);
   });
+  */
 });
 
 async function sessionFinished(sessionid) {

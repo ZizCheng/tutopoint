@@ -54,9 +54,12 @@ router.get('/transactions', async function(req, res) {
 });
 
 router.put('/', async function(req, res) {
-  let allowedChanges = {'name': true};
+  let allowedChanges;
+  if(req.user.__t == "clients") {
+    allowedChanges = {'name': true, 'chatNotifs': true};
+  }
   if (req.user.__t == 'guides') {
-    allowedChanges = {'bio': true, 'major': true, 'grade': true, 'freeFirstSession': true, 'zoomLink': true};
+    allowedChanges = {'bio': true, 'major': true, 'grade': true, 'freeFirstSession': true, 'zoomLink': true, 'chatNotifs': true};
   }
   const data = req.body.data;
   const changes = {};
