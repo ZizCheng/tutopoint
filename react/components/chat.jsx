@@ -29,7 +29,7 @@ class Chat extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{display: "none"}}>
         <div className="chat-launcher" onClick={this.toggleChat}>
           {this.state.chatWindowOpen ?
             <i className="chat-launcher-icon chat-launcher-icon-close fas fa-chevron-down"></i> :
