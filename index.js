@@ -19,6 +19,8 @@ const transporter = nodemailer.createTransport({
   auth: mailAuth,
 });
 
+const nodeSchedule = require('node-schedule');
+
 const databaseCredentials = require('./secret.js').databaseCredentials;
 
 const Users = require('./models/model.js').Users;
@@ -123,6 +125,9 @@ app.get('/about', function(req, res) {
 });
 app.get('/mission', function(req, res) {
   res.render('mission', {layout: false});
+});
+app.get('/events', function(req, res) {
+  res.render('events', {layout: false});
 });
 app.get('/summer', function(req, res) {
   res.render('summer', {layout: false});
@@ -263,7 +268,16 @@ io.on('connection', function(socket) {
           socket.join("chat-" + data);
           socket.leave("chat-" + socket.chatId);
           socket.chatId = data;
-          console.log("chat room joined successfully");
+
+          //update the lastRead by finding the user then iterating through all chats to match the id
+          Users.findById(userId).exec((err, user) => {
+            for(var chat of user.chats) {
+              if(chat.chat == socket.chatId) {
+                chat.lastRead = Date.now();
+                user.save();
+              }
+            }
+          });
         }
       }
     });
@@ -281,6 +295,8 @@ io.on('connection', function(socket) {
       chat.chatHistory.push(newMessage);
       chat.save();
 
+      //email, currently disabled in favor of daily notifications
+      /*
       for(var user of chat.participants) {
         if(user._id == userId) continue;
 
@@ -291,9 +307,10 @@ io.on('connection', function(socket) {
           text: 'You received a new chat message:\n\n' + data,
         };
         transporter.sendMail(mailOptions, function(err) {
-          
+
         });
       }
+      */
 
       io.to("chat-" + socket.chatId).emit("chat-msg", newMessage);
     });
@@ -481,6 +498,62 @@ subscriber.on('message', function(_channel, message) {
       io.to(sessionid).emit('activityPing');
 
       redis.setex(`shadow:${sessionid}`, refreshTTL, '');
+    }
+  });
+});
+
+//send email notifs every day
+nodeSchedule.scheduleJob('0 0 0 * * *', function() {
+  console.log("sending chat notifs");
+  Users.find({chatNotifs: true}).populate("chats.chat").populate("chats.chat.participant", "name").exec((err, users) => {
+    //for each user, send an email
+    for(let user of users) {
+      let unreadMessagesCount = 0;
+      //for each chat, construct the email text, and add these together to form the final email
+      for(let chatTemp of user.chats) {
+
+        let chatHistory = chatTemp.chat.chatHistory;
+        let lastRead = chatTemp.lastRead;
+        let participants = chatTemp.chat.participants;
+
+        //find all messages with timestamp greater than lastread
+        //stupid O(n) iteration and then sort the result
+        let unreadHistory = [];
+        for(let i = 0;i<chatHistory.length;i++) {
+          if(chatHistory[i].timestamp.getTime() > lastRead.getTime()) {
+            unreadHistory.push(chatHistory[i]);
+            unreadMessagesCount++;
+          }
+        }
+        unreadHistory.sort();
+
+        /*
+        //construct the email text
+        let emailBody = "";
+        //add the chat header
+        emailBody += "Chat with ";
+        for(let i = 0;i<participants.length) {
+          if(i > 0) emailBody += ", ";
+          emailBody += participants[i];
+        }
+        emailBody += "\n";
+        //add the chat body (not implemented yet)
+        */
+      }
+      if(unreadMessagesCount > 0) {
+        const mailOptions = {
+          from: "TutoPoint <auth@tutopoint.com>",
+          to: user.email,
+          subject: "[TutoPoint] " + unreadMessagesCount + " new chat message(s)",
+          text: "Hello,\n\nYou have " + unreadMessagesCount + " unread chat messages. You can " +
+          "read these at https://tutopoint.com/dashboard/upcoming.\n" +
+          "You can turn off these notifications from " + "https://tutopoint.com/profile.\n\n" +
+          "Best, TutoPoint LLC."
+        };
+        transporter.sendMail(mailOptions, function(err, info) {
+          if (err) console.log(err);
+        });
+      }
     }
   });
 });

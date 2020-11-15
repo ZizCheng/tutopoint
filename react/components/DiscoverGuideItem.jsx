@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import store from "../store/store.js";
 
-const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdrop, onClick, freeFirstSession }) => {
+const DiscoverGuideItem = ({ guide, onClick }) => {
     return (
       <div onClick={onClick} className="card dashboard__discoverGuide_Item">
         <div className="card-image">
           <figure className="image is-2by1">
             <img
-              src={backdrop ? backdrop : "https://bulma.io/images/placeholders/640x320.png"}
+              src={guide.backdrop ? guide.backdrop : "https://bulma.io/images/placeholders/640x320.png"}
               alt="Placeholder image"
             />
           </figure>
@@ -16,23 +17,29 @@ const DiscoverGuideItem = ({ major, name, university, grade, profilePic, backdro
           <div className="media">
             <div className="media-left">
               <figure className="image is-64x64">
-                <img className="is-rounded" src={profilePic ? profilePic : "https://bulma.io/images/placeholders/64x64.png"} alt="Placeholder image"
+                <img className="is-rounded" src={guide.profilePic ? guide.backdrop : "https://bulma.io/images/placeholders/64x64.png"} alt="Placeholder image"
                 />
               </figure>
             </div>
             <div className="media-content">
               <p className="is-size-7 has-text-weight-bold">
-                {name} at <span className="highlight">{university}</span>
+                {guide.name} at <span className="highlight">{guide.university}</span>
               </p>
               <p className="is-size-7 has-text-weight-bold">
-                {grade} &mdash; <span className="highlight">{major}</span>
+                {guide.grade} &mdash; <span className="highlight">{guide.major}</span>
               </p>
-              {freeFirstSession ? (
+              {guide.freeFirstSession ? (
                 <p className="is-size-7 has-text-weight-bold has-text-success">
                   Free first session
                 </p>
               ) : ""}
-
+              <p className="is-size-7 has-text-weight-bold highlight" style={{cursor: "pointer"}} onClick={(e) => {
+                e.stopPropagation();
+                store.dispatch({type: "chat/guideIdUpdate", data: guide._id});
+                console.log(guide);
+              }}>
+                Start a chat
+              </p>
             </div>
           </div>
         </div>

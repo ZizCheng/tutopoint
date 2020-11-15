@@ -7,26 +7,27 @@ const socketIOEndpoint = window.location.origin;
 import "./chat.scss";
 import chatAPI from "../api/chat.js";
 import profileAPI from "../api/profile.js";
+import store from "../store/store.js";
 
 import { withRouter } from "react-router-dom";
 
 class Chat extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       chatWindowOpen: false,
     }
-
     this.toggleChat = this.toggleChat.bind(this);
+    this.showChat = this.showChat.bind(this);
   }
-
   toggleChat() {
     this.setState({
       chatWindowOpen: !this.state.chatWindowOpen
     });
   }
-
+  showChat() {
+    this.setState({chatWindowOpen: true});
+  }
   render() {
     return (
       <div>
@@ -37,7 +38,7 @@ class Chat extends React.Component {
           }
         </div>
         <div className={"chat-window-wrapper " + (this.state.chatWindowOpen ? "" : "chat-window-wrapper-hidden")}>
-          <ChatWindow></ChatWindow>
+          <ChatWindow showChat={this.showChat}></ChatWindow>
         </div>
       </div>
     );
@@ -64,7 +65,11 @@ class ChatWindow extends React.Component {
   }
 
   //opens chat box with chat (full chat object with messages with auto-gen ids)
-  loadChat(chat, newChatCreated /* boolean: refresh chats if true */) {
+  //newChatCreated: if true, we need to get the existing/new chats again
+  loadChat(chat, newChatCreated) {
+    //show chat, this is needed when chat is opened from discover
+    this.props.showChat();
+
     for(var chatHistoryEle of chat.chatHistory) {
       this.assignId(chatHistoryEle);
     }
@@ -111,15 +116,15 @@ class ChatWindow extends React.Component {
 
   componentDidMount() {
     this.getChatState();
+    this.unsubscribe = store.subscribe(() => {
+      this.setState({ profile: store.getState().chatState });
+    });
   }
 
   render() {
-    //clients (see all the guides)
+    //build both lists at the same time by seeing what category each qualified user falls into
     var existingChatList = [];
     var newChatList = [];
-    var existingChatList = this.state.existingUsers.map((user) => {
-
-    });
     for(var user of this.state.users) {
       var ChatSelectTemp = null;
       if(user.__t == "guides") {
@@ -138,6 +143,7 @@ class ChatWindow extends React.Component {
       }
       else newChatList.push(ChatSelectTemp);
     }
+    
     return (
       <div className="chat-container card">
         <div className="chat-select-list" style={{display: this.state.chatBoxOpen ? "none" : "block"}}>
@@ -171,15 +177,29 @@ class ChatSelect extends React.Component {
     super(props);
 
     this.chatSelectClick = this.chatSelectClick.bind(this);
+    this.createOrLoadChat = this.createOrLoadChat.bind(this);
+  }
+
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      if(store.getState().chatState?.guideId == this.props._id) {
+        this.chatSelectClick();
+        store.dispatch({type: "chat/guideIdUpdate", data: "-1"});
+      }
+    });
   }
 
   chatSelectClick() {
-    chatAPI.findChat(this.props._id).then((chat) => {
+    console.log("chatSelectClick called");
+    this.createOrLoadChat(this.props._id);
+  }
+  createOrLoadChat(guideId) {
+    chatAPI.findChat(guideId).then((chat) => {
       if(chat == "not found") {
         //if chat does not exist, create a new one and then find it
         //kind of dumb to find it again but simpler to code this way
-        chatAPI.newChat(this.props._id).then((newChat) => {
-          chatAPI.findChat(this.props._id).then((chat) => {
+        chatAPI.newChat(guideId).then((newChat) => {
+          chatAPI.findChat(guideId).then((chat) => {
             this.props.loadChat(chat, true);
           });
         });
@@ -231,7 +251,7 @@ class ChatSelect extends React.Component {
 class ChatBox extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
+    this.chatScrollDummyRef = React.createRef();
 
     this.socket = socketIOClient(socketIOEndpoint);
     this.socket.on("chat-error", (data) => {
@@ -276,9 +296,11 @@ class ChatBox extends React.Component {
   //use this to join another socket room if props changes
   //this is called on every change, including re-render, so first compare props with old props
   componentDidUpdate(prevProps) {
-    //if this.props.chat exists and ( either prevProps.chat doesn't exist or prevProps.chat._id is different )
+    //if the user opened a new chat
     if(this.props.chat && (!prevProps.chat || this.props.chat._id != prevProps.chat._id)) {
       this.joinChatRoom();
+      //using the ref, scroll to the bottom
+      this.chatScrollDummyRef.current.scrollIntoView();
     }
   }
 
@@ -315,6 +337,7 @@ class ChatBox extends React.Component {
         </div>
         <div className="chat-messages-container">
           {messageList}
+          <div className="chat-scroll-dummy" ref={this.chatScrollDummyRef}></div>
         </div>
         <div className="chat-input-wrapper">
           <form className="chat-input-form" onSubmit={this.sendSubmit}>

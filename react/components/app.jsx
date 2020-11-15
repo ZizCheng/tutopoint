@@ -26,7 +26,7 @@ import Help from "./help.jsx";
 import Services from "./services.jsx";
 import Chat from "./chat.jsx";
  const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 
 import "./theme.sass";
 import "./app.scss";
@@ -54,11 +54,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    //this is where profileStore first stores the profile (?)
     profileAPI.getProfile().then((profile) => {
       const intro = introJs();
-      console.log(profile);
-      profileStore.dispatch({ type: "Update", data: profile });
+      store.dispatch({ type: "Update", data: profile });
       this.setState({ loaded: true }, function () {
         if (
           this.state.profile?.__t == "clients" &&
@@ -80,8 +78,8 @@ class App extends React.Component {
       });
     });
 
-    profileStore.subscribe(() => {
-      this.setState({ profile: profileStore.getState() });
+    store.subscribe(() => {
+      this.setState({ profile: store.getState().profileState });
     });
   }
 
@@ -90,7 +88,7 @@ class App extends React.Component {
       if (resp.error) {
         console.log("Error occurred when closing the tutorial page. Internet connection may be down!");
       }
-      profileStore.dispatch({
+      store.dispatch({
         type: "Close Tutorial",
         data: this.state.profile,
       });
@@ -339,7 +337,7 @@ function Users() {
 }
 
 const PaymentSuccess = () => {
-  const profile = profileStore.getState();
+  const profile = store.getState().profileState;
 
   return (
     <div id="paymentSuccess" style={{ marginTop: "15vh" }}>
@@ -373,7 +371,7 @@ const PaymentSuccess = () => {
 };
 
 const PaymentFailed = () => {
-  const profile = profileStore.getState();
+  const profile = store.getState().profileState;
 
   return (
     <div

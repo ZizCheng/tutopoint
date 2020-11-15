@@ -7,7 +7,7 @@ import "./appointments.scss";
 import sessionAPI from "../api/session.js";
 import documentAPI from "../api/document.js";
 import profileAPI from "../api/profile.js";
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 import createModal from "./createModal.jsx";
 
 
@@ -34,6 +34,7 @@ const calculateTimeLeft = date => {
 const AppointmentItem = ({
   title,
   date,
+  userType,
   clientName,
   guideName,
   guideGrade,
@@ -84,11 +85,11 @@ const AppointmentItem = ({
       </div>
       <div className="media-content">
         <div className="content">
-          {(profileStore.getState().__t == "guides") && (
+          {userType == "guides" && (
             <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">Session with {clientName}</p>
           )}
-          {(profileStore.getState().__t == "clients") && (
-            <div className="react-stupid-gremlin-rules">
+          {userType == "clients" && (
+            <div>
               <p className="is-size-6-widescreen is-size-6 has-text-weight-bold">{title}</p>
               <p className="is-size-7-widescreen is-size-6 has-text-weight-light">{guideGrade} at {guideUniversity}</p>
               <p className="is-size-7-widescreen is-size-7 has-text-weight-light">{guideMajor}</p>
@@ -115,7 +116,7 @@ const AppointmentItem = ({
             </button>
           </div>
         ) : null}
-        {(profileStore.getState().__t == "clients" && status != "past") && (
+        {(userType == "clients" && status != "past") && (
           <div className="control is-expanded">
             <button
               className={"button is-light is-fullwidth is-small"}
@@ -123,7 +124,7 @@ const AppointmentItem = ({
                 createModal("Are you sure you want to cancel the session with "+guideName+" on "+formattedDate+"? This action is irreversible.", () => {cancel(sessionid)});
               }}
               disabled={
-                profileStore.getState().__t == "clients" ? "" : "disabled"
+                userType == "clients" ? "" : "disabled"
               }
             >
               Cancel
@@ -135,7 +136,7 @@ const AppointmentItem = ({
                 send(sessionid);
               }}
               disabled={
-                profileStore.getState().__t == "clients" ? "" : "disabled"
+                userType == "clients" ? "" : "disabled"
               }
             >
               Send questionnaire
@@ -143,7 +144,7 @@ const AppointmentItem = ({
           </div>
         )}
 
-        {profileStore.getState().__t == "guides" && status == "unconfirmed" && (
+        {userType == "guides" && status == "unconfirmed" && (
           <button
             className={"button is-light is-fullwidth"}
             onClick={() => {
@@ -165,7 +166,7 @@ class Appointments extends React.Component {
     //this.state.profile is used to get sessions later
     this.state = {
       isUpcoming: true,
-      profile: profileStore.getState(),
+      profile: store.getState().profileState,
       selectDocumentPopup: "",
       selectedSessionId: null
     };
@@ -183,8 +184,8 @@ class Appointments extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe = profileStore.subscribe(() => {
-      this.setState({ profile: profileStore.getState() });
+    this.unsubscribe = store.subscribe(() => {
+      this.setState({ profile: store.getState().profileState });
     });
 
     function closeModal(e) {
@@ -223,7 +224,7 @@ class Appointments extends React.Component {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
         profileAPI.getProfile().then(data => {
-          profileStore.dispatch({ type: "Update", data: data });
+          store.dispatch({ type: "Update", data: data });
           this.props.history.push("/dashboard");
         });
       }
@@ -236,7 +237,7 @@ class Appointments extends React.Component {
         // Needs fixing. Timer does not want to end causing hook crash.
         // window.location.href = "/dashboard";
         profileAPI.getProfile().then(data => {
-          profileStore.dispatch({ type: "Update", data: data });
+          store.dispatch({ type: "Update", data: data });
           this.props.history.push("/dashboard");
         });
       }
@@ -285,6 +286,7 @@ class Appointments extends React.Component {
             key={i}
             title={session.createdBy.name}
             date={session.date}
+            userType={this.state.profile?.__t}
             clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}
@@ -320,6 +322,7 @@ class Appointments extends React.Component {
             key={i}
             title={session.title}
             date={session.date}
+            userType={this.state.profile?.__t}
             clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}
@@ -357,6 +360,7 @@ class Appointments extends React.Component {
             key={i}
             title={session.title}
             date={session.date}
+            userType={this.state.profile?.__t}
             clientName={session.clients[0] ? session.clients[0].name : "?"}
             guideName={session.createdBy.name}
             guideGrade={session.createdBy.grade}

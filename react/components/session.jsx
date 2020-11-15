@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 import createModal from "./createModal.jsx";
 import quilljs from "quill";
 import {
@@ -20,7 +20,7 @@ class Session extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      profile: profileStore.getState(),
+      profile: store.getState().profileState,
       sessionid: props.match.params.id,
     };
     this.initializePeer = this.initializePeer.bind(this);
