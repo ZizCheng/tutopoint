@@ -502,6 +502,7 @@ subscriber.on('message', function(_channel, message) {
   });
 });
 
+/*
 //send email notifs every day
 nodeSchedule.scheduleJob('0 0 0 * * *', function() {
   console.log("sending chat notifs");
@@ -526,19 +527,6 @@ nodeSchedule.scheduleJob('0 0 0 * * *', function() {
           }
         }
         unreadHistory.sort();
-
-        /*
-        //construct the email text
-        let emailBody = "";
-        //add the chat header
-        emailBody += "Chat with ";
-        for(let i = 0;i<participants.length) {
-          if(i > 0) emailBody += ", ";
-          emailBody += participants[i];
-        }
-        emailBody += "\n";
-        //add the chat body (not implemented yet)
-        */
       }
       if(unreadMessagesCount > 0) {
         const mailOptions = {
@@ -557,3 +545,4 @@ nodeSchedule.scheduleJob('0 0 0 * * *', function() {
     }
   });
 });
+*/
