@@ -8,14 +8,14 @@ import QRCode from "qrcode.react";
 
 import profileAPI from "../api/profile.js";
 
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state =
     {
-      profile: profileStore.getState(),
+      profile: store.getState().profileState,
       changed: {},
       submitStatus: 0,
       zoomInstructions: false,
@@ -31,8 +31,8 @@ class Profile extends React.Component {
   }
 
   componentDidMount() {
-    this.unsubscribe = profileStore.subscribe(() => {
-      this.setState({ profile: profileStore.getState() });
+    this.unsubscribe = store.subscribe(() => {
+      this.setState({ profile: store.getState().profileState });
     });
   }
 
@@ -71,7 +71,7 @@ class Profile extends React.Component {
 
         if (msg.message == "ok") {
           profileAPI.getProfile().then(profile => {
-            profileStore.dispatch({ type: "Initialize", data: profile });
+            store.dispatch({ type: "Initialize", data: profile });
           });
         }
       });
@@ -82,14 +82,13 @@ class Profile extends React.Component {
     profileAPI.requestReferralKey().then(msg => {
       if (msg.message == "ok") {
         profileAPI.getProfile().then(profile => {
-          profileStore.dispatch({ type: "Initialize", data: profile });
+          store.dispatch({ type: "Initialize", data: profile });
         });
       }
     })
   }
 
   toggleZoomInstructions() {
-    console.log("qwer");
     this.setState({
       zoomInstructions: !this.state.zoomInstructions
     });

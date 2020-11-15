@@ -333,7 +333,7 @@ exports.deserializeUser = function(id, cb) {
       })
       .populate('ratedSessions')
       .populate('documents')
-      .populate('chats')
+      .populate("chats.chat")
       .exec(function(err, user) {
         cb(err, user);
       });

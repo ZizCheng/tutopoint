@@ -12,7 +12,7 @@ import {
 } from "react-router-dom";
 
 import discoverAPI from '../api/discover.js';
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 
 import Appointments from './appointments.jsx'
 import DiscoverGuideItem from './DiscoverGuideItem.jsx';
@@ -22,7 +22,7 @@ import DocumentCompactList from './DocumentCompactList.jsx';
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {topGuides: null, profile: profileStore.getState()};
+    this.state = {topGuides: null, profile: store.getState().profileState};
   }
 
   componentDidMount(){
@@ -32,8 +32,8 @@ class Dashboard extends React.Component {
             this.setState({topGuides: guides.data})
         })
 
-        this.unsubscribe = profileStore.subscribe(() => {
-          this.setState({ profile: profileStore.getState() });
+        this.unsubscribe = store.subscribe(() => {
+          this.setState({ profile: store.getState().profileState });
         });
   }
 
@@ -45,13 +45,7 @@ class Dashboard extends React.Component {
     const guides = this.state.topGuides?.slice(0, 4).map((guide, i) => {
         return <DiscoverGuideItem
           key={i}
-          major={guide.major}
-          name={guide.name}
-          university={guide.university}
-          grade={guide.grade}
-          profilePic={guide.profilePic}
-          backdrop={guide.backdrop}
-          freeFirstSession={guide.freeFirstSession}
+          guide={guide}
           onClick={() => {
             this.props.history.push(`/discover/?guide=${guide._id}`);
           }}>
