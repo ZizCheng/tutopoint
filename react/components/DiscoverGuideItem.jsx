@@ -17,7 +17,7 @@ const DiscoverGuideItem = ({ guide, onClick }) => {
           <div className="media">
             <div className="media-left">
               <figure className="image is-64x64">
-                <img className="is-rounded" src={guide.profilePic ? guide.backdrop : "https://bulma.io/images/placeholders/64x64.png"} alt="Placeholder image"
+                <img className="is-rounded" src={guide.profilePic ? guide.profilePic : "https://bulma.io/images/placeholders/64x64.png"} alt="Placeholder image"
                 />
               </figure>
             </div>
@@ -33,6 +33,7 @@ const DiscoverGuideItem = ({ guide, onClick }) => {
                   Free first session
                 </p>
               ) : ""}
+              {/*
               <p className="is-size-7 has-text-weight-bold highlight" style={{cursor: "pointer"}} onClick={(e) => {
                 e.stopPropagation();
                 store.dispatch({type: "chat/guideIdUpdate", data: guide._id});
@@ -40,6 +41,7 @@ const DiscoverGuideItem = ({ guide, onClick }) => {
               }}>
                 Start a chat
               </p>
+              */}
             </div>
           </div>
         </div>

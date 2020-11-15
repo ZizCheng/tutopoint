@@ -30,7 +30,7 @@ class Chat extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div style={{display: "none"}}>
         <div className="chat-launcher" onClick={this.toggleChat}>
           {this.state.chatWindowOpen ?
             <i className="chat-launcher-icon chat-launcher-icon-close fas fa-chevron-down"></i> :
@@ -143,7 +143,7 @@ class ChatWindow extends React.Component {
       }
       else newChatList.push(ChatSelectTemp);
     }
-    
+
     return (
       <div className="chat-container card">
         <div className="chat-select-list" style={{display: this.state.chatBoxOpen ? "none" : "block"}}>
