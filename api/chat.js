@@ -15,7 +15,7 @@ router.get("/list", function(req, res) {
   var userIds = [];
   for(var chat of req.user.chats) {
     //loop through participants (should only be 2) to find the one that isn't this user
-    for(var participant of chat.participants) {
+    for(var participant of chat.chat.participants) {
       if(!participant.equals(req.user._id)) {
         userIds.push(participant);
       }
@@ -34,12 +34,15 @@ router.post("/new", function(req, res) {
         participants: [req.user._id, req.body.userId]
       });
       chat.save();
-      req.user.chats.push(chat._id);
+
+      req.user.chats.push({chat: chat._id, lastRead: new Date()});
       req.user.markModified("chats");
       req.user.save();
-      user.chats.push(chat._id);
+
+      user.chats.push({chat: chat._id, lastRead: new Date()});
       user.markModified("chats");
       user.save();
+
       res.json("success");
     }
   });

@@ -2,7 +2,7 @@ import React, { useEffect, setState, useState } from "react";
 import ReactDOM from "react-dom";
 import { withRouter } from "react-router-dom";
 import "./balance.scss";
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 import balanceAPI from "../api/balance.js";
 import { loadStripe } from "@stripe/stripe-js";
 import QRCode from 'qrcode.react';
@@ -159,7 +159,7 @@ class Balance extends React.Component {
     const search = props.location.search;
     const params = new URLSearchParams(search);
     const balance= Boolean(params.get('balanceerror')) ? true : false;
-    this.state = { step: 0, profile: profileStore.getState(), summary: null, wechat: false, balanceerror: balance};
+    this.state = { step: 0, profile: store.getState().profileState, summary: null, wechat: false, balanceerror: balance};
     this.formRef = React.createRef();
 
     this.formComplete = this.formComplete.bind(this);
@@ -172,8 +172,8 @@ class Balance extends React.Component {
   }
 
   componentDidMount() {
-    profileStore.subscribe(profile => {
-      this.setState({ profile: profileStore.getState() });
+    store.subscribe(profile => {
+      this.setState({ profile: store.getState().profileState });
     });
   }
 
@@ -190,8 +190,8 @@ class Balance extends React.Component {
           console.log(data.error);
           return that.props.history.push('/fail');
         } else {
-          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          store.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          store.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
           that.props.history.push('/success');
         }
 
@@ -251,8 +251,8 @@ class Balance extends React.Component {
           console.log(data.error);
           return that.props.history.push('/fail');
         } else {
-          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          store.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          store.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
           that.props.history.push('/success');
         }
       });
@@ -264,8 +264,8 @@ class Balance extends React.Component {
           console.log(data.error);
           return that.props.history.push('/fail');
         } else {
-          profileStore.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
-          profileStore.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
+          store.dispatch({type: "Update Balance", data: {balance: data.ending_balance} });
+          store.dispatch({type: "Update Transactions", data: {transactions: data.transactions}});
           that.props.history.push('/success');
         }
       });

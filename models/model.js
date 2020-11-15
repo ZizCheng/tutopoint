@@ -28,11 +28,16 @@ const User = new Schema({
     ref: 'referrals',
   },
   isVerified: {type: Boolean, default: false},
-  chats: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'chats',
-    default: [],
-  }],
+  chats: {
+    type: [{
+      chat: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'chats',
+      },
+      lastRead: {type: Date, default: Date.now()}
+    }],
+    default: []
+  },
   chatNotifs: {
     type: Boolean,
     default: true,

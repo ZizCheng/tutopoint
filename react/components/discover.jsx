@@ -14,7 +14,7 @@ import sessionAPI from "../api/session.js";
 import scheduleAPI from "../api/schedule.js";
 
 
-import profileStore from "../store/profileStore.js";
+import store from "../store/store.js";
 
 import moment from "moment-timezone";
 
@@ -82,7 +82,7 @@ class ScheduleWithoutRouter extends React.Component {
         .then(response => {
           if (response.message == "ok") {
             profileAPI.getProfile().then(profile => {
-              profileStore.dispatch({ type: "Update", data: profile });
+              store.dispatch({ type: "Update", data: profile });
               this.props.history.push("/dashboard");
             });
           } else if (response.error && response.code == 15) {
@@ -102,7 +102,6 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   renderButtonText(interval) {
-    console.log(interval);
     if (interval.status == "booked") {
       return "booked";
     } else if (interval.status == "available") {
@@ -111,7 +110,7 @@ class ScheduleWithoutRouter extends React.Component {
   }
 
   render() {
-    var intervalTableHtml = "Loading";
+    var intervalTableHtml = false;
     if (this.state.schedule !== null) {
       scheduleAPI.stringToDate(this.state.schedule);
       intervalTableHtml = scheduleAPI
@@ -122,7 +121,7 @@ class ScheduleWithoutRouter extends React.Component {
             (timezone, column) => {
               if (column == 0) {
                 return (
-                  <td className="monospace" key={row + "" + column}>
+                  <td className="monospace" key={row + "-" + column}>
                     {moment(time)
                       .tz(timezone)
                       .format(format)}
@@ -130,10 +129,7 @@ class ScheduleWithoutRouter extends React.Component {
                 );
               }
               return (
-                <td
-                  className="monospace is-hidden-mobile"
-                  key={row + "" + column}
-                >
+                <td className="monospace is-hidden-mobile" key={row + "-" + column}>
                   {moment(time)
                     .tz(timezone)
                     .format(format)}
@@ -152,7 +148,7 @@ class ScheduleWithoutRouter extends React.Component {
               </button>
             </td>
           );
-          return <tr>{timezones}</tr>;
+          return <tr key={row}>{timezones}</tr>;
         });
     }
     return (
@@ -165,7 +161,7 @@ class ScheduleWithoutRouter extends React.Component {
               <th className="has-text-grey">Availability</th>
             </tr>
           </thead>
-          <tbody>{intervalTableHtml}</tbody>
+          <tbody>{intervalTableHtml ? intervalTableHtml : <tr><td>Loading...</td></tr>}</tbody>
         </table>
       </div>
     );
@@ -200,7 +196,6 @@ class Discover extends React.Component {
     }
 
     discoverAPI.getGuides(this.state.currentPage).then(guides => {
-      console.log("componentDidMount", guides);
       this.setState({ topGuides: guides.data, totalGuides: guides.count });
     });
   }
@@ -237,18 +232,12 @@ class Discover extends React.Component {
 
   render() {
     const guides = this.state.topGuides?.map((guide, i) => {
-      console.log(guide.freeFirstSession);
       return (
         <DiscoverGuideItem
           key={i}
-          major={guide.major}
-          name={guide.name}
-          university={guide.university}
-          grade={guide.grade}
-          profilePic={guide.profilePic}
-          backdrop={guide.backdrop}
-          freeFirstSession={guide.freeFirstSession}
+          guide={guide}
           onClick={() => {
+            console.log("onClick");
             this.handleGuideClicked(i);
           }}
         ></DiscoverGuideItem>
@@ -319,12 +308,12 @@ class Discover extends React.Component {
                       <ul>
                         <li onClick={() => {
                           this.setState({view: "Schedule"})
-                        }} className={(this.state.view == "Schedule") && "is-active"}>
+                        }} className={(this.state.view == "Schedule") ? "is-active" : undefined}>
                           <a>Schedule</a>
                         </li>
                         <li onClick={() => {
                           this.setState({view: "Reviews"})
-                        }} className={(this.state.view == "Reviews") && "is-active"}>
+                        }} className={(this.state.view == "Reviews") ? "is-active" : undefined}>
                           <a>Reviews</a>
                         </li>
                       </ul>
