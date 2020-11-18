@@ -502,7 +502,7 @@ subscriber.on('message', function(_channel, message) {
   });
 });
 
-/*
+
 //send email notifs every day
 nodeSchedule.scheduleJob('0 0 0 * * *', function() {
   console.log("sending chat notifs");
@@ -545,4 +545,3 @@ nodeSchedule.scheduleJob('0 0 0 * * *', function() {
     }
   });
 });
-*/
