@@ -33,7 +33,6 @@ const DiscoverGuideItem = ({ guide, onClick }) => {
                   Free first session
                 </p>
               ) : ""}
-              {/*
               <p className="is-size-7 has-text-weight-bold highlight" style={{cursor: "pointer"}} onClick={(e) => {
                 e.stopPropagation();
                 store.dispatch({type: "chat/guideIdUpdate", data: guide._id});
@@ -41,7 +40,6 @@ const DiscoverGuideItem = ({ guide, onClick }) => {
               }}>
                 Start a chat
               </p>
-              */}
             </div>
           </div>
         </div>
