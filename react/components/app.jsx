@@ -25,6 +25,7 @@ import Loading from "./loading.jsx";
 import Help from "./help.jsx";
 import Services from "./services.jsx";
 import Chat from "./chat.jsx";
+import Events from "./events.jsx";
  const PostCall = React.lazy(() => import( "./PostCall.jsx" ));
 import store from "../store/store.js";
 
@@ -139,7 +140,7 @@ class App extends React.Component {
                 <div
                   id="profilePicture"
                   className="navbar-brand"
-                  data-step="7"
+                  data-step="8"
                   data-intro="You can see your transaction history in your acount page, and your referral code and status. Thank you for choosing TutoPoint!"
                 >
                   <figure onClick={this.goToProfile} className="image is-48x48" style={{cursor: "pointer"}}>
@@ -186,6 +187,16 @@ class App extends React.Component {
                       data-intro="Your booked appointments will show up in appointments."
                     >
                       Appointments
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      activeClassName="is-active"
+                      to="/Events"
+                      data-step="9"
+                      data-intro="Browse our free virtual community events here."
+                    >
+                      Events
                     </NavLink>
                   </li>
                   <li>
@@ -271,6 +282,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/Appointments">
                   <Appointments />
+                </Route>
+                <Route path="/Events">
+                  <Events />
                 </Route>
                 <Route path="/Profile">
                   <Profile />

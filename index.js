@@ -43,6 +43,7 @@ const profileAPI = require('./api/profile.js');
 const discoverAPI = require('./api/discover.js');
 const documentAPI = require('./api/document.js');
 const balanceAPI = require('./api/balance.js');
+const eventsAPI = require('./api/events.js');
 const sessionAPI = require('./api/session.js');
 const referralAPI = require('./api/referral.js');
 const postcallAPI = require('./api/postcall.js');
@@ -93,6 +94,7 @@ app.use('/api/session', sessionAPI);
 app.use('/api/referral', referralAPI);
 app.use('/api/postcall', postcallAPI);
 app.use('/api/chat', chatAPI);
+app.use('/api/events', eventsAPI);
 
 
 app.engine('hbs', handlebars({
