@@ -60,6 +60,7 @@ router.post('/login', function(req, res, next) {
         return next(err);
       }
       return res.redirect('/dashboard');
+      //return res.redirect(req.body.redirectTo);
     });
   })(req, res, next);
 });
@@ -110,6 +111,7 @@ router.post('/reset/:token', auth.resetUser, function(req, res) {
 router.post('/signup', auth.newUser, (req, res) => {
   //res.redirect('/awaitVerification');
   res.redirect('/dashboard');
+  //res.redirect(req.body.redirectTo);
 });
 router.get('/logout', function(req, res) {
   req.logout();

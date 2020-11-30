@@ -5,7 +5,7 @@
   <div class="modal-background" onclick="hideModal()"></div>
   <div class="modal-content">
     <form method="post" action="/login">
-        <div class="card center-items modal-card-c">
+      <div class="card center-items modal-card-c">
         <h1>Login</h1>
         <div class="field">
           <div class="control">
@@ -24,6 +24,7 @@
         <p>Don't have an account? <a onclick="show('registerModal')" class="is-primary">Sign Up</a></p>
         <p><a onclick="show('resetModal')" class="is-primary">Forgot Password?</a></p>
       </div>
+      <input class="login-modal-redirect" name="redirectTo" type="hidden" value="/dashboard">
     </form>
     <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
   </div>
@@ -72,6 +73,7 @@
         </button>
         <p>Already have an account? <a onclick="show('loginModal')" class="is-primary">Log in</a></p>
       </div>
+      <input class="register-modal-redirect" name="redirectTo" type="hidden" value="/dashboard">
     </form>
     <button onclick="hideModal()" class="modal-close is-large" aria-label="close"></button>
   </div>
