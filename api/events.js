@@ -16,4 +16,12 @@ router.get('/', function(req, res){
     })
 })
 
+router.post('/rsvp', auth.loggedIn, auth.ensureUserIsClient, function(req, res) {
+  
+    Events.findById(req.body.eventID).exec(function(err, event) {
+        event.clients.push(req.body.clientID);
+        event.save();
+      })
+})
+
 module.exports = router;
