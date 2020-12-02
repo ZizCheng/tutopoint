@@ -50,8 +50,8 @@ class Events extends React.Component {
   }
 
   RSVP() {
-    console.log(this.profile?._id); //profile?._id is showing up as null?
-    event.RSVP(this.state.selectedEvent._id, this.profile?._id)
+    console.log(this.state.profile?._id); //profile?._id is showing up as null?
+    event.RSVP(this.state.selectedEvent._id, this.state.profile?._id)
       .then(response => {console.log(response)});
   }
 
