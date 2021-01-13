@@ -187,6 +187,7 @@ class Discover extends React.Component {
   }
 
   componentDidMount() {
+    console.log("discover didMount ran");
     const guideid = this.params.get("guide");
     console.log('guide id', guideid)
     if (guideid) {

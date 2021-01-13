@@ -22,6 +22,8 @@ import DocumentCompactList from './DocumentCompactList.jsx';
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
+    console.log("Dashboard props");
+    console.log(props);
     this.state = {topGuides: null, profile: store.getState().profileState};
   }
 
@@ -68,7 +70,7 @@ class Dashboard extends React.Component {
           </div>
         </div>
         <Router>
-        <Redirect to="/dashboard/upcoming"/>
+          <Redirect to="/dashboard/upcoming" />
           <div id="dashboard__bottomPreview" className="columns">
             <div className="column is-half">
               <Appointments existingHistory={this.props.history}/>

@@ -295,7 +295,7 @@ class App extends React.Component {
                 <Route path="/Documents/:id">
                   <DocumentEdit />
                 </Route>
-                {this.state.profile?.__t == "clients" && (
+                {(this.state.profile == null || this.state.profile?.__t == "clients") && (
                   <Route path="/Discover">
                     <Discover />
                   </Route>
