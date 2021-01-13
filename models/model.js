@@ -139,7 +139,7 @@ const Session = new Schema({
   },
   date: {
     type: Date,
-    required: [true, 'Required is required'],
+    required: [true, 'Date is required'],
   },
   confirmed: {
     type: Boolean,
@@ -157,6 +157,40 @@ const Session = new Schema({
     default: false,
   },
   free: {
+    type: Boolean,
+    default: false,
+  }
+});
+
+const Event = new Schema({
+  title: {
+    type: String,
+    required: [true, 'Title is required.'],
+  },
+  // lsit of guides
+  guides: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: [true, 'Creator required.'],
+  }],
+  clients: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+  }],
+  description: {
+    type: String,
+  },
+  date: {
+    type: Date,
+    required: [true, 'Date is required'],
+  },
+  link: {
+    type: String
+  },
+  backdrop: {
+    type: String,
+  },
+  completed: {
     type: Boolean,
     default: false,
   }
@@ -219,7 +253,7 @@ const failedPayment = new Schema({
   },
 });
 
-//fields are named poorly: chatHistory should be renamed messages, chatHistory.message should be renamed text
+// fields are named poorly: chatHistory should be renamed messages, chatHistory.message should be renamed text
 const Chat = new Schema({
   participants: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -249,6 +283,7 @@ const VerifyTokens = mongoose.model('verifyTokens', VerifyToken);
 const ResetTokens = mongoose.model('resetTokens', ResetToken);
 const failedPayments = mongoose.model('failedPayments', failedPayment);
 const Chats = mongoose.model('chats', Chat);
+const Events = mongoose.model('events', Event)
 module.exports = {
   Users: Users,
   Clients: Clients,
@@ -260,4 +295,5 @@ module.exports = {
   ResetTokens: ResetTokens,
   failedPayments: failedPayments,
   Chats: Chats,
+  Events: Events,
 };

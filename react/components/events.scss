@@ -1,0 +1,14 @@
+#your-events.card, #upcoming-events.card {
+    border-radius: 24px;
+    margin-top: 12px;
+    .cardOrganizer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5em, 10em));
+
+    }
+
+
+    .card {
+        border-radius: 0px;
+    }
+}

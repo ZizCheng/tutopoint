@@ -3,6 +3,7 @@ const router = new express.Router();
 const secret = require('../secret.js').stripe;
 const stripe = require('stripe')(secret.sk_key);
 const Guides = require('../models/model.js').Guides;
+const Events = require('../models/model.js').Events;
 const passcode = require('../secret.js').adminAuth.password;
 const bcrypt = require('bcrypt');
 
@@ -31,6 +32,7 @@ const upload = multer({
 });
 
 const everything = upload.fields([{name: 'profilePic', maxCount: 1}, {name: 'backdrop', maxCount: 1}, {name: 'logo', maxCount: 1}]);
+const eventBackdrop = upload.fields([{name: 'backdrop', maxCount: 1}]);
 
 const ensureAdmin = function(req, res, next) {
   if (req.session.admin == passcode) {
@@ -65,6 +67,36 @@ router.get('/', ensureAdmin, function(req, res) {
 router.get('/guide/register', ensureAdmin, function(req, res) {
   res.render('adminGuideRegister', {layout: false});
 });
+
+router.get('/events/create', ensureAdmin, function(req, res) {
+  Guides.find({}).select('name').lean().exec(function(err, data) {
+    console.log(data)
+    res.render('createEvent', {layout: false, allGuides: data})
+  })
+  
+})
+router.post('/events/create', ensureAdmin, eventBackdrop, function(req, res, next) {
+
+  console.log(req.body);
+  const eventInfo = {
+    title: req.body.Title,
+    guides: req.body.guides,
+    clients: [],
+    description: req.body.description,
+    date: req.body.Time,
+    link: req.body.link,
+    backdrop: req.files['backdrop'][0].location,
+    completed: false,
+  }
+  ev = new Events(eventInfo);
+  ev.save(function(err, user) {
+    if(err) {
+      res.send(err)
+    } else {
+      res.send('it worked')
+    }
+  })  
+})
 
 
 router.post('/guide/register', ensureAdmin, everything, function(req, res, next) {
