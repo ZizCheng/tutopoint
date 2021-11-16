@@ -23,7 +23,7 @@
     "@loadable/server": "^5.12.0",
     "@stripe/react-stripe-js": "^1.0.3",
     "@stripe/stripe-js": "^1.0.3",
-    "aws-sdk": "^2.619.0",
+    "aws-sdk": "^2.814.0",
     "babel-compat-loader": "^0.1.1",
     "babel-loader": "^8.0.6",
     "bcrypt": "^3.0.8",
