@@ -26,7 +26,7 @@
     "aws-sdk": "^2.619.0",
     "babel-compat-loader": "^0.1.1",
     "babel-loader": "^8.0.6",
-    "bcrypt": "^3.0.8",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "bulma": "^0.8.0",
     "bulma-divider": "^0.2.0",
